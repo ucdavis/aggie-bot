@@ -70,7 +70,18 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   def ldap_command(message)
-    term = message[5..-1]
+    # First, we need to check if the message contains an e-mail address as they
+    # utilize a special encoding. If we cannot detect one, assume everything
+    # except the beginning 'ldap ' is the search term.
+
+    # (E-mail encoding sample: "<mailto:somebody@ucdavis.edu|somebody@ucdavis.edu>")
+    mail_match = /mailto:([\S]+)\|/.match(message)
+
+    if mail_match
+      term = mail_match[1]
+    else
+      term = message[5..-1]
+    end
 
     # Connect to LDAP
     conn = LDAP::SSLConn.new( $SETTINGS['LDAP_HOST'], $SETTINGS['LDAP_PORT'].to_i )
@@ -79,7 +90,7 @@ Daemons.run_proc('dss-chatbot.rb') do
 
     search_terms = "(|(uid=#{term})(mail=#{term})(givenName=#{term})(sn=#{term})(cn=#{term}))"
     results = ""
-    result_count = 0;
+    result_count = 0
 
     conn.search($SETTINGS['LDAP_SEARCH_DN'], LDAP::LDAP_SCOPE_SUBTREE, search_terms) do |entry|
       if result_count > 0
