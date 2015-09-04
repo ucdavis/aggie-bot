@@ -1,3 +1,6 @@
+2015-09-04 Christopher Thielen <cmthielen@ucdavis.edu>:
+	* Converted from HipChat to Slack (uh oh)
+
 2015-08-06 Christopher Thielen <cmthielen@ucdavis.edu>:
 	* Enabled global integration installation.
 	* Bumped verison to 0.2.
