@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 # DSS ChatBot
 # Version 0.3 2015-09-04
 # Written by Christopher Thielen <cmthielen@ucdavis.edu>
