@@ -1,0 +1,52 @@
+{
+  "name": "DSS ChatBot",
+  "version": "0.2",
+  "vendor": {
+    "name": "Christopher Thielen",
+    "url": "http://it.dss.ucdavis.edu"
+  },
+  "description": "A custom-built HipChat integration for the UCD DSS IT",
+  "key": "edu.ucdavis.dss.chatbot",
+  "links": {
+    "homepage": "https://it.dss.ucdavis.edu",
+    "self": "<%= $SETTINGS['CHATBOT_URL'] %>/capabilities"
+  },
+  "capabilities": {
+    "hipchatApiConsumer": {
+      "scopes": [
+        "send_notification"
+      ]
+    },
+    "installable": {
+      "allowRoom": true,
+      "allowGlobal": true,
+      "callbackUrl": "<%= $SETTINGS['CHATBOT_URL'] %>/installable"
+    },
+    "webhook": [
+      {
+        "event": "room_message",
+        "pattern": "^\\/sysaid [0-9]+$",
+        "url": "<%= $SETTINGS['CHATBOT_URL'] %>/webhook?command=sysaid",
+        "name": "room_message_sysaid"
+      },
+      {
+        "event": "room_message",
+        "pattern": "#[0-9]+",
+        "url": "<%= $SETTINGS['CHATBOT_URL'] %>/webhook?command=sysaid",
+        "name": "room_message_sysaid"
+      },
+      {
+        "event": "room_message",
+        "pattern": "^\\/ldap",
+        "url": "<%= $SETTINGS['CHATBOT_URL'] %>/webhook?command=ldap",
+        "name": "room_message_ldap"
+      },
+      {
+        "event": "room_message",
+        "pattern": "^\\/visioneers",
+        "url": "<%= $SETTINGS['CHATBOT_URL'] %>/webhook?command=visioneers",
+        "name": "room_message_visioneers"
+      }
+    ]
+  }
+}

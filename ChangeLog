@@ -1,0 +1,11 @@
+2015-08-06 Christopher Thielen <cmthielen@ucdavis.edu>:
+	* Enabled global integration installation.
+	* Bumped verison to 0.2.
+	* Added the ability to query SysAid by typing a pound (#) followed by digits
+	  anywhere in a message.
+
+2015-05-14 Christopher Thielen <cmthielen@ucdavis.edu>:
+	* Turn off notifications for ChatBot replies
+
+2014-11-13 Christopher Thielen <cmthielen@ucdavis.edu>:
+	* Began project (according to comment in dss-chatbot.rb)
