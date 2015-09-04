@@ -3,14 +3,10 @@ SYSAID_USER: ""
 SYSAID_PASSWORD: ""
 SYSAID_URI: "https://your.sysaid.server/services/SysaidApiService?wsdl"
 
-HIPCHAT_API_TOKEN: ""
-
-CHATBOT_URL: "https://your.chatbot.url.com"
-
 LDAP_HOST: ""
 LDAP_PORT: ""
 LDAP_BASE_DN: ""
 LDAP_BASE_PW: ""
 LDAP_SEARCH_DN: ""
 
-HIPCHAT_GROUP_ID: ""
+SLACK_API_TOKEN: ""

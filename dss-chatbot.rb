@@ -1,16 +1,16 @@
 # DSS ChatBot
-# Version 0.2 2015-08-06
+# Version 0.3 2015-09-04
 # Written by Christopher Thielen <cmthielen@ucdavis.edu>
 
 require 'rubygems'
 require 'bundler/setup'
 
-require 'sinatra'
-require 'hipchat'
+require 'daemons'
 require 'sysaid'
 require 'logger'
 require 'cgi'
 require 'ldap'
+require 'slack-ruby-client'
 
 SETTINGS_FILE = "config/settings.yml"
 LDAP_MAX_RESULTS = 8
@@ -30,8 +30,10 @@ else
   exit
 end
 
-# Set up HipChat client
-hipchat_client = HipChat::Client.new($SETTINGS['HIPCHAT_API_TOKEN'])
+# Set up Slack connection
+Slack.configure do |config|
+  config.token = $SETTINGS['SLACK_API_TOKEN']
+end
 
 # Log into SysAid
 begin
@@ -43,97 +45,16 @@ rescue Exception => e
   exit
 end
 
-# HipChat's protocol requires we provide a "capabilities document".
-# See views/capabilities.erb
-get '/capabilities' do
-  erb :capabilities
-end
-
-post '/installable' do
-  # Read the HTTP body
-  request.body.rewind
-
-  body = request.body.read
-
-  if body.length > 0
-    data = JSON.parse body
-
-    if data["groupId"].to_s == $SETTINGS['HIPCHAT_GROUP_ID']
-      logger.info "Accepted installable as it matched our group ID."
-      status 200
-      ""
-    else
-      logger.info "Rejected installable as it did not match our group ID. Attempted from group ID #{data["groupId"].to_s}"
-      status 401
-      ""
-    end
-  end
-end
-
-delete '/installable' do
-  # Read the HTTP body
-  request.body.rewind
-
-  body = request.body.read
-
-  if body.length > 0
-    data = JSON.parse body
-  end
-
-  status 200
-  ""
-end
-
-# HipChat will HTTP POST to this URL when a message matching our requests
-# (defined by 'capabilities' above). We parse the message and communicate
-# back using the HipChat API client provided by the 'hipchat' gem.
-post '/webhook' do
-  # Read the HTTP body
-  request.body.rewind
-
-  body = request.body.read
-
-  if body.length > 0
-    data = JSON.parse body
-
-    # If we received valid JSON, begin parsing the message
-    if data["event"] == "room_message"
-      if data["item"]
-        # Extract data needed to understand the message we received
-        message = data["item"]["message"]["message"] # the chat text
-        room_name = data["item"]["room"]["name"] # room name where it was sent
-        mention_from = data["item"]["message"]["from"]["mention_name"] # 'mention-version' of the user who sent the message
-        command = params[:command] #/^\/([a-zA-Z]+)/.match(message)[1]
-
-        # We will compose our reply in reply_message
-        reply_message = ""
-
-        case command
-        when 'sysaid'
-          reply_message = sysaid_command(message)
-        when 'ldap'
-          reply_message = ldap_command(message)
-        when 'visioneers'
-          if(Time.now.hour < 17)
-            reply_message = "There are #{((Time.new(Time.now.year, Time.now.month, Time.now.day, 17, 0, 0) - Time.now) / 60).to_i} minutes of productivity remaining in the day."
-          else
-            reply_message = "There are no minutes of productivity remaining in the day."
-          end
-        else
-          logger.warn "Unknown command #{command}. Check the webhooks defined in /capabilities"
-          reply_message = ""
-        end
-
-        hipchat_client[room_name].send("DSS ChatBot", reply_message, { :message_format => "html", :notify => false }) if reply_message.length > 0
-      end
-    end
-
-    "" # Sinatra (our web framework) wants us to return some type of view, so return an empty string
-  end
-end
+#         case command
+#         when 'ldap'
+#           reply_message = ldap_command(message)
+#         when 'visioneers'
 
 def sysaid_command(message)
   ticket_id = message[/\d+/] # ticket ID of the message
+
+  return "" unless ticket_id
+
   link = "https://sysaid.dss.ucdavis.edu/index.jsp#/SREdit.jsp?QuickAcess&id=" + ticket_id # link template for a SysAid ticket given ID
 
   # Find ticket in SysAid
@@ -143,12 +64,12 @@ def sysaid_command(message)
     return "Couldn't find a ticket with ID #{ticket_id}"
   else
     # Ticket exists, compose 'reply_message'
-    return "<b>#{CGI.escapeHTML(ticket.title)}</b> requested by <b>#{CGI.escapeHTML(ticket.request_user)}</b>: <a href=\"#{link}\">#{link}</a>"
+    return "*#{ticket.title}* requested by *#{ticket.request_user}*: #{link}"
   end
 end
 
 def ldap_command(message)
-  term = message[6..-1]
+  term = message[5..-1]
 
   # Connect to LDAP
   conn = LDAP::SSLConn.new( $SETTINGS['LDAP_HOST'], $SETTINGS['LDAP_PORT'].to_i )
@@ -161,7 +82,7 @@ def ldap_command(message)
 
   conn.search($SETTINGS['LDAP_SEARCH_DN'], LDAP::LDAP_SCOPE_SUBTREE, search_terms) do |entry|
     if result_count > 0
-      results += "<br>"
+      results += "\n"
     end
 
     result_count = result_count + 1
@@ -203,12 +124,12 @@ def ldap_command(message)
       affiliations = affiliations.join(", ")
     end
 
-    results += "<b>Name</b> #{name}<br>"
-    results += "<b>Login ID</b> #{loginid}<br>"
-    results += "<b>E-Mail</b> <a href=\"mailto:#{mail}\">#{mail}</a><br>"
-    results += "<b>Department</b> #{department}<br>"
-    results += "<b>Office</b> #{office}<br>"
-    results += "<b>Affiliation</b> #{affiliations}<br>"
+    results += "*Name* #{name}\n"
+    results += "*Login ID* #{loginid}\n"
+    results += "*E-Mail* #{mail}\n"
+    results += "*Department* #{department}\n"
+    results += "*Office* #{office}\n"
+    results += "*Affiliation* #{affiliations}\n"
   end
 
   conn.unbind
@@ -221,3 +142,32 @@ def ldap_command(message)
     return results
   end
 end
+
+def visioneers_command
+  if(Time.now.hour < 17)
+    return "There are #{((Time.new(Time.now.year, Time.now.month, Time.now.day, 17, 0, 0) - Time.now) / 60).to_i} minutes of productivity remaining in the day."
+  else
+    return "There are no minutes of productivity remaining in the day."
+  end
+end
+
+client = Slack::RealTime::Client.new
+
+client.on :hello do
+  logger.info "Successfully connected, welcome '#{client.self['name']}' to the '#{client.team['name']}' team at https://#{client.team['domain']}.slack.com."
+end
+
+client.on :message do |data|
+  case data['text']
+  when /sysaid/i then
+    client.message channel: data['channel'], text: sysaid_command(data['text'])
+  when /#[0-9]+/ then
+    client.message channel: data['channel'], text: sysaid_command(data['text'])
+  when /^ldap/ then
+    client.message channel: data['channel'], text: ldap_command(data['text'])
+  when /^visioneers/ then
+    client.message channel: data['channel'], text: visioneers_command
+  end
+end
+
+client.start!
