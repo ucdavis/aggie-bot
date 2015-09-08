@@ -1,3 +1,6 @@
+2015-09-08 Christopher Thielen <cmthielen@ucdavis.edu>:
+  * Added LDAP attribute-specific search. Idea credit: Bill Broadley
+
 2015-09-04 Christopher Thielen <cmthielen@ucdavis.edu>:
 	* Converted from HipChat to Slack (uh oh)
 
