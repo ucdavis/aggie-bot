@@ -17,7 +17,7 @@ LDAP_ESCAPE_RE = Regexp.new(
 ##
 # Escape a string for use in an LDAP filter
 def ldap_escape(string)
-  string.gsub(LDAP_ESCAPE_RE) { |char| "\\" + LDAP_ESCAPES[char] }
+  string.gsub(LDAP_ESCAPE_RE) { |char| "\\" + LDAP_ESCAPES[char] } if string
 end
 
 def ldap_command(message)
