@@ -14,35 +14,76 @@ LDAP_ESCAPE_RE = Regexp.new(
   LDAP_ESCAPES.keys.map { |e| Regexp.escape(e) }.join +
   "]")
 
-##
 # Escape a string for use in an LDAP filter
 def ldap_escape(string)
   string.gsub(LDAP_ESCAPE_RE) { |char| "\\" + LDAP_ESCAPES[char] } if string
 end
 
-def ldap_command(message)
-  # First, we need to check if the message contains an e-mail address as they
-  # utilize a special encoding. If we cannot detect one, assume everything
-  # except the beginning 'ldap ' is the search term.
-
-  # (E-mail encoding sample: "<mailto:somebody@ucdavis.edu|somebody@ucdavis.edu>")
-  mail_match = /mailto:([\S]+)\|/.match(message)
-
-  if mail_match
-    term = mail_match[1]
-  else
-    term = message[5..-1]
+# Removes any Slack-specific encoding
+def decode_slack(string)
+  if string
+    # Strip e-mail encoding (sample: "<mailto:somebody@ucdavis.edu|somebody@ucdavis.edu>")
+    mail_match = /mailto:([\S]+)\|/.match(string)
+    string = mail_match[1] if mail_match
   end
 
+  return string
+end
+
+def ldap_command(message)
+  parameters = message[5..-1] # Strip away the beginning "ldap "
+
+  # In case we're called with less than five characters in 'message'
+  return "No results found." if parameters == nil
+
+  # LDAP attribute to search; nil will imply all supported fields
+  ldap_field = nil
+
+  # First, determine if we're doing an attribute-specific or general search
+  field_match = /^[\S]+\s/.match(parameters)
+  if field_match
+    command = field_match[0].strip.downcase
+    query = parameters[field_match[0].length..-1]
+
+    case command
+    when 'uid', 'login', 'loginid', 'kerberos'
+      ldap_field = 'uid'
+    when 'name', 'displayname', 'fullname'
+      ldap_field = 'displayName'
+    when 'givenname', 'first', 'firstname'
+      ldap_field = 'givenName'
+    when 'sn', 'last', 'lastname'
+      ldap_field = 'sn'
+    when 'mail', 'email', 'e-mail'
+      ldap_field = 'mail'
+    when 'department', 'dept', 'ou'
+      ldap_field = 'ou'
+    when 'affiliation', 'ucdpersonaffiliation'
+      ldap_field = 'ucdPersonAffiliation'
+    end
+  else
+    # No specific command was given, the query is all given text
+    query = parameters
+  end
+
+  # Decode any Slack formatting
+  query = decode_slack(query)
+
   # Avoid LDAP injection attacks, thanks John Knoll
-  term = ldap_escape(term)
+  query = ldap_escape(query)
 
   # Connect to LDAP
   conn = LDAP::SSLConn.new( $SETTINGS['LDAP_HOST'], $SETTINGS['LDAP_PORT'].to_i )
   conn.set_option( LDAP::LDAP_OPT_PROTOCOL_VERSION, 3 )
   conn.bind(dn = $SETTINGS['LDAP_BASE_DN'], password = $SETTINGS['LDAP_BASE_PW'] )
 
-  search_terms = "(|(uid=#{term})(mail=#{term})(givenName=#{term})(sn=#{term})(cn=#{term}))"
+  # Set up LDAP search string for attribute-specific or broad-based search
+  if ldap_field
+    search_terms = "(|(#{ldap_field}=#{query}))"
+  else
+    search_terms = "(|(uid=#{query})(mail=#{query})(givenName=#{query})(sn=#{query})(cn=#{query}))"
+  end
+
   results = ""
   result_count = 0
 
