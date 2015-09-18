@@ -1,3 +1,7 @@
+2015-09-18 Christopher Thielen <cmthielen@ucdavis.edu>:
+  * Added 'Good morning' responses
+  * Added 'roles <loginid>' command to query Roles Management
+
 2015-09-08 Christopher Thielen <cmthielen@ucdavis.edu>:
   * Added LDAP attribute-specific search. Idea credit: Bill Broadley
 

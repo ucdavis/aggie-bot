@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # DSS ChatBot
-# Version 0.4 2015-09-08
+# Version 0.5 2015-09-18
 # Written by Christopher Thielen <cmthielen@ucdavis.edu>
 
 require 'rubygems'
@@ -13,11 +13,13 @@ require 'logger'
 require 'cgi'
 require 'ldap'
 require 'slack-ruby-client'
+require 'roles-management-api'
 
 # Include support for various commands
 load 'commands/ldap.rb'
 load 'commands/sysaid.rb'
 load 'commands/visioneers.rb'
+load 'commands/roles.rb'
 
 # Set up paths here as daemonizing will change our current working directory
 log_file = Dir.getwd + '/dss-chatbot.log'
@@ -70,6 +72,11 @@ Daemons.run_proc('dss-chatbot.rb') do
       client.message channel: data['channel'], text: ldap_command(data['text'])
     when /^visioneers/ then
       client.message channel: data['channel'], text: visioneers_command
+    when /good morning/i then
+      greetings = ['Dobro jutro', 'Goedemorgen', 'Bonjour', 'Guten Morgen', 'Howdy', 'Buongiorno', 'Dzień dobry', 'Доброе утро', 'Habari ya asubuhi', 'Bună dimineaţa']
+      client.message channel: data['channel'], text: greetings.sample + "!"
+    when /^roles [\S]+$/i then
+      client.message channel: data['channel'], text: roles_command(data['text'][6..-1])
     end
   end
 
