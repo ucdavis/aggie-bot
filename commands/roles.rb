@@ -6,7 +6,7 @@ def roles_command(loginid)
   if roles_client.connected?
     p = roles_client.find_person_by_loginid(loginid)
 
-    if (p == null) || (p.role_assignments == null) || (p.role_assignments.length == 0)
+    if (p == nil) || (p.role_assignments == nil) || (p.role_assignments.length == 0)
       return "#{loginid} has no role assignments."
     end
 
