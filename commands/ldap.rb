@@ -60,28 +60,52 @@ def ldap_command(message)
       ldap_field = 'ou'
     when 'affiliation', 'ucdpersonaffiliation'
       ldap_field = 'ucdPersonAffiliation'
+    else
+      # Multiple words but no known commands, assume it's a fullname.
+
+      # If we happen to have exactly two words, we'll consider them first and last names
+      words = parameters.split
+      if words.size == 2
+        first = words[0]
+        first = decode_slack(first)
+        first = ldap_escape(first)
+
+        last = words[1]
+        last = decode_slack(last)
+        last = ldap_escape(last)
+
+        search_terms = "(&(givenName=#{first})(sn=#{last}))"
+      else
+        ldap_field = 'displayName'
+        query = parameters
+      end
     end
   else
     # No specific command was given, the query is all given text
     query = parameters
   end
 
-  # Decode any Slack formatting
-  query = decode_slack(query)
-
-  # Avoid LDAP injection attacks, thanks John Knoll
-  query = ldap_escape(query)
-
   # Connect to LDAP
   conn = LDAP::SSLConn.new( $SETTINGS['LDAP_HOST'], $SETTINGS['LDAP_PORT'].to_i )
   conn.set_option( LDAP::LDAP_OPT_PROTOCOL_VERSION, 3 )
   conn.bind(dn = $SETTINGS['LDAP_BASE_DN'], password = $SETTINGS['LDAP_BASE_PW'] )
 
-  # Set up LDAP search string for attribute-specific or broad-based search
-  if ldap_field
-    search_terms = "(|(#{ldap_field}=#{query}))"
-  else
-    search_terms = "(|(uid=#{query})(mail=#{query})(givenName=#{query})(sn=#{query})(cn=#{query}))"
+  # search_terms is set if the query string needs to be more complex than a simply multi-attribute search,
+  # such as the first+last name case handled above.
+  unless search_terms
+    # Set up LDAP search string for attribute-specific or broad-based search
+
+    # Decode any Slack formatting
+    query = decode_slack(query)
+
+    # Avoid LDAP injection attacks, thanks John Knoll
+    query = ldap_escape(query)
+
+    if ldap_field
+      search_terms = "(|(#{ldap_field}=#{query}))"
+    else
+      search_terms = "(|(uid=#{query})(mail=#{query})(givenName=#{query})(sn=#{query})(cn=#{query}))"
+    end
   end
 
   results = ""
