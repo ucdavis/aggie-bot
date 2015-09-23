@@ -74,7 +74,8 @@ def ldap_command(message)
         last = decode_slack(last)
         last = ldap_escape(last)
 
-        search_terms = "(&(givenName=#{first})(sn=#{last}))"
+        #search_terms = "(&(givenName=#{first})(sn=#{last}))"
+        search_terms = "(cn=*#{first}*#{last}*)"
       else
         ldap_field = 'displayName'
         query = parameters
