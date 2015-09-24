@@ -4,7 +4,7 @@ def is_number?(string)
 end
 
 def sysaid_command(message)
-  ticket_id = message[/\S+/] # ticket ID of the message
+  ticket_id = message[/\d+/] # ticket ID of the message
 
   puts "Ticket_id appears to be '#{ticket_id}'"
 
