@@ -61,25 +61,12 @@ def ldap_command(message)
     when 'affiliation', 'ucdpersonaffiliation'
       ldap_field = 'ucdPersonAffiliation'
     else
-      # Multiple words but no known commands, assume it's a fullname.
-
-      # If we happen to have exactly two words, we'll consider them first and last names
+      # Multiple words but no known commands. Use CN wildcard strategy.
       words = parameters.split
-      if words.size == 2
-        first = words[0]
-        first = decode_slack(first)
-        first = ldap_escape(first)
 
-        last = words[1]
-        last = decode_slack(last)
-        last = ldap_escape(last)
+      words.map!{ |w| ldap_escape( decode_slack(w) ) }
 
-        #search_terms = "(&(givenName=#{first})(sn=#{last}))"
-        search_terms = "(cn=*#{first}*#{last}*)"
-      else
-        ldap_field = 'displayName'
-        query = parameters
-      end
+      search_terms = "(cn=*" + words.join("*") + "*)"
     end
   else
     # No specific command was given, the query is all given text
