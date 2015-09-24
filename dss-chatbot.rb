@@ -66,7 +66,7 @@ Daemons.run_proc('dss-chatbot.rb') do
     case data['text']
     when /sysaid/i then
       client.message channel: data['channel'], text: sysaid_command(data['text'])
-    when /#[\S]+/ then
+    when /#[0-9]+(\s|$|\z)/ then
       client.message channel: data['channel'], text: sysaid_command(data['text'])
     when /^ldap/ then
       client.message channel: data['channel'], text: ldap_command(data['text'])
