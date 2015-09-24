@@ -1,7 +1,13 @@
+# is_number? credit: http://stackoverflow.com/questions/5661466/test-if-string-is-a-number-in-ruby-on-rails
+def is_number?(string)
+  true if Float(string) rescue false
+end
+
 def sysaid_command(message)
   ticket_id = message[/\d+/] # ticket ID of the message
 
   return "" unless ticket_id
+  return "" unless is_number?(ticket_id)
 
   link = "https://sysaid.dss.ucdavis.edu/index.jsp#/SREdit.jsp?QuickAcess&id=" + ticket_id # link template for a SysAid ticket given ID
 
