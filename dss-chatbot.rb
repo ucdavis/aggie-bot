@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # DSS ChatBot
-# Version 0.5 2015-09-18
+# Version 0.5 2015-10-12
 # Written by Christopher Thielen <cmthielen@ucdavis.edu>
 
 require 'rubygems'
@@ -82,4 +82,5 @@ Daemons.run_proc('dss-chatbot.rb') do
 
   client.start!
 
+  logger.info "DSS ChatBot ended at #{Time.now}"
 end
