@@ -3,9 +3,19 @@ def is_number?(string)
   true if Float(string) rescue false
 end
 
-def sysaid_command(ticket_id)
-  puts "sysaid_command: ticket_id is '#{ticket_id}'"
-  puts "sysaid_command: is_number? is #{is_number?(ticket_id)}"
+def sysaid_command(message)
+  ticket_id = nil
+
+  case message
+  when /^sysaid/i then
+    ticket_id = message[/\d+/]
+  when /#[\d]+(\s|$|\z|\D)/ then # looks for #123 followed by space, end of string, or end of line
+    matches = /#([\d]+)(\s|$|\z|\D)/.match(message)
+    ticket_id = matches[1] if matches
+  end
+
+  #puts "sysaid_command: ticket_id is '#{ticket_id}'"
+  #puts "sysaid_command: is_number? is #{is_number?(ticket_id)}"
 
   return "" unless ticket_id
   return "" unless is_number?(ticket_id)

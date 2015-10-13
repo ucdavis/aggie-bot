@@ -71,9 +71,9 @@ Daemons.run_proc('dss-chatbot.rb') do
 
     case data['text']
     when /^sysaid/i then
-      client.message channel: data['channel'], text: sysaid_command(data['text'][/\d+/])
-    when /#[0-9]+(\s|$|\z)/ then # looks for #123 followed by space, end of string, or end of line
-      client.message channel: data['channel'], text: sysaid_command(data['text'][/#[0-9]+(\s|$|\z)/][1..-1].delete(' '))
+      client.message channel: data['channel'], text: sysaid_command(data['text'])
+    when /#[\d]+(\s|$|\z|\D)/ then # looks for #123 followed by space, end of string, or end of line
+      client.message channel: data['channel'], text: sysaid_command(data['text'])
     when /^ldap/ then
       client.message channel: data['channel'], text: ldap_command(data['text'])
     when /^visioneers/ then
