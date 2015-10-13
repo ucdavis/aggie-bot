@@ -27,7 +27,7 @@ settings_file = Dir.getwd + '/config/settings.yml'
 
 Daemons.run_proc('dss-chatbot.rb') do
   # Keep a log file (auto-rotate at 1 MB, keep 10 rotations)
-  logger = Logger.new(log_file, 10, 1024000)
+  logger = Logger.new(STDOUT) #(log_file, 10, 1024000)
 
   logger.info "DSS ChatBot started at #{Time.now}"
 
@@ -44,6 +44,7 @@ Daemons.run_proc('dss-chatbot.rb') do
   # Set up Slack connection
   Slack.configure do |config|
     config.token = $SETTINGS['SLACK_API_TOKEN']
+    #config.websocket_ping = 30 # 30 is the default
   end
 
   # Log into SysAid
@@ -63,11 +64,16 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   client.on :message do |data|
+    logger.debug "Received message: '#{data['text']}'"
+
+    self_id = client.self["id"]
+    next if data["user"] == self_id # Skip messages sent by this chat bot
+
     case data['text']
-    when /sysaid/i then
-      client.message channel: data['channel'], text: sysaid_command(data['text'])
-    when /#[0-9]+(\s|$|\z)/ then
-      client.message channel: data['channel'], text: sysaid_command(data['text'])
+    when /^sysaid/i then
+      client.message channel: data['channel'], text: sysaid_command(data['text'][/\d+/])
+    when /#[0-9]+(\s|$|\z)/ then # looks for #123 followed by space, end of string, or end of line
+      client.message channel: data['channel'], text: sysaid_command(data['text'][/#[0-9]+(\s|$|\z)/][1..-1].delete(' '))
     when /^ldap/ then
       client.message channel: data['channel'], text: ldap_command(data['text'])
     when /^visioneers/ then

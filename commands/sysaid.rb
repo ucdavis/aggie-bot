@@ -3,10 +3,9 @@ def is_number?(string)
   true if Float(string) rescue false
 end
 
-def sysaid_command(message)
-  ticket_id = message[/\d+/] # ticket ID of the message
-
-  puts "Ticket_id appears to be '#{ticket_id}'"
+def sysaid_command(ticket_id)
+  puts "sysaid_command: ticket_id is '#{ticket_id}'"
+  puts "sysaid_command: is_number? is #{is_number?(ticket_id)}"
 
   return "" unless ticket_id
   return "" unless is_number?(ticket_id)
