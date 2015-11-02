@@ -1,3 +1,7 @@
+2015-11-02 Christopher Thielen <cmthielen@ucdavis.edu>:
+  * Implemented feature on/off switches to allow UCD AggieBot and DSS AutoBot
+    to share a codebase.
+
 2015-10-13 Christopher Thielen <cmthielen@ucdavis.edu>:
   * Ignore messages sent by self
   * Fix for using two types of SysAid ticket number identification

@@ -1,14 +1,16 @@
 DSS ChatBot
 ===========
 
-DSS ChatBot is a Slack-compatible chat bot designed for use within the
-UC Davis Division of Social Science IT group.
+DSS ChatBot is a Slack-compatible chat bot designed for use by the
+UC Davis IT community. It originated in the UC Davis Division of Social
+Science IT group.
 
 Requirements
 ------------
  * Ruby 2.1 or higher (2.0 and 1.9 may work but have not been tested)
  * The popular 'bundler' gem ('gem install bundler' to install it)
- * A working SysAid server
+ * A working SysAid server (for optional SysAid support)
+ * A working Roles Management server (for optional Roles Management support)
  * Admin access to a Slack workgroup
 
 Installation Instructions
@@ -42,7 +44,6 @@ and their LDAP mappings:
   'mail', 'email', 'e-mail'             will search the 'mail' attribute.
   'department', 'dept', 'ou'            will search the 'ou' attribute.
   'affiliation', 'ucdpersonaffiliation' will search the 'ucdPersonAffiliation' attribute.
-
 
 Contact
 -------

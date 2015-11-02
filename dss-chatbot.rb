@@ -1,37 +1,29 @@
 #!/usr/bin/env ruby
 
 # DSS ChatBot
-# Version 0.5 2015-10-12
+# Version 0.6 2015-11-02
 # Written by Christopher Thielen <cmthielen@ucdavis.edu>
 
 require 'rubygems'
 require 'bundler/setup'
-
 require 'daemons'
-require 'sysaid'
 require 'logger'
+require 'yaml'
 require 'cgi'
-require 'ldap'
 require 'slack-ruby-client'
-require 'roles-management-api'
 
-# Include support for various commands
-load 'commands/ldap.rb'
-load 'commands/sysaid.rb'
-load 'commands/visioneers.rb'
-load 'commands/roles.rb'
+# Store the current working directory as Daemons.run_proc() will change it
+$cwd = Dir.getwd
 
-# Set up paths here as daemonizing will change our current working directory
-log_file = Dir.getwd + '/dss-chatbot.log'
-settings_file = Dir.getwd + '/config/settings.yml'
-
+# 'Daemonize' the process (see 'daemons' gem for more information)
 Daemons.run_proc('dss-chatbot.rb') do
   # Keep a log file (auto-rotate at 1 MB, keep 10 rotations)
-  logger = Logger.new(STDOUT) #(log_file, 10, 1024000)
+  logger = Logger.new($cwd + '/dss-chatbot.log', 10, 1024000)
 
   logger.info "DSS ChatBot started at #{Time.now}"
 
   # Load sensitive settings from config/*
+  settings_file = $cwd + '/config/settings.yml'
   if File.file?(settings_file)
     $SETTINGS = YAML.load_file(settings_file)
     logger.info "Settings loaded."
@@ -44,17 +36,40 @@ Daemons.run_proc('dss-chatbot.rb') do
   # Set up Slack connection
   Slack.configure do |config|
     config.token = $SETTINGS['SLACK_API_TOKEN']
-    #config.websocket_ping = 30 # 30 is the default
   end
 
-  # Log into SysAid
-  begin
-    SysAid::login $SETTINGS['SYSAID_ACCOUNT'], $SETTINGS['SYSAID_USER'], $SETTINGS['SYSAID_PASSWORD'], $SETTINGS['SYSAID_URI']
-    logger.info "Logged into SysAid."
-  rescue Exception => e
-    $stderr.puts "Failed to connect to SysAid: #{e}"
-    logger.error "DSS ChatBot could not start because it failed to connect to SysAid. Exception: #{e}"
-    exit
+  # Set up LDAP support, if enabled
+  if $SETTINGS['LDAP_ENABLED']
+    require 'ldap'
+    load $cwd + '/commands/ldap.rb'
+  end
+
+  # Set up SysAid support, if enabled
+  if $SETTINGS['SYSAID_ENABLED']
+    require 'sysaid'
+
+    # Log into SysAid
+    begin
+      SysAid::login $SETTINGS['SYSAID_ACCOUNT'], $SETTINGS['SYSAID_USER'], $SETTINGS['SYSAID_PASSWORD'], $SETTINGS['SYSAID_URI']
+      logger.info "Logged into SysAid."
+    rescue Exception => e
+      $stderr.puts "Failed to connect to SysAid: #{e}"
+      logger.error "DSS ChatBot could not start because it failed to connect to SysAid. Exception: #{e}"
+      exit
+    end
+
+    load $cwd + '/commands/sysaid.rb'
+  end
+
+  # Set up Roles Management support, if enabled
+  if $SETTINGS['ROLES_ENABLED']
+    require 'roles-management-api'
+    load $cwd + '/commands/roles.rb'
+  end
+
+  # Set up the easter egg 'visioneers' command, if enabled
+  if $SETTINGS['VISIONEERS_ENABLED']
+    load $cwd + '/commands/visioneers.rb'
   end
 
   client = Slack::RealTime::Client.new
@@ -64,26 +79,37 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   client.on :message do |data|
-    logger.debug "Received message: '#{data['text']}'"
-
+    # Check if the message was sent by this chat bot ... we don't need to
+    # talk to ourselves.
     self_id = client.self["id"]
-    next if data["user"] == self_id # Skip messages sent by this chat bot
+    next if data["user"] == self_id
 
+    # Parse the received message for valid Chat Bot commands
     case data['text']
     when /^sysaid/i then
-      client.message channel: data['channel'], text: sysaid_command(data['text'])
+      if $SETTINGS['SYSAID_ENABLED']
+        client.message channel: data['channel'], text: sysaid_command(data['text'])
+      end
     when /#[\d]+(\s|$|\z|\D)/ then # looks for #123 followed by space, end of string, or end of line
-      client.message channel: data['channel'], text: sysaid_command(data['text'])
+      if $SETTINGS['SYSAID_ENABLED']
+        client.message channel: data['channel'], text: sysaid_command(data['text'])
+      end
     when /^ldap/ then
-      client.message channel: data['channel'], text: ldap_command(data['text'])
+      if $SETTINGS['LDAP_ENABLED']
+        client.message channel: data['channel'], text: ldap_command(data['text'])
+      end
     when /^visioneers/ then
-      client.message channel: data['channel'], text: visioneers_command
+      if $SETTINGS['VISIONEERS_ENABLED']
+        client.message channel: data['channel'], text: visioneers_command
+      end
     #when /good morning/i then
       #greetings = ['Which in ghosts make merry on this last of dear October days? Hm ... Well, good morning!', 'Where there is no imagination, there is no horror. Good morning!', 'There are nights when the wolves are silent and only the moon howls. Good morning!', 'They that are born on Halloween shall see more than other folk. Good morning!', 'Clothes make a statement. Costumes tell a story. Good morning!', 'I see dead people. Good morning!', 'October, tuck tiny candy bars in my pockets and carve my smile into a thousand pumpkins .... Merry October, and good morning!', 'Proof of our society\'s decline is that Halloween has become a broad daylight event for many. Good morning!', 'When black cats prowl and pumpkins gleam, may luck be yours on Halloween. Good morning!', 'Look, there\'s no metaphysics on earth like chocolates. Good morning!', 'Shadows of a thousand years rise again unseen, voices whisper in the trees, "Tonight is Halloween!" Also, good morning!', 'When witches go riding, and black cats are seen, the moon laughs and whispers, ‘tis near Halloween. Good morning!', 'Hold on, man. We don\'t go anywhere with "scary," "spooky," "haunted," or "forbidden" in the title. ~From Scooby-Doo. Good morning!', 'Eat, drink and be scary. And have a good morning!']
       #greetings = ['Dobro jutro', 'Goedemorgen', 'Bonjour', 'Guten Morgen', 'Howdy', 'Buongiorno', 'Dzień dobry', 'Доброе утро', 'Habari ya asubuhi', 'Bună dimineaţa']
       #client.message channel: data['channel'], text: greetings.sample #+ "!"
     when /^roles [\S]+$/i then
-      client.message channel: data['channel'], text: roles_command(data['text'][6..-1])
+      if $SETTINGS['ROLES_ENABLED']
+        client.message channel: data['channel'], text: roles_command(data['text'][6..-1])
+      end
     end
   end
 

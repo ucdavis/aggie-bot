@@ -1,16 +1,27 @@
+# This value must be set.
+SLACK_API_TOKEN: ""
+
+# Set these values for SysAid support. Switch _ENABLED to true.
+SYSAID_ENABLED: false
 SYSAID_ACCOUNT: ""
 SYSAID_USER: ""
 SYSAID_PASSWORD: ""
 SYSAID_URI: "https://your.sysaid.server/services/SysaidApiService?wsdl"
 
+# Set these values for LDAP lookup support. Switch _ENABLED to true.
+LDAP_ENABLED: false
 LDAP_HOST: ""
 LDAP_PORT: ""
 LDAP_BASE_DN: ""
 LDAP_BASE_PW: ""
 LDAP_SEARCH_DN: ""
 
-SLACK_API_TOKEN: ""
-
+# Set these values for Roles Management support. Switch _ENABLED to true.
+ROLES_ENABLED: false
 ROLES_URL: ""
 ROLES_USERNAME: ""
 ROLES_TOKEN: ""
+
+# An Easter Egg command. Prints the number of minutes of "productivity" left
+# until 5:00pm.
+VISIONEERS_ENABLED: false
