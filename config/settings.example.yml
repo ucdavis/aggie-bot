@@ -25,3 +25,6 @@ ROLES_TOKEN: ""
 # An Easter Egg command. Prints the number of minutes of "productivity" left
 # until 5:00pm.
 VISIONEERS_ENABLED: false
+
+# Extra commands used by the DSS IT not generally suited for anyone else
+DSSIT_ENABLED: false
