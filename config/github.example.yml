@@ -1,0 +1,5 @@
+GITHUB_TOKEN: ""
+
+GITHUB_PROJECTS:
+  - tag1: "gh_org/gh_project_name"
+  - tag2: "gh_org/gh_project_name"

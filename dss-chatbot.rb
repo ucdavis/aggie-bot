@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # DSS ChatBot
-# Version 0.6 2015-11-02
+# Version 0.61 2015-12-09
 # Written by Christopher Thielen <cmthielen@ucdavis.edu>
 
 require 'rubygems'
@@ -67,6 +67,24 @@ Daemons.run_proc('dss-chatbot.rb') do
     load $cwd + '/commands/roles.rb'
   end
 
+  # Set up GitHub support, if enabled
+  if $SETTINGS['GITHUB_ENABLED']
+    require 'octokit'
+
+    # Load GitHub-specific settings from config/github.yml
+    github_settings_file = $cwd + '/config/github.yml'
+    if File.file?(github_settings_file)
+      $GITHUB_SETTINGS = YAML.load_file(github_settings_file)
+      logger.info "GitHub settings loaded."
+    else
+      $stderr.puts "You need to set up #{github_settings_file} to enable GitHub support."
+      logger.error "DSS ChatBot could not start because #{github_settings_file} does not exist. See config/github.example.yml."
+      exit
+    end
+
+    load $cwd + '/commands/github.rb'
+  end
+
   # Set up the easter egg 'visioneers' command, if enabled
   if $SETTINGS['VISIONEERS_ENABLED']
     load $cwd + '/commands/visioneers.rb'
@@ -102,9 +120,9 @@ Daemons.run_proc('dss-chatbot.rb') do
       if $SETTINGS['VISIONEERS_ENABLED']
         client.message channel: data['channel'], text: visioneers_command
       end
-    when /^Say hi @autobot/ then
-      if $SETTINGS['DSSIT_ENABLED']
-        client.message channel: data['channel'], text: "Hi @autobot."
+    when /([\w]+)\/([\d]+)/ then # look for characters followed by / followed by numbers, e.g. dw/123
+      if $SETTINGS['GITHUB_ENABLED']
+        client.message channel: data['channel'], text: github_command(data['text'])
       end
     #when /good morning/i then
       #greetings = ['Which in ghosts make merry on this last of dear October days? Hm ... Well, good morning!', 'Where there is no imagination, there is no horror. Good morning!', 'There are nights when the wolves are silent and only the moon howls. Good morning!', 'They that are born on Halloween shall see more than other folk. Good morning!', 'Clothes make a statement. Costumes tell a story. Good morning!', 'I see dead people. Good morning!', 'October, tuck tiny candy bars in my pockets and carve my smile into a thousand pumpkins .... Merry October, and good morning!', 'Proof of our society\'s decline is that Halloween has become a broad daylight event for many. Good morning!', 'When black cats prowl and pumpkins gleam, may luck be yours on Halloween. Good morning!', 'Look, there\'s no metaphysics on earth like chocolates. Good morning!', 'Shadows of a thousand years rise again unseen, voices whisper in the trees, "Tonight is Halloween!" Also, good morning!', 'When witches go riding, and black cats are seen, the moon laughs and whispers, ‘tis near Halloween. Good morning!', 'Hold on, man. We don\'t go anywhere with "scary," "spooky," "haunted," or "forbidden" in the title. ~From Scooby-Doo. Good morning!', 'Eat, drink and be scary. And have a good morning!']

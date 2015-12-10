@@ -1,3 +1,6 @@
+2015-12-09 Christopher Thielen <cmthielen@ucdavis.edu>:
+  * Implemented GitHub support via project_tag/issue_number, e.g. dw/232
+
 2015-11-02 Christopher Thielen <cmthielen@ucdavis.edu>:
   * Implemented feature on/off switches to allow UCD AggieBot and DSS AutoBot
     to share a codebase.

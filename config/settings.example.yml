@@ -26,5 +26,5 @@ ROLES_TOKEN: ""
 # until 5:00pm.
 VISIONEERS_ENABLED: false
 
-# Extra commands used by the DSS IT not generally suited for anyone else
-DSSIT_ENABLED: false
+# If true, requires separate github.yml file
+GITHUB_ENABLED: false

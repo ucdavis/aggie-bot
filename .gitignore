@@ -1,5 +1,6 @@
 # Ignore sensitive settings
 config/settings.yml
+config/github.yml
 
 # Do not check Gemfile.lock as directed by the Bundler folks
 Gemfile.lock
