@@ -8,10 +8,12 @@ def github_command(message)
   issue_number = nil
 
   case message
-  when /([\w]+)\/([\d]+)/ then # look for characters followed by / followed by numbers, e.g. dw/123
-    matches = /([\w]+)\/([\d]+)/.match(message)
-    project_tag = matches[1]
-    issue_number = matches[2]
+  # look for characters at the beginning of the line or following a space
+  # followed by / followed by numbers, e.g. dw/123
+  when /(^|\s)([\w]+)\/([\d]+)($|\s)/ then
+    matches = /(^|\s)([\w]+)\/([\d]+)($|\s)/.match(message)
+    project_tag = matches[2]
+    issue_number = matches[3]
   end
 
   return "" unless project_tag
