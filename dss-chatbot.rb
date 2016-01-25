@@ -42,6 +42,8 @@ Daemons.run_proc('dss-chatbot.rb') do
   if $SETTINGS['LDAP_ENABLED']
     require 'ldap'
     load $cwd + '/commands/ldap.rb'
+
+    logger.info "LDAP command(s) enabled."
   end
 
   # Set up SysAid support, if enabled
@@ -59,12 +61,16 @@ Daemons.run_proc('dss-chatbot.rb') do
     end
 
     load $cwd + '/commands/sysaid.rb'
+
+    logger.info "SysAid command(s) enabled."
   end
 
   # Set up Roles Management support, if enabled
   if $SETTINGS['ROLES_ENABLED']
     require 'roles-management-api'
     load $cwd + '/commands/roles.rb'
+
+    logger.info "Roles Management command(s) enabled."
   end
 
   # Set up GitHub support, if enabled
@@ -83,11 +89,15 @@ Daemons.run_proc('dss-chatbot.rb') do
     end
 
     load $cwd + '/commands/github.rb'
+
+    logger.info "GitHub command(s) enabled."
   end
 
   # Set up the easter egg 'visioneers' command, if enabled
   if $SETTINGS['VISIONEERS_ENABLED']
     load $cwd + '/commands/visioneers.rb'
+
+    logger.info "Nonsense command(s) enabled."
   end
 
   client = Slack::RealTime::Client.new
