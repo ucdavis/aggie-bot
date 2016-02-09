@@ -145,7 +145,28 @@ Daemons.run_proc('dss-chatbot.rb') do
     end
   end
 
-  client.start!
+  # Loop itself credit slack-ruby-bot: https://github.com/dblock/slack-ruby-bot/blob/798d1305da8569381a6cd70b181733ce405e44ce/lib/slack-ruby-bot/app.rb#L45
+  loop do
+    begin
+      client.start!
+    rescue Slack::Web::Api::Error => e
+      logger.error e
+      case e.message
+      when 'migration_in_progress'
+        sleep 5 # ignore, try again
+      else
+        raise e
+      end
+    rescue Faraday::Error::TimeoutError, Faraday::Error::ConnectionFailed, Faraday::Error::SSLError => e
+      logger.error e
+      sleep 5 # ignore, try again
+    rescue StandardError => e
+      logger.error e
+      raise e
+    ensure
+      client = nil
+    end
+  end
 
   logger.info "DSS ChatBot ended at #{Time.now}"
 end
