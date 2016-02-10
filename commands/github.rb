@@ -14,7 +14,11 @@ def github_command(message)
     matches = message.scan(/(^|\s)([\w]+)\/([\d]+)/)
   end
 
-  return "" unless matches
+  return [] unless matches
+
+  Octokit.auto_paginate = true
+  client = Octokit::Client.new(:access_token => $GITHUB_SETTINGS["GITHUB_TOKEN"])
+  client.login
 
   matches.each do |m|
     repo_url = nil
@@ -30,23 +34,16 @@ def github_command(message)
       end
     end
 
-    messages.push "No such project tag '#{project_tag}'" unless repo_url
-
-    # if repo url does exist, then find the issue
-    if repo_url
-      Octokit.auto_paginate = true
-      client = Octokit::Client.new(:access_token => $GITHUB_SETTINGS["GITHUB_TOKEN"])
-      client.login
-
+    unless repo_url
+      messages.push "No such project tag '#{project_tag}'"
+    else 
+      # if repo url does exist, then find the issue
       begin
         issue = client.issue(repo_url, issue_number)
+        messages.push "*#{issue[:title]}* (#{issue[:state]})\n#{issue[:html_url]}"
       rescue Octokit::NotFound => e
         messages.push "No such issue for for '#{project_tag}'"
       end
-    end
-    
-    if (repo_url && issue)
-      messages.push "*#{issue[:title]}* (#{issue[:state]})\n#{issue[:html_url]}"
     end
   end
 
