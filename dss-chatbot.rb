@@ -105,6 +105,11 @@ Daemons.run_proc('dss-chatbot.rb') do
   client.on :hello do
     logger.info "Successfully connected, welcome '#{client.self['name']}' to the '#{client.team['name']}' team at https://#{client.team['domain']}.slack.com."
   end
+  
+  client.on :close do
+    logger.info "Caught close signal. Attempting to restart ..."
+    EM.stop
+  end
 
   client.on :message do |data|
     # Check if the message was sent by this chat bot ... we don't need to
@@ -149,6 +154,7 @@ Daemons.run_proc('dss-chatbot.rb') do
 
   # Loop itself credit slack-ruby-bot: https://github.com/dblock/slack-ruby-bot/blob/798d1305da8569381a6cd70b181733ce405e44ce/lib/slack-ruby-bot/app.rb#L45
   loop do
+    logger.info "Marking the start of the client loop!"
     begin
       client.start!
     rescue Slack::Web::Api::Error => e
@@ -165,8 +171,8 @@ Daemons.run_proc('dss-chatbot.rb') do
     rescue StandardError => e
       logger.error e
       raise e
-    ensure
-      client = nil
+    #ensure
+      #client = nil
     end
   end
 
