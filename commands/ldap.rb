@@ -131,6 +131,11 @@ def ldap_command(message)
     else
       department = "Not listed"
     end
+    unless entry.get_values('ucdAppointmentDepartmentCode').to_s[2..-3].nil?
+      departmentCode = entry.get_values('ucdAppointmentDepartmentCode').to_s[2..-3]
+    else
+      departmentCode = "Not listed"
+    end
 
     affiliations = []
     # A person may have multiple affiliations
@@ -146,7 +151,7 @@ def ldap_command(message)
     results += "*Name* #{name}\n"
     results += "*Login ID* #{loginid}\n"
     results += "*E-Mail* #{mail}\n"
-    results += "*Department* #{department}\n"
+    results += "*Department* #{department} (#{departmentCode})\n"
     results += "*Office* #{office}\n"
     results += "*Affiliation* #{affiliations}\n"
   end
