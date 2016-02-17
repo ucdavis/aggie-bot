@@ -1,5 +1,6 @@
 2016-02-17 Christopher Thielen <cmthielen@ucdavis.edu>:
   * Added home department code (ucdAppointmentDepartmentCode) to LDAP response
+  * Catch ruby-sysaid exceptions and display error message in chat
 
 2015-12-09 Christopher Thielen <cmthielen@ucdavis.edu>:
   * Implemented GitHub support via project_tag/issue_number, e.g. dw/232

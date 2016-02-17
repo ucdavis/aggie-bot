@@ -14,21 +14,24 @@ def sysaid_command(message)
     ticket_id = matches[1] if matches
   end
 
-  #puts "sysaid_command: ticket_id is '#{ticket_id}'"
-  #puts "sysaid_command: is_number? is #{is_number?(ticket_id)}"
-
   return "" unless ticket_id
   return "" unless is_number?(ticket_id)
 
-  link = "https://sysaid.dss.ucdavis.edu/index.jsp#/SREdit.jsp?QuickAcess&id=" + ticket_id # link template for a SysAid ticket given ID
+  # Link template for a SysAid ticket given ID
+  link = "https://sysaid.dss.ucdavis.edu/index.jsp#/SREdit.jsp?QuickAcess&id=" + ticket_id
 
   # Find ticket in SysAid
-  ticket = SysAid::Ticket.find_by_id(ticket_id)
-  if ticket.nil?
-    # Ticket does not exist.
-    return "Couldn't find a ticket with ID #{ticket_id}"
-  else
-    # Ticket exists, compose 'reply_message'
-    return "*#{ticket.title}* requested by *#{ticket.request_user}*: #{link}"
+  begin
+    ticket = SysAid::Ticket.find_by_id(ticket_id)
+
+    if ticket.nil?
+        # Ticket does not exist.
+        return "Couldn't find a ticket with ID #{ticket_id}"
+    else
+        # Ticket exists, compose 'reply_message'
+        return "*#{ticket.title}* requested by *#{ticket.request_user}*: #{link}"
+    end
+  rescue SysAidException => e
+    return "Error while communicating with SysAid. Try again later."
   end
 end
