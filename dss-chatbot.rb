@@ -45,6 +45,14 @@ Daemons.run_proc('dss-chatbot.rb') do
 
     logger.info "LDAP command(s) enabled."
   end
+  
+  # Set up DEVBOARD support, if enabled
+  if $SETTINGS['DEVBOARD_ENABLED']
+    #require 'devboard'
+    load $cwd + '/commands/devboard.rb'
+    
+    logger.info "DEVBOARD command(s) enabled."
+  end
 
   # Set up SysAid support, if enabled
   if $SETTINGS['SYSAID_ENABLED']
@@ -140,6 +148,11 @@ Daemons.run_proc('dss-chatbot.rb') do
         github_command(data['text']).each do |message|
           client.message channel: data['channel'], text: message
         end
+      end
+    when /^!assignments/ then
+      # Send Message to Slack
+      if $SETTINGS["DEVBOARD_ENABLED"]
+        client.message channel: data['channel'], text: devboard_command
       end
     #when /good morning/i then
       #greetings = ['Which in ghosts make merry on this last of dear October days? Hm ... Well, good morning!', 'Where there is no imagination, there is no horror. Good morning!', 'There are nights when the wolves are silent and only the moon howls. Good morning!', 'They that are born on Halloween shall see more than other folk. Good morning!', 'Clothes make a statement. Costumes tell a story. Good morning!', 'I see dead people. Good morning!', 'October, tuck tiny candy bars in my pockets and carve my smile into a thousand pumpkins .... Merry October, and good morning!', 'Proof of our society\'s decline is that Halloween has become a broad daylight event for many. Good morning!', 'When black cats prowl and pumpkins gleam, may luck be yours on Halloween. Good morning!', 'Look, there\'s no metaphysics on earth like chocolates. Good morning!', 'Shadows of a thousand years rise again unseen, voices whisper in the trees, "Tonight is Halloween!" Also, good morning!', 'When witches go riding, and black cats are seen, the moon laughs and whispers, ‘tis near Halloween. Good morning!', 'Hold on, man. We don\'t go anywhere with "scary," "spooky," "haunted," or "forbidden" in the title. ~From Scooby-Doo. Good morning!', 'Eat, drink and be scary. And have a good morning!']
