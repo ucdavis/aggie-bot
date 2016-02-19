@@ -21,16 +21,16 @@ def devboard_command
     
     open_assignments.each do |open_assignment|
       # Grab Developer
-      developer = open_assignment["developer"] + "\n"
+      developer = "*" + open_assignment["developer"] + "*\n"
       message += developer
-      
       # Grab Assignments
       assignments = open_assignment["assignments"]
       assignments.each do |assigment|
-        project = assigment["project"]
-        project_id = assigment["project_id"]
+        task = "_" + assigment["task_title"]
+        project = assigment["project"] + "_"
+        task_link = assigment["task_link"]
         
-        message += project + "/" + project_id.to_s + "\n"
+        message += task + " (" + project + ")" + "\n" + "https://devboard.dss.ucdavis.edu" + task_link + "\n"
       end # end assignment loop
       message += "\n"
     end # end open_assignments loop
