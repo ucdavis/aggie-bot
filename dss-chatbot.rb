@@ -34,9 +34,8 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   # Set up Slack connection
-  Slack.configure do |config|
-    config.token = $SETTINGS['SLACK_API_TOKEN']
-  end
+  load $cwd + "/libs/slack.rb"
+  client = slack_connect $SETTINGS["SLACK_API_TOKEN"]
 
   # Set up LDAP support, if enabled
   if $SETTINGS['LDAP_ENABLED']
@@ -106,8 +105,6 @@ Daemons.run_proc('dss-chatbot.rb') do
 
     logger.info "Nonsense command(s) enabled."
   end
-
-  client = Slack::RealTime::Client.new
 
   client.on :hello do
     logger.info "Successfully connected, welcome '#{client.self['name']}' to the '#{client.team['name']}' team at https://#{client.team['domain']}.slack.com."
