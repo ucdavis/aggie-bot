@@ -48,10 +48,9 @@ Daemons.run_proc('dss-chatbot.rb') do
   
   # Set up DEVBOARD support, if enabled
   if $SETTINGS['DEVBOARD_ENABLED']
-    #require 'devboard'
     load $cwd + '/commands/devboard.rb'
     
-    logger.info "DEVBOARD command(s) enabled."
+    logger.info "DevBoard command(s) enabled."
   end
 
   # Set up SysAid support, if enabled
@@ -150,7 +149,6 @@ Daemons.run_proc('dss-chatbot.rb') do
         end
       end
     when /^!assignments/ then
-      # Send Message to Slack
       if $SETTINGS["DEVBOARD_ENABLED"]
         client.message channel: data['channel'], text: devboard_command
       end
