@@ -4,7 +4,7 @@ require 'net/https'
 
 # Get data from Devboard
 def devboard_command
-  uri =  URI.parse($SETTINGS["DEVBOARD_URL"])
+  uri =  URI.parse($SETTINGS["DEVBOARD_JSON"])
 
   http = Net::HTTP.new(uri.host, uri.port)
   http.use_ssl = true if uri.scheme == "https" 
@@ -30,7 +30,7 @@ def devboard_command
         project = assigment["project"] + "_"
         task_link = assigment["task_link"]
         
-        message += task + " (" + project + ")" + "\n" + "https://devboard.dss.ucdavis.edu" + task_link + "\n"
+        message += task + " (" + project + ")" + "\n" + $SETTINGS["DEVBOARD_URL"] + task_link + "\n"
       end # end assignment loop
       message += "\n"
     end # end open_assignments loop
