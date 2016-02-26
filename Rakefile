@@ -1,20 +1,26 @@
 require 'rake'
-require Dir.getwd + "/libs/slack.rb"
+require 'yaml'
+require 'slack-ruby-client'
 
-# Do I need to load Settings YAML here?
-# How do i access the $Settings[] ? 
-# Do I just 
+$cwd = Dir.getwd
+require $cwd + "/commands/devboard.rb"
 
 namespace :autobot do
   desc 'Send !assignments message to slack'
   task :remind do
+    
+    # Set up settings
+    settings_file = $cwd + '/config/settings.yml'
+    $SETTINGS = YAML.load_file(settings_file)
+
     # Connect to slack
-    client = slack_connect #need to get api
+    Slack.configure do |config|
+      config.token = $SETTINGS["SLACK_API_TOKEN"]
+    end
 
     # Send message
-    puts "I will send !assignments to slack" # maybe just run devboard_command instead?
+    client = Slack::Web::Client.new(user_agent: 'Slack Ruby Client/1.0')
+    client.chat_postMessage(channel: '#appdev', text: devboard_command , as_user: true)
 
-    # Disconnect from slack
-    puts "I will disconnect from slack"
   end
 end
