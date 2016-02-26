@@ -2,12 +2,12 @@ require 'rake'
 require 'yaml'
 require 'slack-ruby-client'
 
-$cwd = Dir.getwd
-require $cwd + "/commands/devboard.rb"
 
 namespace :autobot do
   desc 'Posts the assignment(s) of each developer'
   task :remind do
+    $cwd = Dir.getwd
+    require $cwd + "/commands/devboard.rb"
     
     # Set up settings
     settings_file = $cwd + '/config/settings.yml'
@@ -21,6 +21,5 @@ namespace :autobot do
     # Send message
     client = Slack::Web::Client.new(user_agent: 'Slack Ruby Client/1.0')
     client.chat_postMessage(channel: '#appdev', text: devboard_command , as_user: true)
-
   end
 end
