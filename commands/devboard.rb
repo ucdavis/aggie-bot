@@ -17,32 +17,34 @@ def devboard_command
   # Retrieve assignments for each developer from DevBoard 
   message = ""
   if response.code == "200"
-    puts "Successfully connected to DevBoard."
-
     result = JSON.parse(response.body)
-    open_assignments = result["open_assignments"]
+    if result
+      open_assignments = result["open_assignments"]
 
-    if open_assignments 
-      open_assignments.each do |open_assignment|
-        # Grab Developer
-        developer = "*" + open_assignment["developer"] + "*\n"
-        message += developer
-        # Grab Assignments
-        assignments = open_assignment["assignments"]
-        assignments.each do |assigment|
-          task = "_" + assigment["task_title"]
-          project = assigment["project"] + "_"
-          task_link = assigment["task_link"]
-          
-          message += task + " (" + project + ")" + "\n" + $SETTINGS["DEVBOARD_URL"] + task_link + "\n"
-        end # end assignment loop
-        message += "\n"
-      end  # end open_assignments loop
+      if open_assignments 
+        open_assignments.each do |open_assignment|
+          # Grab Developer
+          developer = "*" + open_assignment["developer"] + "*\n"
+          message += developer
+          # Grab Assignments
+          assignments = open_assignment["assignments"]
+          assignments.each do |assigment|
+            task = "_" + assigment["task_title"]
+            project = assigment["project"] + "_"
+            task_link = assigment["task_link"]
+            
+            message += task + " (" + project + ")" + "\n" + $SETTINGS["DEVBOARD_URL"] + task_link + "\n"
+          end # end assignment loop
+          message += "\n"
+        end  # end open_assignments loop
+      else
+        message = "No assignments."
+      end # end openassignments if
     else
-      message = "No assignments."
-    end # end if
+      message = "No results found."
+    end # end results if
   else
-    message = "We can't connect to DevBoard"
+    message = "Unable to connect to DevBoard due to a " + response.code + " error."
   end # end if
   
   return message 
