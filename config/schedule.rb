@@ -18,4 +18,11 @@
 # end
 
 # Learn more: http://github.com/javan/whenever
+every :day, at:'1:00pm' do
+  rake 'autobot:remind'
+end
+
+every :day, at:'9:00am' do
+  rake 'autobot:remind'
+end
 
