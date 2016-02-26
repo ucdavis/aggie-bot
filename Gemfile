@@ -17,4 +17,3 @@ gem 'faraday-http-cache' # (provides etag caching in octokit)
 
 # For cron tasks
 gem 'whenever', :require => false
-gem 'rake'
