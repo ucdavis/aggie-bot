@@ -1,13 +1,12 @@
 require 'rake'
 require 'yaml'
-require 'slack-ruby-client'
-
 
 namespace :autobot do
   desc 'Posts the assignment(s) of each developer'
   task :remind do
     $cwd = Dir.getwd
     require $cwd + "/commands/devboard.rb"
+    require 'slack-ruby-client'
     
     # Set up settings
     settings_file = $cwd + '/config/settings.yml'
