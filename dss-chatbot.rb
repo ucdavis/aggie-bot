@@ -34,8 +34,9 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   # Set up Slack connection
-  load $cwd + "/libs/slack.rb"
-  client = slack_connect $SETTINGS["SLACK_API_TOKEN"]
+  Slack.configure do |config|
+    config.token = $SETTINGS["SLACK_API_TOKEN"]
+  end
 
   # Set up LDAP support, if enabled
   if $SETTINGS['LDAP_ENABLED']
@@ -106,6 +107,7 @@ Daemons.run_proc('dss-chatbot.rb') do
     logger.info "Nonsense command(s) enabled."
   end
 
+  client = Slack::RealTime::Client.new
   client.on :hello do
     logger.info "Successfully connected, welcome '#{client.self['name']}' to the '#{client.team['name']}' team at https://#{client.team['domain']}.slack.com."
   end
@@ -118,8 +120,8 @@ Daemons.run_proc('dss-chatbot.rb') do
   client.on :message do |data|
     # Check if the message was sent by this chat bot ... we don't need to
     # talk to ourselves.
-    self_id = client.self["id"]
-    next if data["user"] == self_id
+    # self_id = client.self["id"]
+    # next if data["user"] == self_id
 
     # Parse the received message for valid Chat Bot commands
     case data['text']
