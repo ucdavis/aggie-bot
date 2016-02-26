@@ -6,7 +6,7 @@ require 'net/https'
 def devboard_command
   uri =  URI.parse($SETTINGS["DEVBOARD_URL"] + "/overview.json");
 
-  # Connecting to DevBoard
+  # Connect to DevBoard
   http = Net::HTTP.new(uri.host, uri.port)
   http.use_ssl = true if uri.scheme == "https" 
   request = Net::HTTP::Get.new(uri.request_uri)
@@ -42,7 +42,7 @@ def devboard_command
       message = "No assignments."
     end # end if
   else
-    puts "Unable to connect to DevBoard."
+    message = "We can't connect to DevBoard"
   end # end if
   
   return message 
