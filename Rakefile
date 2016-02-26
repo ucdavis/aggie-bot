@@ -6,7 +6,7 @@ $cwd = Dir.getwd
 require $cwd + "/commands/devboard.rb"
 
 namespace :autobot do
-  desc 'Send !assignments message to slack'
+  desc 'Posts the assignment(s) of each developer'
   task :remind do
     
     # Set up settings
