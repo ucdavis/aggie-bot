@@ -35,7 +35,7 @@ Daemons.run_proc('dss-chatbot.rb') do
 
   # Set up Slack connection
   Slack.configure do |config|
-    config.token = $SETTINGS["SLACK_API_TOKEN"]
+    config.token = $SETTINGS['SLACK_API_TOKEN']
   end
 
   # Set up LDAP support, if enabled
@@ -120,8 +120,8 @@ Daemons.run_proc('dss-chatbot.rb') do
   client.on :message do |data|
     # Check if the message was sent by this chat bot ... we don't need to
     # talk to ourselves.
-    # self_id = client.self["id"]
-    # next if data["user"] == self_id
+    self_id = client.self["id"]
+    next if data["user"] == self_id
 
     # Parse the received message for valid Chat Bot commands
     case data['text']
