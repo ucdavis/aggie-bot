@@ -14,3 +14,6 @@ gem 'roles-management-api', git: "https://github.com/dssit/roles-management-api.
 # For GitHub support
 gem 'octokit'
 gem 'faraday-http-cache' # (provides etag caching in octokit)
+
+# For cron tasks
+gem 'whenever', :require => false

@@ -28,3 +28,9 @@ VISIONEERS_ENABLED: false
 
 # If true, requires separate github.yml file
 GITHUB_ENABLED: false
+
+#Devboard Data
+DEVBOARD_ENABLED: false
+DEVBOARD_URL: ""
+DEVBOARD_API_USER: ""
+DEVBOARD_API_SECRET: ""
