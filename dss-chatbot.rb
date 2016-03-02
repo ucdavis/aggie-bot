@@ -80,6 +80,12 @@ Daemons.run_proc('dss-chatbot.rb') do
     logger.info "Roles Management command(s) enabled."
   end
 
+  if $SETTINGS['HOST_ENABLED']
+    load $cwd + '/commands/host.rb'
+
+    logger.info "'host' command enabled."
+  end
+
   # Set up GitHub support, if enabled
   if $SETTINGS['GITHUB_ENABLED']
     require 'octokit'
@@ -136,6 +142,10 @@ Daemons.run_proc('dss-chatbot.rb') do
     when /^ldap/ then
       if $SETTINGS['LDAP_ENABLED']
         client.message channel: data['channel'], text: ldap_command(data['text'])
+      end
+    when /^host/ then
+      if $SETTINGS['HOST_ENABLED']
+        client.message channel: data['channel'], text: host_command(Slack::Messages::Formatting.unescape(data['text']))
       end
     when /^visioneers/ then
       if $SETTINGS['VISIONEERS_ENABLED']

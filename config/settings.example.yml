@@ -22,6 +22,9 @@ ROLES_URL: ""
 ROLES_USERNAME: ""
 ROLES_TOKEN: ""
 
+# Enable piping to the UNIX 'host' command (with validation)
+HOST_ENABLED: false
+
 # An Easter Egg command. Prints the number of minutes of "productivity" left
 # until 5:00pm.
 VISIONEERS_ENABLED: false
