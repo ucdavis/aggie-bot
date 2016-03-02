@@ -18,7 +18,7 @@ $cwd = Dir.getwd
 # 'Daemonize' the process (see 'daemons' gem for more information)
 Daemons.run_proc('dss-chatbot.rb') do
   # Keep a log file (auto-rotate at 1 MB, keep 10 rotations)
-  logger = Logger.new($cwd + '/dss-chatbot.log', 10, 1024000)
+  @logger = logger = Logger.new($cwd + '/dss-chatbot.log', 10, 1024000)
 
   logger.info "DSS ChatBot started at #{Time.now}"
 
