@@ -35,7 +35,8 @@ def github_command(message)
     end
 
     unless repo_url
-      messages.push "No such project tag '#{project_tag}'"
+      # No such project. Don't emit anything.
+      #messages.push "No such project tag '#{project_tag}'"
     else 
       # if repo url does exist, then find the issue
       begin
