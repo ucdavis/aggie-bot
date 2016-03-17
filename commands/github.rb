@@ -16,9 +16,13 @@ def github_command(message)
 
   return [] unless matches
 
-  Octokit.auto_paginate = true
-  client = Octokit::Client.new(:access_token => $GITHUB_SETTINGS["GITHUB_TOKEN"])
-  client.login
+  begin
+    Octokit.auto_paginate = true
+    client = Octokit::Client.new(:access_token => $GITHUB_SETTINGS["GITHUB_TOKEN"])
+    client.login
+  rescue Octokit::Unauthorized => e
+    return ["Unable to log into GitHub. Check credentials."]
+  end
 
   matches.each do |m|
     repo_url = nil
