@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # DSS ChatBot
-# Version 0.61 2015-12-09
+# Version 0.62 2016-06-02
 # Written by Christopher Thielen <cmthielen@ucdavis.edu>
 
 require 'rubygems'

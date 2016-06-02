@@ -1,6 +1,8 @@
 DSS ChatBot
 ===========
 
+Version 0.62 2016-06-02
+
 DSS ChatBot is a Slack-compatible chat bot designed for use by the
 UC Davis IT community. It originated in the UC Davis Division of Social
 Science IT group.

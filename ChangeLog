@@ -1,3 +1,6 @@
+2016-06-02 Christopher Thielen <cmthielen@ucdavis.edu>:
+  * Added 'title' field to LDAP command
+
 2016-02-17 Christopher Thielen <cmthielen@ucdavis.edu>:
   * Added home department code (ucdAppointmentDepartmentCode) to LDAP response
   * Catch ruby-sysaid exceptions and display error message in chat

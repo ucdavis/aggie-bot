@@ -58,6 +58,8 @@ def ldap_command(message)
       ldap_field = 'mail'
     when 'department', 'dept', 'ou'
       ldap_field = 'ou'
+    when 'title'
+      ldap_field = 'title'
     when 'affiliation', 'ucdpersonaffiliation'
       ldap_field = 'ucdPersonAffiliation'
     else
@@ -136,6 +138,11 @@ def ldap_command(message)
     else
       departmentCode = "Not listed"
     end
+    unless entry.get_values('title').to_s[2..-3].nil?
+      title = entry.get_values('title').to_s[2..-3]
+    else
+      title = "Not listed"
+    end
 
     affiliations = []
     # A person may have multiple affiliations
@@ -152,6 +159,7 @@ def ldap_command(message)
     results += "*Login ID* #{loginid}\n"
     results += "*E-Mail* #{mail}\n"
     results += "*Department* #{department} (#{departmentCode})\n"
+    results += "*Title* #{title}\n"
     results += "*Office* #{office}\n"
     results += "*Affiliation* #{affiliations}\n"
   end
