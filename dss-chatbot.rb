@@ -185,7 +185,7 @@ Daemons.run_proc('dss-chatbot.rb') do
       else
         raise e
       end
-    rescue Faraday::Error::TimeoutError, Faraday::Error::ConnectionFailed, Faraday::Error::SSLError => e
+    rescue Faraday::Error::TimeoutError, Faraday::Error::ConnectionFailed, Faraday::Error::SSLError, Faraday::ClientError => e
       logger.error e
       sleep 5 # ignore, try again
     rescue StandardError => e
