@@ -31,6 +31,8 @@ documentation), invite @bot to the room you'd like to use it in.
 You can then type commands in the form: "<command> <query>", e.g. "ldap smith"
 to perform an LDAP lookup using the query term "smith".
 
+_Note: A command must be ACCESSIBLE before it can be used_
+
 Local Channel Configuration
 ==============================
 You can choose to enable or disable commands for a specific channel. For example,
