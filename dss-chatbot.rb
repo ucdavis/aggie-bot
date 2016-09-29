@@ -105,13 +105,6 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   client.on :message do |data|
-    if data['channel'] == $SETTINGS['DSS-IT-APPDEV']
-      puts "In app dev"
-    end
-
-    if data['channel'] == 'D2HPTUNSW'
-      puts "private msg"
-    end
     # Check if the message was sent by this chat bot ... we don't need to
     # talk to ourselves.
     self_id = client.self["id"]
