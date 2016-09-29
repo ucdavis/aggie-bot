@@ -105,33 +105,43 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   client.on :message do |data|
+    if data['channel'] == $SETTINGS['DSS-IT-APPDEV']
+      puts "In app dev"
+    end
+
+    if data['channel'] == 'D2HPTUNSW'
+      puts "private msg"
+    end
     # Check if the message was sent by this chat bot ... we don't need to
     # talk to ourselves.
     self_id = client.self["id"]
     next if data["user"] == self_id
 
+    # Check if the channel source contains local config, use global config otherwise
+    currentChannel = $SETTINGS[data['channel']] ? data['channel'] : 'GLOBAL'
+
     # Parse the received message for valid Chat Bot commands
     case data['text']
     when /^ldap/ then
-      if $SETTINGS['GLOBAL']['LDAP_ENABLED']
+      if $SETTINGS[currentChannel]['LDAP_ENABLED']
         client.message channel: data['channel'], text: ldap_command(data['text'])
       end
     when /^host/ then
-      if $SETTINGS['GLOBAL']['HOST_ENABLED']
+      if $SETTINGS[currentChannel]['HOST_ENABLED']
         client.message channel: data['channel'], text: host_command(Slack::Messages::Formatting.unescape(data['text']))
       end
     when /^visioneers/ then
-      if $SETTINGS['GLOBAL']['VISIONEERS_ENABLED']
+      if $SETTINGS[currentChannel]['VISIONEERS_ENABLED']
         client.message channel: data['channel'], text: visioneers_command
       end
     when /([\w]+)\/([\d]+)/ then # look for characters followed by / followed by numbers, e.g. dw/123
-      if $SETTINGS['GLOBAL']['GITHUB_ENABLED']
+      if $SETTINGS[currentChannel]['GITHUB_ENABLED']
         github_command(data['text']).each do |message|
           client.message channel: data['channel'], text: message
         end
       end
     when /^!assignments/ then
-      if $SETTINGS['GLOBAL']["DEVBOARD_ENABLED"]
+      if $SETTINGS[currentChannel]["DEVBOARD_ENABLED"]
         client.message channel: data['channel'], text: devboard_command
       end
     #when /good morning/i then
