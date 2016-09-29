@@ -39,7 +39,7 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   # Set up LDAP support, if enabled
-  if $SETTINGS['GLOBAL']['LDAP_ENABLED']
+  if $SETTINGS['LDAP_ENABLED']
     require 'ldap'
     load $cwd + '/commands/ldap.rb'
 
@@ -47,28 +47,28 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   # Set up DEVBOARD support, if enabled
-  if $SETTINGS['GLOBAL']['DEVBOARD_ENABLED']
+  if $SETTINGS['DEVBOARD_ENABLED']
     load $cwd + '/commands/devboard.rb'
 
     logger.info "DevBoard command(s) enabled."
   end
 
   # Set up Roles Management support, if enabled
-  if $SETTINGS['GLOBAL']['ROLES_ENABLED']
+  if $SETTINGS['ROLES_ENABLED']
     require 'roles-management-api'
     load $cwd + '/commands/roles.rb'
 
     logger.info "Roles Management command(s) enabled."
   end
 
-  if $SETTINGS['GLOBAL']['HOST_ENABLED']
+  if $SETTINGS['HOST_ENABLED']
     load $cwd + '/commands/host.rb'
 
     logger.info "'host' command enabled."
   end
 
   # Set up GitHub support, if enabled
-  if $SETTINGS['GLOBAL']['GITHUB_ENABLED']
+  if $SETTINGS['GITHUB_ENABLED']
     require 'octokit'
 
     # Load GitHub-specific settings from config/github.yml
@@ -88,7 +88,7 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   # Set up the easter egg 'visioneers' command, if enabled
-  if $SETTINGS['GLOBAL']['VISIONEERS_ENABLED']
+  if $SETTINGS['VISIONEERS_ENABLED']
     load $cwd + '/commands/visioneers.rb'
 
     logger.info "Nonsense command(s) enabled."
@@ -137,12 +137,14 @@ Daemons.run_proc('dss-chatbot.rb') do
       if $SETTINGS[currentChannel]["DEVBOARD_ENABLED"]
         client.message channel: data['channel'], text: devboard_command
       end
+    when /^!channel/ then
+        client.message channel: data['channel'], text: data['channel']
     #when /good morning/i then
       #greetings = ['Which in ghosts make merry on this last of dear October days? Hm ... Well, good morning!', 'Where there is no imagination, there is no horror. Good morning!', 'There are nights when the wolves are silent and only the moon howls. Good morning!', 'They that are born on Halloween shall see more than other folk. Good morning!', 'Clothes make a statement. Costumes tell a story. Good morning!', 'I see dead people. Good morning!', 'October, tuck tiny candy bars in my pockets and carve my smile into a thousand pumpkins .... Merry October, and good morning!', 'Proof of our society\'s decline is that Halloween has become a broad daylight event for many. Good morning!', 'When black cats prowl and pumpkins gleam, may luck be yours on Halloween. Good morning!', 'Look, there\'s no metaphysics on earth like chocolates. Good morning!', 'Shadows of a thousand years rise again unseen, voices whisper in the trees, "Tonight is Halloween!" Also, good morning!', 'When witches go riding, and black cats are seen, the moon laughs and whispers, ‘tis near Halloween. Good morning!', 'Hold on, man. We don\'t go anywhere with "scary," "spooky," "haunted," or "forbidden" in the title. ~From Scooby-Doo. Good morning!', 'Eat, drink and be scary. And have a good morning!']
       #greetings = ['Dobro jutro', 'Goedemorgen', 'Bonjour', 'Guten Morgen', 'Howdy', 'Buongiorno', 'Dzień dobry', 'Доброе утро', 'Habari ya asubuhi', 'Bună dimineaţa']
       #client.message channel: data['channel'], text: greetings.sample #+ "!"
     when /^roles [\S]+$/i then
-      if $SETTINGS['GLOBAL']['ROLES_ENABLED']
+      if $SETTINGS[currentChannel]['ROLES_ENABLED']
         client.message channel: data['channel'], text: roles_command(data['text'][6..-1])
       end
     end
