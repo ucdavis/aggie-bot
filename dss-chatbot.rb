@@ -39,7 +39,7 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   # Set up LDAP support, if enabled
-  if $SETTINGS['LDAP_ENABLED']
+  if $SETTINGS['GLOBAL']['LDAP_ENABLED']
     require 'ldap'
     load $cwd + '/commands/ldap.rb'
 
@@ -47,28 +47,28 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   # Set up DEVBOARD support, if enabled
-  if $SETTINGS['DEVBOARD_ENABLED']
+  if $SETTINGS['GLOBAL']['DEVBOARD_ENABLED']
     load $cwd + '/commands/devboard.rb'
 
     logger.info "DevBoard command(s) enabled."
   end
 
   # Set up Roles Management support, if enabled
-  if $SETTINGS['ROLES_ENABLED']
+  if $SETTINGS['GLOBAL']['ROLES_ENABLED']
     require 'roles-management-api'
     load $cwd + '/commands/roles.rb'
 
     logger.info "Roles Management command(s) enabled."
   end
 
-  if $SETTINGS['HOST_ENABLED']
+  if $SETTINGS['GLOBAL']['HOST_ENABLED']
     load $cwd + '/commands/host.rb'
 
     logger.info "'host' command enabled."
   end
 
   # Set up GitHub support, if enabled
-  if $SETTINGS['GITHUB_ENABLED']
+  if $SETTINGS['GLOBAL']['GITHUB_ENABLED']
     require 'octokit'
 
     # Load GitHub-specific settings from config/github.yml
@@ -88,7 +88,7 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   # Set up the easter egg 'visioneers' command, if enabled
-  if $SETTINGS['VISIONEERS_ENABLED']
+  if $SETTINGS['GLOBAL']['VISIONEERS_ENABLED']
     load $cwd + '/commands/visioneers.rb'
 
     logger.info "Nonsense command(s) enabled."
@@ -113,25 +113,25 @@ Daemons.run_proc('dss-chatbot.rb') do
     # Parse the received message for valid Chat Bot commands
     case data['text']
     when /^ldap/ then
-      if $SETTINGS['LDAP_ENABLED']
+      if $SETTINGS['GLOBAL']['LDAP_ENABLED']
         client.message channel: data['channel'], text: ldap_command(data['text'])
       end
     when /^host/ then
-      if $SETTINGS['HOST_ENABLED']
+      if $SETTINGS['GLOBAL']['HOST_ENABLED']
         client.message channel: data['channel'], text: host_command(Slack::Messages::Formatting.unescape(data['text']))
       end
     when /^visioneers/ then
-      if $SETTINGS['VISIONEERS_ENABLED']
+      if $SETTINGS['GLOBAL']['VISIONEERS_ENABLED']
         client.message channel: data['channel'], text: visioneers_command
       end
     when /([\w]+)\/([\d]+)/ then # look for characters followed by / followed by numbers, e.g. dw/123
-      if $SETTINGS['GITHUB_ENABLED']
+      if $SETTINGS['GLOBAL']['GITHUB_ENABLED']
         github_command(data['text']).each do |message|
           client.message channel: data['channel'], text: message
         end
       end
     when /^!assignments/ then
-      if $SETTINGS["DEVBOARD_ENABLED"]
+      if $SETTINGS['GLOBAL']["DEVBOARD_ENABLED"]
         client.message channel: data['channel'], text: devboard_command
       end
     #when /good morning/i then
@@ -139,7 +139,7 @@ Daemons.run_proc('dss-chatbot.rb') do
       #greetings = ['Dobro jutro', 'Goedemorgen', 'Bonjour', 'Guten Morgen', 'Howdy', 'Buongiorno', 'Dzień dobry', 'Доброе утро', 'Habari ya asubuhi', 'Bună dimineaţa']
       #client.message channel: data['channel'], text: greetings.sample #+ "!"
     when /^roles [\S]+$/i then
-      if $SETTINGS['ROLES_ENABLED']
+      if $SETTINGS['GLOBAL']['ROLES_ENABLED']
         client.message channel: data['channel'], text: roles_command(data['text'][6..-1])
       end
     end
