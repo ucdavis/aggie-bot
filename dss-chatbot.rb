@@ -116,25 +116,25 @@ Daemons.run_proc('dss-chatbot.rb') do
     # Parse the received message for valid Chat Bot commands
     case data['text']
     when /^ldap/ then
-      if $SETTINGS[currentChannel]['LDAP_ENABLED']
+      if $SETTINGS[currentChannel]['LDAP_ENABLED'] && $SETTINGS['LDAP_ACCESSIBLE']
         client.message channel: data['channel'], text: ldap_command(data['text'])
       end
     when /^host/ then
-      if $SETTINGS[currentChannel]['HOST_ENABLED']
+      if $SETTINGS[currentChannel]['HOST_ENABLED'] && $SETTINGS['HOST_ACCESSIBLE']
         client.message channel: data['channel'], text: host_command(Slack::Messages::Formatting.unescape(data['text']))
       end
     when /^visioneers/ then
-      if $SETTINGS[currentChannel]['VISIONEERS_ENABLED']
+      if $SETTINGS[currentChannel]['VISIONEERS_ENABLED'] && $SETTINGS['VISIONEERS_ACCESSIBLE']
         client.message channel: data['channel'], text: visioneers_command
       end
     when /([\w]+)\/([\d]+)/ then # look for characters followed by / followed by numbers, e.g. dw/123
-      if $SETTINGS[currentChannel]['GITHUB_ENABLED']
+      if $SETTINGS[currentChannel]['GITHUB_ENABLED'] && $SETTINGS['GITHUB_ACCESSIBLE']
         github_command(data['text']).each do |message|
           client.message channel: data['channel'], text: message
         end
       end
     when /^!assignments/ then
-      if $SETTINGS[currentChannel]["DEVBOARD_ENABLED"]
+      if $SETTINGS[currentChannel]["DEVBOARD_ENABLED"] && $SETTINGS['DEVBOARD_ACCESSIBLE']
         client.message channel: data['channel'], text: devboard_command
       end
     when /^!channel/ then
@@ -144,7 +144,7 @@ Daemons.run_proc('dss-chatbot.rb') do
       #greetings = ['Dobro jutro', 'Goedemorgen', 'Bonjour', 'Guten Morgen', 'Howdy', 'Buongiorno', 'Dzień dobry', 'Доброе утро', 'Habari ya asubuhi', 'Bună dimineaţa']
       #client.message channel: data['channel'], text: greetings.sample #+ "!"
     when /^roles [\S]+$/i then
-      if $SETTINGS[currentChannel]['ROLES_ENABLED']
+      if $SETTINGS[currentChannel]['ROLES_ENABLED'] && $SETTINGS['ROLES_ACCESSIBLE']
         client.message channel: data['channel'], text: roles_command(data['text'][6..-1])
       end
     end
