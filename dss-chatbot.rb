@@ -38,37 +38,37 @@ Daemons.run_proc('dss-chatbot.rb') do
     config.token = $SETTINGS['SLACK_API_TOKEN']
   end
 
-  # Set up LDAP support, if enabled
-  if $SETTINGS['LDAP_ENABLED']
+  # Set up LDAP support, if accessible
+  if $SETTINGS['LDAP_ACCESSIBLE']
     require 'ldap'
     load $cwd + '/commands/ldap.rb'
 
     logger.info "LDAP command(s) enabled."
   end
 
-  # Set up DEVBOARD support, if enabled
-  if $SETTINGS['DEVBOARD_ENABLED']
+  # Set up DEVBOARD support, if accessible
+  if $SETTINGS['DEVBOARD_ACCESSIBLE']
     load $cwd + '/commands/devboard.rb'
 
     logger.info "DevBoard command(s) enabled."
   end
 
-  # Set up Roles Management support, if enabled
-  if $SETTINGS['ROLES_ENABLED']
+  # Set up Roles Management support, if accessible
+  if $SETTINGS['ROLES_ACCESSIBLE']
     require 'roles-management-api'
     load $cwd + '/commands/roles.rb'
 
     logger.info "Roles Management command(s) enabled."
   end
 
-  if $SETTINGS['HOST_ENABLED']
+  if $SETTINGS['HOST_ACCESSIBLE']
     load $cwd + '/commands/host.rb'
 
     logger.info "'host' command enabled."
   end
 
-  # Set up GitHub support, if enabled
-  if $SETTINGS['GITHUB_ENABLED']
+  # Set up GitHub support, if accessible
+  if $SETTINGS['GITHUB_ACCESSIBLE']
     require 'octokit'
 
     # Load GitHub-specific settings from config/github.yml
@@ -87,8 +87,8 @@ Daemons.run_proc('dss-chatbot.rb') do
     logger.info "GitHub command(s) enabled."
   end
 
-  # Set up the easter egg 'visioneers' command, if enabled
-  if $SETTINGS['VISIONEERS_ENABLED']
+  # Set up the easter egg 'visioneers' command, if accessible
+  if $SETTINGS['VISIONEERS_ACCESSIBLE']
     load $cwd + '/commands/visioneers.rb'
 
     logger.info "Nonsense command(s) enabled."
