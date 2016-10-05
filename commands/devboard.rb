@@ -4,6 +4,10 @@ require 'net/https'
 
 module SlackBotCommand
   class Devboard
+    REGEX = /^!assignments/
+    COMMAND = "!assignments"
+    DESCRIPTION = "TODO"
+    
     # Get data from Devboard
     def run (message)
       uri =  URI.parse($SETTINGS["DEVBOARD_URL"] + "/overview.json");

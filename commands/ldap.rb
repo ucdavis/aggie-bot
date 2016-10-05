@@ -1,5 +1,9 @@
 module SlackBotCommand
   class Ldap
+    REGEX = /^ldap/
+    COMMAND = "ldap TODO"
+    DESCRIPTION = "TODO"
+    
     LDAP_MAX_RESULTS = 8
 
     # LDAP escape code credit: ruby-net-ldap (https://github.com/ruby-ldap/ruby-net-ldap).

@@ -1,5 +1,9 @@
 module SlackBotCommand
   class Roles
+    REGEX = /^roles [\S]+$/i
+    COMMAND = "TODO"
+    DESCRIPTION = "TODO"
+
     def roles_client
       @roles_client ||= RolesManagementAPI.login($SETTINGS['ROLES_URL'], $SETTINGS['ROLES_USERNAME'], $SETTINGS['ROLES_TOKEN'])
     end
