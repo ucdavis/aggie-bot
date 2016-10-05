@@ -8,11 +8,15 @@ module SlackBotCommand
 
   # Runs the proper command based on the message
   def SlackBotCommand.run(message)
-    # Get an instance for each command we have
-    # for each command,
-      # if the message matches the regex
-        # then run the command
-      # else
-        # move on
+    SlackBotCommand.constants.each |command| do
+      # Get a reference of the command class
+      commandClassReference = SlackBotCommand.const_get(command)
+
+      # Check if the assigned REGEX matches the message passed
+      if (commandClassReference::REGEX.match(message))
+        # Run the command
+        commandClassReference.new.run(message)
+      end
+    end
   end
 end
