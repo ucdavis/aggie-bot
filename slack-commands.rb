@@ -7,6 +7,7 @@ module SlackBotCommand
   Dir[$cwd + "/commands/*.rb"].each {|file| require file }
 
   # Runs the proper command based on the message
+  # It should return a string to output if a command is found
   def SlackBotCommand.run(message)
     SlackBotCommand.constants.each |command| do
       # Get a reference of the command class
