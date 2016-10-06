@@ -31,24 +31,6 @@ documentation), invite @bot to the room you'd like to use it in.
 You can then type commands in the form: "<command> <query>", e.g. "ldap smith"
 to perform an LDAP lookup using the query term "smith".
 
-_Note: A command must be ACCESSIBLE before it can be used_
-
-Local Channel Configuration
-==============================
-You can choose to enable or disable commands for a specific channel. For example,
-maybe you would like github integration available for #appdev but not for #general.
-To accomplish this, do the following:
-1. Invite your chat bot to the channel
-2. Run '!channel' and copy your bot's response. This is your channel's code.
-3. Paste it in settings.yml as a key for a block of key : value pairs. It should look like
-```YAML
-# Channel Name
-<channel_code>:
-  GITHUB_ENABLED: true
-  ...
-  DEVBOARD_ENABLED: false
-```
-4. Restart your chat bot.
 LDAP Attribute-Specific Search
 ==============================
 When using the 'ldap' command, you can narrow your search to a specific field
