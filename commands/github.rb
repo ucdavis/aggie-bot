@@ -5,12 +5,31 @@ module SlackBotCommand
     DESCRIPTION = "TODO"
     ENABLED_CHANNELS = []
 
+    @GITHUB_SETTINGS = nil
+
     # is_number? credit: http://stackoverflow.com/questions/5661466/test-if-string-is-a-number-in-ruby-on-rails
     def is_number?(string)
       true if Float(string) rescue false
     end
 
+    def loadSettings
+      # Load GitHub-specific settings from config/github.yml
+      github_settings_file = $cwd + '/config/github.yml'
+      if File.file?(github_settings_file)
+        @GITHUB_SETTINGS = YAML.load_file(github_settings_file)
+        $logger.info "GitHub settings loaded."
+      else
+        $stderr.puts "You need to set up #{github_settings_file} to enable GitHub support."
+        $logger.error "DSS ChatBot could not start because #{github_settings_file} does not exist. See config/github.example.yml."
+        exit
+      end
+    end
+
     def run(message)
+      if !ENABLED_CHANNELS.empty? && !@GITHUB_SETTINGS
+        loadSettings()
+      end
+
       messages = []
       matches = nil
 
@@ -25,7 +44,7 @@ module SlackBotCommand
 
       begin
         Octokit.auto_paginate = true
-        client = Octokit::Client.new(:access_token => $GITHUB_SETTINGS["GITHUB_TOKEN"])
+        client = Octokit::Client.new(:access_token => @GITHUB_SETTINGS["GITHUB_TOKEN"])
         client.login
       rescue Octokit::Unauthorized => e
         return ["Unable to log into GitHub. Check credentials."]
@@ -38,7 +57,7 @@ module SlackBotCommand
         issue_number = m[2]
 
         # Ensure 'project_tag' exists in $GITHUB_SETTINGS
-        $GITHUB_SETTINGS["GITHUB_PROJECTS"].each do |p|
+        @GITHUB_SETTINGS["GITHUB_PROJECTS"].each do |p|
           if p[project_tag]
             repo_url = p[project_tag]
             break
