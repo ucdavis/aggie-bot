@@ -55,12 +55,9 @@ Daemons.run_proc('dss-chatbot.rb') do
     self_id = client.self["id"]
     next if data["user"] == self_id
 
-    # Check if the channel source contains local config, use global config otherwise
-    currentChannel = $SETTINGS[data['channel']] ? data['channel'] : 'GLOBAL'
-
     # Parse the received message for valid Chat Bot commands
     if data['text']
-      client.message channel: data['channel'], text: SlackBotCommand.run(data['text'])
+      client.message channel: data['channel'], text: SlackBotCommand.run(data['text'], data['channel'])
     end
   end
 
