@@ -4,7 +4,6 @@ SLACK_API_TOKEN: ""
 ## All commands must be accessible before they can be enabled
 
 # Set these values for LDAP lookup support. Switch _ENABLED to true.
-LDAP_ACCESSIBLE: false
 LDAP_HOST: ""
 LDAP_PORT: ""
 LDAP_BASE_DN: ""
@@ -12,44 +11,12 @@ LDAP_BASE_PW: ""
 LDAP_SEARCH_DN: ""
 
 # Set these values for Roles Management support. Switch _ENABLED to true.
-ROLES_ACCESSIBLE: false
 ROLES_URL: ""
 ROLES_USERNAME: ""
 ROLES_TOKEN: ""
 
-# Enable piping to the UNIX 'host' command (with validation)
-HOST_ACCESSIBLE: false
-
-# An Easter Egg command. Prints the number of minutes of "productivity" left
-# until 5:00pm.
-VISIONEERS_ACCESSIBLE: false
-
-# If true, requires separate github.yml file
-GITHUB_ACCESSIBLE: false
-
-# Devboard Data
-DEVBOARD_ACCESSIBLE: false
+# Set these values for Devboard lookup support.
 DEVBOARD_URL: ""
+DEVBOARD_JSON: ""
 DEVBOARD_API_USER: ""
 DEVBOARD_API_SECRET: ""
-
-# Configure which commands are enabled globally
-# Note, it must be set up if you would like to use it
-GLOBAL:
-  LDAP_ENABLED: false
-  ROLES_ENABLED: false
-  VISIONEERS_ENABLED: false
-  GITHUB_ENABLED: false
-  DEVBOARD_ENABLED: true
-
-# Set up channel-specific configurations here
-# The channel names are not equivalent to the human readable channel names presented
-# To add a new channel for local config refer to README
-
-# Here is an example for local configuration on a channel
-# G239PUSQN:
-#   LDAP_ENABLED: false
-#   ROLES_ENABLED: false
-#   VISIONEERS_ENABLED: true
-#   GITHUB_ENABLED: false
-#   DEVBOARD_ENABLED: true
