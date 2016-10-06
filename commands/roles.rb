@@ -3,20 +3,10 @@ module SlackBotCommand
     REGEX = /^roles [\S]+$/i
     COMMAND = "TODO"
     DESCRIPTION = "TODO"
+    ENABLED_CHANNELS = ['GLOBAL', 'D2HPTUNSW']
 
     def roles_client
       @roles_client ||= RolesManagementAPI.login($SETTINGS['ROLES_URL'], $SETTINGS['ROLES_USERNAME'], $SETTINGS['ROLES_TOKEN'])
-    end
-
-    def isEnabledFor(channel)
-      enabledChannels = ['GLOBAL', 'D2HPTUNSW']
-      enabledChannels.each do |enabledChannel|
-        if channel == enabledChannel
-          return true
-        end
-      end
-      
-      return false
     end
 
     def run(loginid)

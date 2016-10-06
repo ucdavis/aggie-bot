@@ -19,11 +19,20 @@ module SlackBotCommand
         # Run the command and
         # return its response message
         # unless it is not enabled
-        commandClass = commandClassReference.new
-        if commandClass.isEnabledFor(messageSource)
-          return commandClass.run(message)
+        if commandClass.isEnabledFor(messageSource, commandClassReference::ENABLED_CHANNELS)
+          return commandClassReference.new.run(message)
         end
       end
     end
   end # def SlackBotCommand.run
+
+  def isEnabledFor(channel, enabledChannels)
+    enabledChannels.each do |enabledChannel|
+      if channel == enabledChannel
+        return true
+      end
+    end
+
+    return false
+  end # def isEnabledFor
 end

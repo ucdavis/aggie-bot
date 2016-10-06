@@ -3,21 +3,11 @@ module SlackBotCommand
     REGEX = /([\w]+)\/([\d]+)/ # look for characters followed by / followed by numbers, e.g. dw/123
     COMMAND = "{characters}/{numbers}"
     DESCRIPTION = "TODO"
+    ENABLED_CHANNELS = ['GLOBAL', 'D2HPTUNSW']
 
     # is_number? credit: http://stackoverflow.com/questions/5661466/test-if-string-is-a-number-in-ruby-on-rails
     def is_number?(string)
       true if Float(string) rescue false
-    end
-
-    def isEnabledFor(channel)
-      enabledChannels = ['GLOBAL', 'D2HPTUNSW']
-      enabledChannels.each do |enabledChannel|
-        if channel == enabledChannel
-          return true
-        end
-      end
-
-      return false
     end
 
     def run(message)

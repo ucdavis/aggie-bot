@@ -3,6 +3,7 @@ module SlackBotCommand
     REGEX = /^ldap/
     COMMAND = "ldap TODO"
     DESCRIPTION = "TODO"
+    ENABLED_CHANNELS = ['GLOBAL', 'D2HPTUNSW']
 
     LDAP_MAX_RESULTS = 8
 
@@ -34,17 +35,6 @@ module SlackBotCommand
       end
 
       return string
-    end
-
-    def isEnabledFor(channel)
-      enabledChannels = ['GLOBAL', 'D2HPTUNSW']
-      enabledChannels.each do |enabledChannel|
-        if channel == enabledChannel
-          return true
-        end
-      end
-
-      return false
     end
 
     def run(message)
