@@ -7,7 +7,7 @@ module SlackBotCommand
     REGEX = /^!assignments/
     COMMAND = "!assignments"
     DESCRIPTION = "TODO"
-    ENABLED_CHANNELS = ['GLOBAL', 'D2HPTUNSW']
+    ENABLED_CHANNELS = ['ALL']
 
     # Get data from Devboard
     def run(message)

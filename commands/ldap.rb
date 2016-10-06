@@ -3,7 +3,7 @@ module SlackBotCommand
     REGEX = /^ldap/
     COMMAND = "ldap TODO"
     DESCRIPTION = "TODO"
-    ENABLED_CHANNELS = ['GLOBAL', 'D2HPTUNSW']
+    ENABLED_CHANNELS = ['ALL']
 
     LDAP_MAX_RESULTS = 8
 

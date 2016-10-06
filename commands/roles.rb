@@ -3,7 +3,7 @@ module SlackBotCommand
     REGEX = /^roles [\S]+$/i
     COMMAND = "TODO"
     DESCRIPTION = "TODO"
-    ENABLED_CHANNELS = ['GLOBAL', 'D2HPTUNSW']
+    ENABLED_CHANNELS = ['ALL', 'D2HPTUNSW']
 
     def roles_client
       @roles_client ||= RolesManagementAPI.login($SETTINGS['ROLES_URL'], $SETTINGS['ROLES_USERNAME'], $SETTINGS['ROLES_TOKEN'])
