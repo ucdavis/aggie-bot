@@ -9,15 +9,17 @@ module SlackBotCommand
   # Runs the proper command based on the message
   # It should return a string to output if a command is found
   def SlackBotCommand.run(message)
-    SlackBotCommand.constants.each |command| do
+    # Match the message to the first compatible command
+    # then return the command's response
+    SlackBotCommand.constants.each do |command|
       # Get a reference of the command class
       commandClassReference = SlackBotCommand.const_get(command)
 
       # Check if the assigned REGEX matches the message passed
       if (commandClassReference::REGEX.match(message))
-        # Run the command
-        commandClassReference.new.run(message)
+        # Run the command and return its response message
+        return commandClassReference.new.run(message)
       end
     end
-  end
+  end # def SlackBotCommand.run
 end

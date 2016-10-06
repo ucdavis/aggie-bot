@@ -59,8 +59,8 @@ Daemons.run_proc('dss-chatbot.rb') do
     currentChannel = $SETTINGS[data['channel']] ? data['channel'] : 'GLOBAL'
 
     # Parse the received message for valid Chat Bot commands
-    case data['text']
-      client.message channel: data['channel'], text: SlackBotCommand.run(data['text']))
+    if data['text']
+      client.message channel: data['channel'], text: SlackBotCommand.run(data['text'])
     end
   end
 
