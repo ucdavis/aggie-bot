@@ -3,7 +3,7 @@ module SlackBotCommand
     REGEX = /^ldap/
     COMMAND = "ldap TODO"
     DESCRIPTION = "TODO"
-    
+
     LDAP_MAX_RESULTS = 8
 
     # LDAP escape code credit: ruby-net-ldap (https://github.com/ruby-ldap/ruby-net-ldap).
@@ -34,6 +34,17 @@ module SlackBotCommand
       end
 
       return string
+    end
+
+    def isEnabledFor(channel)
+      enabledChannels = ['GLOBAL', 'D2HPTUNSW']
+      enabledChannels.each do |enabledChannel|
+        if channel == enabledChannel
+          return true
+        end
+      end
+
+      return false
     end
 
     def run(message)

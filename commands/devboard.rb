@@ -7,9 +7,20 @@ module SlackBotCommand
     REGEX = /^!assignments/
     COMMAND = "!assignments"
     DESCRIPTION = "TODO"
-    
+
+    def isEnabledFor(channel)
+      enabledChannels = ['GLOBAL', 'D2HPTUNSW']
+      enabledChannels.each do |enabledChannel|
+        if channel == enabledChannel
+          return true
+        end
+      end
+
+      return false
+    end
+
     # Get data from Devboard
-    def run (message)
+    def run(message)
       uri =  URI.parse($SETTINGS["DEVBOARD_URL"] + "/overview.json");
 
       # Connect to DevBoard

@@ -8,6 +8,17 @@ module SlackBotCommand
       @roles_client ||= RolesManagementAPI.login($SETTINGS['ROLES_URL'], $SETTINGS['ROLES_USERNAME'], $SETTINGS['ROLES_TOKEN'])
     end
 
+    def isEnabledFor(channel)
+      enabledChannels = ['GLOBAL', 'D2HPTUNSW']
+      enabledChannels.each do |enabledChannel|
+        if channel == enabledChannel
+          return true
+        end
+      end
+      
+      return false
+    end
+
     def run(loginid)
       if roles_client.connected?
         p = roles_client.find_person_by_loginid(loginid)

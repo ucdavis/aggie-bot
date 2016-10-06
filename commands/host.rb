@@ -3,7 +3,7 @@ module SlackBotCommand
     REGEX = "/^host/"
     COMMAND = "host TODO"
     DESCRIPTION = "TODO"
-    
+
     # Returns true if 'string' is an IP address or hostname, e.g. 'www.ucdavis.edu' or '192.168.1.1'
     def valid_ip_or_hostname(string)
       if string
@@ -14,6 +14,17 @@ module SlackBotCommand
         # Hostname reg ex
         host_match = /^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$/.match(string)
         return true if host_match
+      end
+
+      return false
+    end
+
+    def isEnabledFor(channel)
+      enabledChannels = ['GLOBAL', 'D2HPTUNSW']
+      enabledChannels.each do |enabledChannel|
+        if channel == enabledChannel
+          return true
+        end
       end
 
       return false
