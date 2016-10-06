@@ -26,7 +26,7 @@ module SlackBotCommand
       query = message[5..-1] # Strip away the beginning "host "
 
       unless valid_ip_or_hostname(query)
-        @logger.warn "Invalid IP or hostname for 'host' command: '#{query}'"
+        $logger.warn "Invalid IP or hostname for 'host' command: '#{query}'"
         return "Query does not appear to be an IP address nor hostname."
       end
 
@@ -38,16 +38,16 @@ module SlackBotCommand
 
       if $?.exitstatus != 0
         # Error
-        @logger.warn "'host' command did not exit cleanly, status: #{$?.exitstatus}. Output:"
-        @logger.warn ret
-        @logger.warn "End of output."
+        $logger.warn "'host' command did not exit cleanly, status: #{$?.exitstatus}. Output:"
+        $logger.warn ret
+        $logger.warn "End of output."
         return "Error running 'host' command. Exit status: #{$?.exitstatus}"
       else
         # Success
         if ret and ret.length > 0
           return "```" + ret + "```"
         else
-          @logger.warn "'host' exited cleanly but produced no output."
+          $logger.warn "'host' exited cleanly but produced no output."
           return "'host' exited cleanly but produced no output."
         end
       end
