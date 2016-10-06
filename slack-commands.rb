@@ -28,7 +28,7 @@ module SlackBotCommand
 
   def isEnabledFor(channel, enabledChannels)
     enabledChannels.each do |enabledChannel|
-      if channel == enabledChannel
+      if (enabledChannel == "ALL") || (channel == enabledChannel)
         return true
       end
     end
