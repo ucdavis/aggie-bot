@@ -1,8 +1,9 @@
 module SlackBotCommand
   class Help
+    TITLE = "help"
     REGEX = /^!help/
     COMMAND = '!help [command]'
-    DESCRIPTION = "Lists all commands available on the channel. !help <command> for more details of a specific command"
+    DESCRIPTION = "Lists all commands available on the channel. !help <title> for more details of a specific command"
     ENABLED_CHANNELS = ['ALL']
 
     def run(message)
@@ -29,7 +30,7 @@ module SlackBotCommand
       end
 
 
-      return response.empty? ? "No such command" : response 
+      return response.empty? ? "No such command" : response
     end # def run
   end # class Help
 end
