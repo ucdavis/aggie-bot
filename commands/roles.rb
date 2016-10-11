@@ -1,5 +1,6 @@
 module SlackBotCommand
   class Roles
+    TITLE = "Roles"
     REGEX = /^roles [\S]+$/i
     COMMAND = "roles <user>"
     DESCRIPTION = "Checks Roles Management for the roles of a user and outputs it"

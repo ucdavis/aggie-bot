@@ -1,5 +1,6 @@
 module SlackBotCommand
   class Visioneers
+    TITLE = "Visioneers"
     REGEX = /^visioneers/
     COMMAND = "visioneers"
     DESCRIPTION = "Outputs the time left for productivity in minutes"

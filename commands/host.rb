@@ -1,5 +1,6 @@
 module SlackBotCommand
   class Host
+    TITLE = "Host"
     REGEX = "/^host/"
     COMMAND = "host "
     DESCRIPTION = "< No Description >"

@@ -4,6 +4,7 @@ require 'net/https'
 
 module SlackBotCommand
   class Devboard
+    TITLE = "Devboard"
     REGEX = /^!assignments/
     COMMAND = "!assignments"
     DESCRIPTION = "Outputs the tasks assigned to developers from Devboard"

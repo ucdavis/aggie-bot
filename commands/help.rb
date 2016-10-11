@@ -1,6 +1,6 @@
 module SlackBotCommand
   class Help
-    TITLE = "help"
+    TITLE = "Help"
     REGEX = /^!help/
     COMMAND = '!help [command]'
     DESCRIPTION = "Lists all commands available on the channel. !help <title> for more details of a specific command"
