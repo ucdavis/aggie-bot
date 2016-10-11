@@ -1,7 +1,7 @@
 module SlackBotCommand
   class Host
     TITLE = "Host"
-    REGEX = "/^host/"
+    REGEX = /^host/
     COMMAND = "host "
     DESCRIPTION = "< No Description >"
     ENABLED_CHANNELS = ['ALL']
