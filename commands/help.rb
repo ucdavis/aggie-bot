@@ -32,7 +32,7 @@ module SlackBotCommand
         end
       end
 
-      response = specificCommand ? "" : response + "\n You can post `!help <title>` for more information on the command. E.g. `!help devboard`"
+      response = specificCommand ? response : response + "\n You can post `!help <title>` for more information on the command. E.g. `!help devboard`"
       return response.empty? ? "No such command" : response
     end # def run
   end # class Help
