@@ -1,8 +1,8 @@
 module SlackBotCommand
   class GitHub
     REGEX = /([\w]+)\/([\d]+)/ # look for characters followed by / followed by numbers, e.g. dw/123
-    COMMAND = "{characters}/{numbers}"
-    DESCRIPTION = "TODO"
+    COMMAND = "{repository}/{issue_number}"
+    DESCRIPTION = "Outputs the issue from github"
     ENABLED_CHANNELS = []
 
     @GITHUB_SETTINGS = nil

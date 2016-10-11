@@ -6,7 +6,7 @@ module SlackBotCommand
   class Devboard
     REGEX = /^!assignments/
     COMMAND = "!assignments"
-    DESCRIPTION = "TODO"
+    DESCRIPTION = "Outputs the tasks assigned to developers from Devboard"
     ENABLED_CHANNELS = ['ALL']
 
     # Get data from Devboard

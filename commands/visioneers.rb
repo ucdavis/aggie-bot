@@ -2,7 +2,7 @@ module SlackBotCommand
   class Visioneers
     REGEX = /^visioneers/
     COMMAND = "visioneers"
-    DESCRIPTION = "TODO"
+    DESCRIPTION = "Outputs the time left for productivity in minutes"
     ENABLED_CHANNELS = ['D2HPTUNSW']
 
     def run(message)

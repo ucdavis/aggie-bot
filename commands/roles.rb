@@ -1,8 +1,8 @@
 module SlackBotCommand
   class Roles
     REGEX = /^roles [\S]+$/i
-    COMMAND = "TODO"
-    DESCRIPTION = "TODO"
+    COMMAND = "roles "
+    DESCRIPTION = "< No Description >"
     ENABLED_CHANNELS = ['ALL', 'D2HPTUNSW']
 
     def roles_client

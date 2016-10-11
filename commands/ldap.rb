@@ -1,8 +1,8 @@
 module SlackBotCommand
   class Ldap
     REGEX = /^ldap/
-    COMMAND = "ldap TODO"
-    DESCRIPTION = "TODO"
+    COMMAND = "ldap"
+    DESCRIPTION = "< No Description >"
     ENABLED_CHANNELS = ['ALL']
 
     LDAP_MAX_RESULTS = 8
