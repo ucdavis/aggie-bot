@@ -28,7 +28,8 @@ module SlackBotCommand
         end
       end
 
-      return response
+
+      return response.empty? ? "No such command" : response 
     end # def run
   end # class Help
 end
