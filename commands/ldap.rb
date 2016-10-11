@@ -1,6 +1,6 @@
 module SlackBotCommand
   class Ldap
-    Title = "LDAP"
+    TITLE = "LDAP"
     REGEX = /^ldap/
     COMMAND = "ldap"
     DESCRIPTION = "< No Description >"
