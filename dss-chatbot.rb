@@ -11,7 +11,7 @@ require 'logger'
 require 'yaml'
 require 'cgi'
 require 'slack-ruby-client'
-require './chat_commands'
+load './chat_commands.rb'
 
 # Store the current working directory as Daemons.run_proc() will change it
 $cwd = Dir.getwd
