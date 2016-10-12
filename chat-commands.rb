@@ -16,6 +16,8 @@ module ChatBotCommand
 
   # Runs the proper command based on the message
   # It should return a string to output if a command is found
+  # @param message - The message sent on slackbot e.g. !help
+  # @param messageSource - The channel where the message was sent e.g. dss-it-appdev
   def ChatBotCommand.run(message, messageSource)
     # Set message source
     @@messageSource = messageSource
