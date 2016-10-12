@@ -12,24 +12,24 @@ module ChatBotCommand
       ChatBotCommand.constants.each do |command|
         # Get a reference of the command class
         commandClassReference = ChatBotCommand.const_get(command)
-        commandClassReference::ENABLED_CHANNELS.each do |channel|
-          if channel == "ALL" || channel == ChatBotCommand.getSource
-            if specificCommand
-              # Define a single command
-              if commandClassReference::TITLE.downcase == specificCommand[2].downcase
-                response += "*" + commandClassReference::TITLE + "*\n"
-                response += "`" + commandClassReference::COMMAND + "`\n"
-                response += ">" + commandClassReference::DESCRIPTION + "\n"
-              end
-            else
-              # List every command
-              response += ">"
-              response += "*" + commandClassReference::TITLE + "*: `"
-              response += commandClassReference::COMMAND + "`\n"
-            end
+
+        # If specificCommand is not nil and the command is enabled for the channel
+        # then display the command with its Description
+        # otherwise, give a list of all available commands for the channel
+        if specificCommand && ChatBotCommand.is_enabled_for(ChatBotCommand.getSource, commandClassReference::TITLE)
+          # Define a single command
+          if commandClassReference::TITLE.downcase == specificCommand[2].downcase
+            response += "*" + commandClassReference::TITLE + "*\n"
+            response += "`" + commandClassReference::COMMAND + "`\n"
+            response += ">" + commandClassReference::DESCRIPTION + "\n"
           end
+        elsif ChatBotCommand.is_enabled_for(ChatBotCommand.getSource, commandClassReference::TITLE)
+          # List every command
+          response += ">"
+          response += "*" + commandClassReference::TITLE + "*: `"
+          response += commandClassReference::COMMAND + "`\n"
         end
-      end
+      end # ChatBotCommand.constants loop
 
       response = specificCommand ? response : response + "\n You can post `!help <title>` for more information on the command. E.g. `!help devboard`"
       return response.empty? ? "No such command" : response
