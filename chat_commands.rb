@@ -31,14 +31,14 @@ module ChatBotCommand
         # Run the command and
         # return its response message
         # unless it is not enabled
-        if isEnabledFor(messageSource, commandClassReference::ENABLED_CHANNELS)
+        if is_enabled_for(messageSource, commandClassReference::ENABLED_CHANNELS)
           return commandClassReference.new.run(message)
         end
       end
     end
   end # def ChatBotCommand.run
 
-  def ChatBotCommand.isEnabledFor(channel, enabledChannels)
+  def ChatBotCommand.is_enabled_for(channel, enabledChannels)
     enabledChannels.each do |enabledChannel|
       if (enabledChannel == "ALL") || (channel == enabledChannel)
         return true
@@ -46,5 +46,5 @@ module ChatBotCommand
     end
 
     return false
-  end # def isEnabledFor
+  end # def is_enabled_for
 end
