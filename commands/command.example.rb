@@ -6,7 +6,7 @@
 #     DESCRIPTION = "TODO"       # Description of the command
 #     ENABLED_CHANNELS = ['ALL'] # 'ALL' implies it is available for all channels
 #
-#     def run(message, messageSource)
+#     def run(message)
 #       Code to run if the command is called
 #     end
 #   end
