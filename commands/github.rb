@@ -1,4 +1,4 @@
-module SlackBotCommand
+module ChatBotCommand
   class GitHub
     TITLE = "GitHub"
     REGEX = /([\w]+)\/([\d]+)/ # look for characters followed by / followed by numbers, e.g. dw/123
@@ -16,7 +16,7 @@ module SlackBotCommand
         puts "You need to setup GitHub settings to enable GitHub support."
         return ""
       end
-      
+
       messages = []
       matches = nil
 

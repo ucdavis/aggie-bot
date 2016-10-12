@@ -1,4 +1,4 @@
-module SlackBotCommand
+module ChatBotCommand
   class Host
     TITLE = "Host"
     REGEX = /^host/

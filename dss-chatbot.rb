@@ -11,7 +11,7 @@ require 'logger'
 require 'yaml'
 require 'cgi'
 require 'slack-ruby-client'
-require './slack-commands'
+require './chat-commands'
 
 # Store the current working directory as Daemons.run_proc() will change it
 $cwd = Dir.getwd
@@ -57,7 +57,7 @@ Daemons.run_proc('dss-chatbot.rb') do
 
     # Parse the received message for valid Chat Bot commands
     if data['text']
-      client.message channel: data['channel'], text: SlackBotCommand.run(data['text'], data['channel'])
+      client.message channel: data['channel'], text: ChatBotCommand.run(data['text'], data['channel'])
     end
   end
 

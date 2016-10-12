@@ -1,4 +1,4 @@
-module SlackBotCommand
+module ChatBotCommand
   class Ldap
     TITLE = "LDAP"
     REGEX = /^ldap/

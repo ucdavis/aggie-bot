@@ -1,4 +1,4 @@
-module SlackBotCommand
+module ChatBotCommand
   class Visioneers
     TITLE = "Visioneers"
     REGEX = /^visioneers/

@@ -2,12 +2,12 @@
 $cwd = Dir.getwd
 
 # Module that wraps around each command
-module SlackBotCommand
-  # SlackBotCommand Variables
+module ChatBotCommand
+  # ChatBotCommand Variables
   @@messageSource
 
   # Getter to access from new commands
-  def SlackBotCommand.getSource
+  def ChatBotCommand.getSource
     return @@messageSource
   end
 
@@ -16,14 +16,14 @@ module SlackBotCommand
 
   # Runs the proper command based on the message
   # It should return a string to output if a command is found
-  def SlackBotCommand.run(message, messageSource)
+  def ChatBotCommand.run(message, messageSource)
     # Set message source
     @@messageSource = messageSource
-    
+
     # Match the message to the first compatible command
-    SlackBotCommand.constants.each do |command|
+    ChatBotCommand.constants.each do |command|
       # Get a reference of the command class
-      commandClassReference = SlackBotCommand.const_get(command)
+      commandClassReference = ChatBotCommand.const_get(command)
 
       # Check if the assigned REGEX matches the message passed
       if (commandClassReference::REGEX.match(message))
@@ -35,9 +35,9 @@ module SlackBotCommand
         end
       end
     end
-  end # def SlackBotCommand.run
+  end # def ChatBotCommand.run
 
-  def SlackBotCommand.isEnabledFor(channel, enabledChannels)
+  def ChatBotCommand.isEnabledFor(channel, enabledChannels)
     enabledChannels.each do |enabledChannel|
       if (enabledChannel == "ALL") || (channel == enabledChannel)
         return true

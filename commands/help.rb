@@ -1,4 +1,4 @@
-module SlackBotCommand
+module ChatBotCommand
   class Help
     TITLE = "Help"
     REGEX = /^!help/
@@ -10,11 +10,11 @@ module SlackBotCommand
       specificCommand = /(^!help)\s+([^\s]+)/.match(message)
       response = specificCommand ? "" : "Here is a list of available commands in the format `<title>: <command>`:\n"
       # Match the message to the first compatible command
-      SlackBotCommand.constants.each do |command|
+      ChatBotCommand.constants.each do |command|
         # Get a reference of the command class
-        commandClassReference = SlackBotCommand.const_get(command)
+        commandClassReference = ChatBotCommand.const_get(command)
         commandClassReference::ENABLED_CHANNELS.each do |channel|
-          if channel == "ALL" || channel == SlackBotCommand.getSource
+          if channel == "ALL" || channel == ChatBotCommand.getSource
             if specificCommand
               # Define a single command
               if commandClassReference::TITLE.downcase == specificCommand[2].downcase

@@ -1,4 +1,4 @@
-# module SlackBotCommand
+# module ChatBotCommand
 #   class CommandName
 #     TITLE = "Visioneer"        # Title of the command
 #     REGEX = /^visioneers/      # REGEX the command needs to look for

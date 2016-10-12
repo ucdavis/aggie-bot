@@ -1,4 +1,4 @@
-module SlackBotCommand
+module ChatBotCommand
   class Roles
     TITLE = "Roles"
     REGEX = /^roles [\S]+$/i

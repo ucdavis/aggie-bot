@@ -2,7 +2,7 @@ require 'json'
 require 'net/http'
 require 'net/https'
 
-module SlackBotCommand
+module ChatBotCommand
   class Devboard
     TITLE = "Devboard"
     REGEX = /^!assignments/
