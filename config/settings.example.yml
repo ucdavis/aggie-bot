@@ -1,7 +1,12 @@
 # This value must be set.
 SLACK_API_TOKEN: ""
 
-## All commands must be accessible before they can be enabled
+# Set these values for GitHub support.
+GITHUB_TOKEN: ""
+
+GITHUB_PROJECTS:
+  - tag1: "gh_org/gh_project_name"
+  - tag2: "gh_org/gh_project_name"
 
 # Set these values for LDAP lookup support. Switch _ENABLED to true.
 LDAP_HOST: ""
