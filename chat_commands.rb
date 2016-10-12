@@ -8,7 +8,7 @@ module ChatBotCommand
     return @@messageSource
   end
 
-  def ChatBotCommand.initialize(cwd)
+  def ChatBotCommand.initializeCommands(cwd)
     # Load all commands
     Dir[cwd + "/commands/*.rb"].each {|file| require file }
   end

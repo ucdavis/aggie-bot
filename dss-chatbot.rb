@@ -35,7 +35,7 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   # Set up chat commands plugin
-  ChatBotCommand.initialize($cwd)
+  ChatBotCommand.initializeCommands($cwd)
 
   # Set up Slack connection
   Slack.configure do |config|
