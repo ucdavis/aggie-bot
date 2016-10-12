@@ -1,6 +1,3 @@
-# Grab cwd because daemon changes it
-$cwd = Dir.getwd
-
 # Module that wraps around each command
 module ChatBotCommand
   # ChatBotCommand Variables
@@ -11,8 +8,10 @@ module ChatBotCommand
     return @@messageSource
   end
 
-  # Load all commands
-  Dir[$cwd + "/commands/*.rb"].each {|file| require file }
+  def ChatBotCommand.initialize(cwd)
+    # Load all commands
+    Dir[cwd + "/commands/*.rb"].each {|file| require file }
+  end
 
   # Runs the proper command based on the message
   # It should return a string to output if a command is found
