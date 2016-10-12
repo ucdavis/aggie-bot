@@ -8,7 +8,6 @@ module ChatBotCommand
     REGEX = /^!assignments/
     COMMAND = "!assignments"
     DESCRIPTION = "Outputs the tasks assigned to developers from Devboard"
-    ENABLED_CHANNELS = ['ALL']
 
     # Get data from Devboard
     def run(message)

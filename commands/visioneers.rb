@@ -4,7 +4,6 @@ module ChatBotCommand
     REGEX = /^visioneers/
     COMMAND = "visioneers"
     DESCRIPTION = "Outputs the time left for productivity in minutes"
-    ENABLED_CHANNELS = ['D2HPTUNSW']
 
     def run(message)
       if(Time.now.hour < 17)

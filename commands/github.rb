@@ -4,7 +4,6 @@ module ChatBotCommand
     REGEX = /([\w]+)\/([\d]+)/ # look for characters followed by / followed by numbers, e.g. dw/123
     COMMAND = "{repository}/{issue_number}"
     DESCRIPTION = "Outputs the issue from github"
-    ENABLED_CHANNELS = ['D2HPTUNSW']
 
     # is_number? credit: http://stackoverflow.com/questions/5661466/test-if-string-is-a-number-in-ruby-on-rails
     def is_number?(string)

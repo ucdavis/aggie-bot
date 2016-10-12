@@ -4,7 +4,6 @@ module ChatBotCommand
     REGEX = /^!help/
     COMMAND = '!help [command]'
     DESCRIPTION = "Lists all commands available on the channel. !help <title> for more details of a specific command"
-    ENABLED_CHANNELS = ['ALL']
 
     def run(message)
       specificCommand = /(^!help)\s+([^\s]+)/.match(message)

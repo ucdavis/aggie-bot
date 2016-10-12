@@ -4,7 +4,6 @@ module ChatBotCommand
     REGEX = /^roles [\S]+$/i
     COMMAND = "roles <user>"
     DESCRIPTION = "Checks Roles Management for the roles of a user and outputs it"
-    ENABLED_CHANNELS = ['D2HPTUNSW']
 
     def roles_client
       @roles_client ||= RolesManagementAPI.login($SETTINGS['ROLES_URL'], $SETTINGS['ROLES_USERNAME'], $SETTINGS['ROLES_TOKEN'])

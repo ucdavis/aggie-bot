@@ -4,7 +4,6 @@ module ChatBotCommand
     REGEX = /^ldap/
     COMMAND = "ldap <individual>"
     DESCRIPTION = "Searches campus LDAP for information about a given individual."
-    ENABLED_CHANNELS = ['ALL']
 
     LDAP_MAX_RESULTS = 8
 

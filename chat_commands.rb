@@ -31,20 +31,27 @@ module ChatBotCommand
         # Run the command and
         # return its response message
         # unless it is not enabled
-        if is_enabled_for(messageSource, commandClassReference::ENABLED_CHANNELS)
+        if is_enabled_for(messageSource, commandClassReference::TITLE)
           return commandClassReference.new.run(message)
         end
       end
     end
   end # def ChatBotCommand.run
 
-  def ChatBotCommand.is_enabled_for(channel, enabledChannels)
-    enabledChannels.each do |enabledChannel|
-      if (enabledChannel == "ALL") || (channel == enabledChannel)
-        return true
-      end
+  # Check if a command is enabled for the channel
+  # @param channel - Where the message was posted
+  # @param commandTitle - Title of the command
+  def ChatBotCommand.is_enabled_for(channel, commandTitle)
+    if $SETTINGS[channel] == nil
+      channel = "GLOBAL"
     end
 
-    return false
+    # If the command is not specified on the channel,
+    # then check the global settings for the command
+    if $SETTINGS[channel][commandTitle] == nil
+      return $SETTINGS["GLOBAL"][commandTitle]
+    else
+      return $SETTINGS[channel][commandTitle]
+    end
   end # def is_enabled_for
 end

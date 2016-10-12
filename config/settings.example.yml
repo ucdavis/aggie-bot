@@ -25,3 +25,13 @@ DEVBOARD_URL: ""
 DEVBOARD_JSON: ""
 DEVBOARD_API_USER: ""
 DEVBOARD_API_SECRET: ""
+
+# Define where a command is enabled here
+GLOBAL:
+  Help: true
+  Visioneers: true
+  LDAP: true
+  Host: true
+  Roles: true
+  Devboard: true
+  GitHub: true
