@@ -73,6 +73,7 @@ module ChatBotCommand
           @users[userFullName] = userEmail
         end
       else
+        $logger.error "Could not connect to Slack API due to #{response.code}"
         return "Could not connect to Slack API due to #{response.code}"
       end
     end # def generate_user_array
