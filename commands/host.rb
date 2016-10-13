@@ -3,7 +3,7 @@ module ChatBotCommand
     TITLE = "Host"
     REGEX = /^host/
     COMMAND = "host "
-    DESCRIPTION = "< No Description >"
+    DESCRIPTION = "Runs an equivalent of the Unix 'host' command."
 
     # Returns true if 'string' is an IP address or hostname, e.g. 'www.ucdavis.edu' or '192.168.1.1'
     def valid_ip_or_hostname(string)
