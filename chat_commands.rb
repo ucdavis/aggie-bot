@@ -53,5 +53,5 @@ module ChatBotCommand
     else
       return $SETTINGS[channel][commandTitle]
     end
-  end # def is_enabled_for
+  end
 end
