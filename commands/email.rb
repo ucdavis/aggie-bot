@@ -7,14 +7,11 @@ module ChatBotCommand
     COMMAND = "!email @user_name"
     DESCRIPTION = "Output the email address of the user"
 
-    # We use a class variable to avoid generating it everytime the command is called
-    @@users = Hash.new
+    @users = Hash.new
 
     def run(message)
-      # When used for the first time, generate the array of users
-      if @@users.size == 0
-        generate_user_array()
-      end
+      # Generate a hash for querying
+      generate_users_hash()
 
       queriedUsers = []
       case message
@@ -39,19 +36,20 @@ module ChatBotCommand
         user.strip!
 
         # get possible users
-        possibleUsers = @@users.keys.grep(/#{user}/)
+        possibleUsers = @users.keys.grep(/#{user}/)
         queriedUsers.push(*possibleUsers)
       end
 
       response = ""
       queriedUsers.each do |user|
-        response += ">" + user + ": " +  @@users[user] + "\n"
+        response += ">" + user + ": " +  @users[user] + "\n"
       end
 
       return response.empty? ? "User does not exist" : response
     end # def run
 
-    def generate_user_array
+    def generate_users_hash
+      @users = Hash.new
       # Get a list of user data from slack api
       uri = URI.parse("https://slack.com/api/users.list")
       args = {token: $SETTINGS["SLACK_API_TOKEN"]}
@@ -70,9 +68,9 @@ module ChatBotCommand
           userFullName = user["real_name"]
           userEmail = user["profile"]["email"]
 
-          @@users[userId] = userEmail
-          @@users[username] = userEmail
-          @@users[userFullName] = userEmail
+          @users[userId] = userEmail
+          @users[username] = userEmail
+          @users[userFullName] = userEmail
         end
       else
         return "Could not connect to Slack API due to #{response.code}"
