@@ -20,8 +20,7 @@ module ChatBotCommand
         user = /^!email\s+(<\S+>)\s*$/.match(message)[1]
 
         # we only need SOMEID
-        endIndex = user.index(">")
-        user = user[2...endIndex]
+        user = user[2...user.index(">")]
         queriedUsers.push(user)
       when /(\S+)/ # query by "msdiez" / "Mark Diez"
         # shift to remove !email
