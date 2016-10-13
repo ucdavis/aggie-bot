@@ -16,6 +16,7 @@ module ChatBotCommand
         generate_user_array()
       end
 
+      queriedUsers = []
       case message
       when /^!email\s+(<\S+>)\s*$/ # query by @user
         # at this point, user is "<@SOMEID>"
@@ -24,6 +25,7 @@ module ChatBotCommand
         # we only need SOMEID
         endIndex = user.index(">")
         user = user[2...endIndex]
+        queriedUsers.push(user)
       when /(\S+)/ # query by "msdiez" / "Mark Diez"
         # shift to remove !email
         query = message.scan(/(\S+)/)
@@ -35,10 +37,18 @@ module ChatBotCommand
 
         # remove ending whitespace
         user.strip!
+
+        # get possible users
+        possibleUsers = @@users.keys.grep(/#{user}/)
+        queriedUsers.push(*possibleUsers)
       end
 
-      response = @@users[user] ? @@users[user] : "User does not exist"
-      return response
+      response = ""
+      queriedUsers.each do |user|
+        response += ">" + user + ": " +  @@users[user] + "\n"
+      end
+
+      return response.empty? ? "User does not exist" : response
     end # def run
 
     def generate_user_array
