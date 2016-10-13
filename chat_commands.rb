@@ -1,5 +1,8 @@
 # Module that wraps around each command
 module ChatBotCommand
+
+  # Load all the commands from the commands folder
+  # @param cwd - current working directory of the project
   def ChatBotCommand.initializeCommands(cwd)
     # Load all commands
     Dir[cwd + "/commands/*.rb"].each {|file| require file }
