@@ -6,7 +6,7 @@ module ChatBotCommand
   end
 
   # Runs the proper command based on the message
-  # It should return a string to output if a command is found
+  # Returns a string to output if a command is found, else nil
   # @param message - The message sent on slackbot e.g. !help
   # @param channel - The channel where the message was sent e.g. dss-it-appdev
   def ChatBotCommand.run(message, channel)
@@ -21,7 +21,10 @@ module ChatBotCommand
         # return its response message
         # unless it is not enabled
         if is_enabled_for(channel, commandClassReference::TITLE)
-          return commandClassReference.new.run(message, channel)
+          response = commandClassReference.new.run(message, channel)
+          if response.is_a? (String)
+            return response
+          end
         end
       end
     end
