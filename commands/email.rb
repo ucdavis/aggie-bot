@@ -4,7 +4,7 @@ module ChatBotCommand
   class Email
     TITLE = "Email"
     REGEX = /^!email\s+/
-    COMMAND = "!email @user_name"
+    COMMAND = "!email @user_name or !email username or !email name"
     DESCRIPTION = "Output the email address of the user"
 
     @users = Hash.new
