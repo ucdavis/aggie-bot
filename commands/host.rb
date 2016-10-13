@@ -22,7 +22,7 @@ module ChatBotCommand
 
     # Runs the UNIX 'host' command with the given query.
     # Expects 'message' to begin with 'host ' + the given query, e.g. 'host www.ucdavis.edu'
-    def run(message)
+    def run(message, channel)
       query = message[5..-1] # Strip away the beginning "host "
 
       unless valid_ip_or_hostname(query)

@@ -5,7 +5,7 @@ module ChatBotCommand
     COMMAND = '!help [command]'
     DESCRIPTION = "Lists all commands available on the channel. !help <title> for more details of a specific command"
 
-    def run(message)
+    def run(message, run)
       specificCommand = /(^!help)\s+([^\s]+)/.match(message)
       response = specificCommand ? "" : "Here is a list of available commands in the format `<title>: <command>`:\n"
       # Match the message to the first compatible command
@@ -16,14 +16,14 @@ module ChatBotCommand
         # If specificCommand is not nil and the command is enabled for the channel
         # then display the command with its Description
         # otherwise, give a list of all available commands for the channel
-        if specificCommand && ChatBotCommand.is_enabled_for(ChatBotCommand.getSource, commandClassReference::TITLE)
+        if specificCommand && ChatBotCommand.is_enabled_for(channel, commandClassReference::TITLE)
           # Define a single command
           if commandClassReference::TITLE.downcase == specificCommand[2].downcase
             response += "*" + commandClassReference::TITLE + "*\n"
             response += "`" + commandClassReference::COMMAND + "`\n"
             response += ">" + commandClassReference::DESCRIPTION + "\n"
           end
-        elsif ChatBotCommand.is_enabled_for(ChatBotCommand.getSource, commandClassReference::TITLE)
+        elsif ChatBotCommand.is_enabled_for(channel, commandClassReference::TITLE)
           # List every command
           response += ">"
           response += "*" + commandClassReference::TITLE + "*: `"

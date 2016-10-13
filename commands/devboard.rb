@@ -10,7 +10,7 @@ module ChatBotCommand
     DESCRIPTION = "Outputs the tasks assigned to developers from Devboard"
 
     # Get data from Devboard
-    def run(message)
+    def run(message, channel)
       uri =  URI.parse($SETTINGS["DEVBOARD_URL"] + "/overview.json");
 
       # Connect to DevBoard

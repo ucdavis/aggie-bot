@@ -5,8 +5,8 @@ module ChatBotCommand
     COMMAND = "!channel"     # Command to use
     DESCRIPTION = "Output the channel code for the current channel"       # Description of the command
 
-    def run(message)
-      return ChatBotCommand.getSource
+    def run(message, channel)
+      return channel
     end
   end
 end

@@ -37,7 +37,7 @@ module ChatBotCommand
       return string
     end
 
-    def run(message)
+    def run(message, channel)
       parameters = message[5..-1] # Strip away the beginning "ldap "
 
       # In case we're called with less than five characters in 'message'

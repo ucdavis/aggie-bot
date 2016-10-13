@@ -9,7 +9,7 @@ module ChatBotCommand
 
     @users = Hash.new
 
-    def run(message)
+    def run(message, channel)
       # Generate a hash for querying
       generate_users_hash()
 

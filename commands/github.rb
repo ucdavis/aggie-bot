@@ -10,7 +10,7 @@ module ChatBotCommand
       true if Float(string) rescue false
     end
 
-    def run(message)
+    def run(message, channel)
       unless $SETTINGS["GITHUB_TOKEN"]
         puts "You need to setup GitHub settings to enable GitHub support."
         return ""
