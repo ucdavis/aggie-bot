@@ -28,7 +28,7 @@ DEVBOARD_API_SECRET: ""
 
 # Define where a command is enabled here
 GLOBAL:
-  CurrentChannel: true
+  "Current Channel": true
   Help: true
   Visioneers: true
   LDAP: true
