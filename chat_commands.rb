@@ -26,6 +26,7 @@ module ChatBotCommand
           if response.is_a? (String)
             return response
           else
+            $logger.error(command_class_reference::TITLE + " does not return a String")
             return nil
           end
         end
