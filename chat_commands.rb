@@ -25,6 +25,8 @@ module ChatBotCommand
           response = command_class_reference.get_instance.run(message, channel)
           if response.is_a? (String)
             return response
+          else
+            return nil
           end
         end
       end

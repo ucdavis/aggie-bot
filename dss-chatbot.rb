@@ -60,7 +60,8 @@ Daemons.run_proc('dss-chatbot.rb') do
 
     # Parse the received message for valid Chat Bot commands
     if data['text']
-      client.message channel: data['channel'], text: ChatBotCommand.run(data['text'], data['channel'])
+      response = ChatBotCommand.run(data['text'], data['channel'])
+      client.message(channel: data['channel'], text: response) unless response == nil
     end
   end
 
