@@ -2,10 +2,19 @@ require "net/http"
 
 module ChatBotCommand
   class Iam
-    TITLE = "IAM"        # Title of the command
+    TITLE = "Iam"        # Title of the command
     REGEX = /^!iam/      # REGEX the command needs to look for
-    COMMAND = "!iam <login_id>"     # Command to use
-    DESCRIPTION = "Searches campus IAM for information about a given individual."       # Description of the command
+    COMMAND = "!iam <options> <query>"     # Command to use
+    DESCRIPTION = "Searches campus IAM for information about a given individual."
+                + "```options: \n"
+                + "\tname    - queries by full display name"
+                + "\tfirst   - queries by first name"
+                + "\tlast    - queries by last name"
+                + "\temail   - queries by email"
+                + "\tloginid - queries by kerberos username"
+                + "\tiamid   - queries by iamid"
+                + "```"
+                + "example: `!iam email trex@ucdavis.edu`"
 
     def run(message, channel)
       # Grab the query to run for IAM
@@ -18,9 +27,25 @@ module ChatBotCommand
       return format_data(response)
     end
 
-
+    # Returns the iam id of the query, a string otherwise
+    # @param query - Slack message without !iam
     def get_iam_id query
+      command = query.shift
+      command = command[0].downcase # required since shift returns an array
+      iam_id = -1
 
+      case command
+      when "name"
+      when "first"
+      when "last"
+      when "iamid"
+      when "loginid"
+      when "email"
+      else
+        return command + " is not a valid option. !help iam for more details"
+      end
+
+      return iam_id
     end
 
     def gather_data iam_id
