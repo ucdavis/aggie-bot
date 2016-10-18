@@ -13,7 +13,7 @@ module ChatBotCommand
       # Generate a hash for querying
       generate_users_hash()
 
-      queriedUsers = []
+      queried_users = []
       case message
       when /^!email\s+(<\S+>)\s*$/ # query by @user
         # at this point, user is "<@SOMEID>"
@@ -21,7 +21,7 @@ module ChatBotCommand
 
         # we only need SOMEID
         user = user[2...user.index(">")]
-        queriedUsers.push(user)
+        queried_users.push(user)
       when /(\S+)/ # query by "msdiez" / "Mark Diez"
         # shift to remove !email
         query = message.scan(/(\S+)/)
@@ -35,12 +35,12 @@ module ChatBotCommand
         user.strip!
 
         # get possible users
-        possibleUsers = @users.keys.grep(/#{user}/)
-        queriedUsers.push(*possibleUsers)
+        possible_users = @users.keys.grep(/#{user}/)
+        queried_users.push(*possible_users)
       end
 
       response = ""
-      queriedUsers.each do |user|
+      queried_users.each do |user|
         response += ">" + user + ": " +  @users[user] + "\n"
       end
 
@@ -63,13 +63,13 @@ module ChatBotCommand
         users = result["members"]
         users.each do |user|
           username = user["name"]
-          userId = user["id"]
-          userFullName = user["real_name"]
-          userEmail = user["profile"]["email"]
+          user_id = user["id"]
+          user_full_name = user["real_name"]
+          user_email = user["profile"]["email"]
 
-          @users[userId] = userEmail
-          @users[username] = userEmail
-          @users[userFullName] = userEmail
+          @users[user_id] = user_email
+          @users[username] = user_email
+          @users[user_full_name] = user_email
         end
       else
         $logger.error "Could not connect to Slack API due to #{response.code}"

@@ -5,33 +5,33 @@ module ChatBotCommand
     COMMAND = '!help [command]'
     DESCRIPTION = "Lists all commands available on the channel. !help <title> for more details of a specific command"
 
-    def run(message, run)
-      specificCommand = /(^!help)\s+([^\s]+)/.match(message)
-      response = specificCommand ? "" : "Here is a list of available commands in the format `<title>: <command>`:\n"
+    def run(message, channel)
+      specific_command = /(^!help)\s+([^\s]+)/.match(message)
+      response = specific_command ? "" : "Here is a list of available commands in the format `<title>: <command>`:\n"
       # Match the message to the first compatible command
       ChatBotCommand.constants.each do |command|
         # Get a reference of the command class
-        commandClassReference = ChatBotCommand.const_get(command)
+        command_class_reference = ChatBotCommand.const_get(command)
 
-        # If specificCommand is not nil and the command is enabled for the channel
+        # If specific_command is not nil and the command is enabled for the channel
         # then display the command with its Description
         # otherwise, give a list of all available commands for the channel
-        if specificCommand && ChatBotCommand.is_enabled_for(channel, commandClassReference::TITLE)
+        if specific_command && ChatBotCommand.is_enabled_for(channel, command_class_reference::TITLE)
           # Define a single command
-          if commandClassReference::TITLE.downcase == specificCommand[2].downcase
-            response += "*" + commandClassReference::TITLE + "*\n"
-            response += "`" + commandClassReference::COMMAND + "`\n"
-            response += ">" + commandClassReference::DESCRIPTION + "\n"
+          if command_class_reference::TITLE.downcase == specific_command[2].downcase
+            response += "*" + command_class_reference::TITLE + "*\n"
+            response += "`" + command_class_reference::COMMAND + "`\n"
+            response += ">" + command_class_reference::DESCRIPTION + "\n"
           end
-        elsif ChatBotCommand.is_enabled_for(channel, commandClassReference::TITLE)
+        elsif ChatBotCommand.is_enabled_for(channel, command_class_reference::TITLE)
           # List every command
           response += ">"
-          response += "*" + commandClassReference::TITLE + "*: `"
-          response += commandClassReference::COMMAND + "`\n"
+          response += "*" + command_class_reference::TITLE + "*: `"
+          response += command_class_reference::COMMAND + "`\n"
         end
       end # ChatBotCommand.constants loop
 
-      response = specificCommand ? response : response + "\n You can post `!help <title>` for more information on the command. E.g. `!help devboard`"
+      response = specific_command ? response : response + "\n You can post `!help <title>` for more information on the command. E.g. `!help devboard`"
       return response.empty? ? "No such command" : response
     end # def run
   end # class Help

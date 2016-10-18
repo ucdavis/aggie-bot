@@ -16,15 +16,13 @@ module ChatBotCommand
     # Match the message to the first compatible command
     ChatBotCommand.constants.each do |command|
       # Get a reference of the command class
-      commandClassReference = ChatBotCommand.const_get(command)
+      command_class_reference = ChatBotCommand.const_get(command)
 
       # Check if the assigned REGEX matches the message passed
-      if commandClassReference::REGEX.match(message)
-        # Run the command and
-        # return its response message
-        # unless it is not enabled
-        if is_enabled_for(channel, commandClassReference::TITLE)
-          response = commandClassReference.new.run(message, channel)
+      if command_class_reference::REGEX.match(message)
+        # Run the command and return its response message unless it is not enabled
+        if is_enabled_for(channel, command_class_reference::TITLE)
+          response = command_class_reference.new.run(message, channel)
           if response.is_a? (String)
             return response
           end
@@ -35,16 +33,16 @@ module ChatBotCommand
 
   # Check if a command is enabled for the channel
   # @param channel - Where the message was posted
-  # @param commandTitle - Title of the command
-  def ChatBotCommand.is_enabled_for(channel, commandTitle)
+  # @param command_title - Title of the command
+  def ChatBotCommand.is_enabled_for(channel, command_title)
     channel = "GLOBAL" unless $SETTINGS[channel]
 
     # If the command is not specified on the channel,
     # then check the global settings for the command
-    if $SETTINGS[channel][commandTitle] == nil
-      return $SETTINGS["GLOBAL"][commandTitle]
+    if $SETTINGS[channel][command_title] == nil
+      return $SETTINGS["GLOBAL"][command_title]
     else
-      return $SETTINGS[channel][commandTitle]
+      return $SETTINGS[channel][command_title]
     end
   end
 end
