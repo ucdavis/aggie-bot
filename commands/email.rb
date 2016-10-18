@@ -76,5 +76,12 @@ module ChatBotCommand
         return "Could not connect to Slack API due to #{response.code}"
       end
     end # def generate_user_array
+
+    @@instance = Email.new
+    def self.get_instance
+      return @@instance
+    end
+
+    private_class_method :new
   end # class Email
 end # module ChatBotCommand

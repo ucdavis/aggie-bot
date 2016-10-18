@@ -12,5 +12,12 @@ module ChatBotCommand
         return "There are no minutes of productivity remaining in the day."
       end
     end
+
+    @@instance = Visioneers.new
+    def self.get_instance
+      return @@instance
+    end
+
+    private_class_method :new
   end
 end

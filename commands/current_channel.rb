@@ -8,5 +8,12 @@ module ChatBotCommand
     def run(message, channel)
       return channel
     end
+
+    @@instance = CurrentChannel.new
+    def self.get_instance
+      return @@instance
+    end
+
+    private_class_method :new
   end
 end

@@ -22,5 +22,12 @@ module ChatBotCommand
         return "There was an error communicating with Roles Management."
       end
     end
+
+    @@instance = Roles.new
+    def self.get_instance
+      return @@instance
+    end
+
+    private_class_method :new
   end
 end

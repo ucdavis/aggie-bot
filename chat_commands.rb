@@ -22,7 +22,7 @@ module ChatBotCommand
       if command_class_reference::REGEX.match(message)
         # Run the command and return its response message unless it is not enabled
         if is_enabled_for(channel, command_class_reference::TITLE)
-          response = command_class_reference.new.run(message, channel)
+          response = command_class_reference.get_instance.run(message, channel)
           if response.is_a? (String)
             return response
           end

@@ -13,5 +13,14 @@
 #         return "There are no minutes of productivity remaining in the day."
 #       end
 #     end
+# =>
+#     # Essential to make commands a singleton
+#     @@instance = Visioneers.new
+#     def self.get_instance
+#       return @@instance
+#     end
+#
+#     # Avoids any "accidental" call to new outside of the class
+#     private_class_method :new
 #   end
 # end

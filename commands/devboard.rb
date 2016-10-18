@@ -57,5 +57,11 @@ module ChatBotCommand
       return message
     end
 
+    @@instance = Devboard.new
+    def self.get_instance
+      return @@instance
+    end
+
+    private_class_method :new
   end
 end

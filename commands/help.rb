@@ -34,5 +34,12 @@ module ChatBotCommand
       response = specific_command ? response : response + "\n You can post `!help <title>` for more information on the command. E.g. `!help devboard`"
       return response.empty? ? "No such command" : response
     end # def run
+
+    @@instance = Help.new
+    def self.get_instance
+      return @@instance
+    end
+
+    private_class_method :new
   end # class Help
 end
