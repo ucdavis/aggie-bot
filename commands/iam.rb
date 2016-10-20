@@ -32,7 +32,7 @@ module ChatBotCommand
       # return format_data(response)
     end
 
-    # Returns a string with all the necessary data to output
+    # Returns an hash-map with all the necessary data to output
     # @param iam_id - iam_id of user
     def gather_data iam_id
       # Determine affiliation
@@ -57,6 +57,7 @@ module ChatBotCommand
 
       if affiliations["isStudent"]
         # api/iam/associations/pps/search ? all ?
+        # api/iam/associations/sis/search
         puts "a student"
       end
 
