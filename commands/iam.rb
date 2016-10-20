@@ -21,11 +21,23 @@ module ChatBotCommand
       query = message.scan(/(\S+)/)
       query.shift # gets rid of !iam
 
-      return get_iam_id(query)
-      # iam_id = get_iam_id(query)
-      # response = gather_data(iam_id)
+      iam_id = get_iam_id(query)
+
+      # Return an appropriate message when the person does not exist or an error occured
+      return iam_id unless iam_id.class == Fixnum
+
+      response = gather_data(iam_id)
       #
       # return format_data(response)
+    end
+
+    # Returns a string with all the necessary data to output
+    # @param iam_id - iam_id of user
+    def gather_data iam_id
+      # Determine affiliation
+
+      query = {"iamId" => iam_id}
+
     end
 
     # Returns the iam id of the query, a string otherwise
@@ -38,27 +50,21 @@ module ChatBotCommand
 
       case command
       when "name"
-        puts "Querying fullName #{query}"
         # TODO:  May have to refactor the command to do -first -last else we can't determine it
         iam_id = "Currently unavailable."
       when "first"
-        puts "Querying firstName #{query}"
         api = "api/iam/people/search";
         query = {"dFirstName" => query}
       when "last"
-        puts "Querying lastName #{query}"
         api = "api/iam/people/search";
         query = {"dLastName" => query}
       when "iamid"
-        puts "Querying iamid #{query}"
         return query
       when "loginid"
-        puts "Querying loginid #{query}"
         api = "api/iam/people/prikerbacct/search"
         query = {"userId" => query}
       when "email"
         query = decode_slack(query)
-        puts "Querying email #{query}"
         api = "api/iam/people/contactinfo/search"
         query = {"email" => query}
       else
@@ -69,10 +75,6 @@ module ChatBotCommand
       iam_id = result["responseData"]["results"][0]["iamId"] unless result["responseData"]["results"].empty?
 
       return iam_id
-    end
-
-    def gather_data iam_id
-
     end
 
     def format_data data
