@@ -23,9 +23,10 @@ module ChatBotCommand
 
       iam_id = get_iam_id(query)
 
-      # Return an appropriate message when the person does not exist or an error occured
-      return iam_id unless iam_id.class == Fixnum
+      # Returns early if iam_id is an error message
+      return iam_id unless iam_id.to_i != 0
 
+      puts "Gathering data"
       response = gather_data(iam_id)
       #
       # return format_data(response)
@@ -35,9 +36,38 @@ module ChatBotCommand
     # @param iam_id - iam_id of user
     def gather_data iam_id
       # Determine affiliation
-      api = "api/iam/people/affiliations/" + iam_id
-      affiliations = get_from_api(api, {})
+      api = "api/iam/people/search/"
+      affiliations = get_from_api(api, {"iamId" => iam_id})
+      affiliations = affiliations[0]
 
+      # Get data based on affiliations
+      if affiliations["isEmployee"]
+        # iam/associations/odr/search ?
+        puts "An employee"
+      end
+
+      if affiliations["isHSEmployee"]
+        # api/iam/associations/hs/search
+        puts "an HS employee"
+      end
+
+      if affiliations["isFaculty"]
+        puts "a faculty"
+      end
+
+      if affiliations["isStudent"]
+        # api/iam/associations/pps/search ? all ?
+        puts "a student"
+      end
+
+      if affiliations["isStaff"]
+        # iam/associations/odr/search ?
+        puts "a staff"
+      end
+
+      if affiliations["isExternal"]
+        puts "an external"
+      end
     end
 
     # Returns the iam id of the query, a string otherwise
@@ -61,6 +91,8 @@ module ChatBotCommand
       when "iamid"
         return query
       when "loginid"
+        # TODO: Could also be non-kerberos? HSAD
+        # api/iam/people/prihsadacct/search
         api = "api/iam/people/prikerbacct/search"
         query = {"userId" => query}
       when "email"
@@ -72,7 +104,9 @@ module ChatBotCommand
       end
 
       result = get_from_api(api, query)
-      iam_id = result["responseData"]["results"][0]["iamId"] unless result["responseData"]["results"].empty?
+
+      # get_from_api returns a string message if iamId is not found
+      iam_id = result.class == String ? result : result[0]["iamId"] unless result.empty?
 
       return iam_id
     end
@@ -81,7 +115,7 @@ module ChatBotCommand
 
     end
 
-    # Returns an object containing a response from an api call
+    # Returns an object containing the result from an api call
     # @param api - specific api extension to append
     # @param query - parameters to add in the GET call
     def get_from_api api, query
@@ -96,7 +130,7 @@ module ChatBotCommand
       if response.code == "200"
         data = JSON.parse(response.body)
         if data["responseStatus"] == 0
-          return data
+          return data["responseData"]["results"]
         else
           $logger.warn "IAM is down"
           return "IAM is currently down"
