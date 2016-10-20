@@ -14,17 +14,18 @@ module ChatBotCommand
                 + "\tloginid - queries by kerberos username"
                 + "\tiamid   - queries by iamid"
                 + "```"
-                + "example: `!iam email trex@ucdavis.edu`"
+                + "example: `!iam email user@ucdavis.edu`"
 
     def run(message, channel)
       # Grab the query to run for IAM
       query = message.scan(/(\S+)/)
       query.shift # gets rid of !iam
 
-      iam_id = get_iam_id(query)
-      response = gather_data(iam_id)
-
-      return format_data(response)
+      return get_iam_id(query)
+      # iam_id = get_iam_id(query)
+      # response = gather_data(iam_id)
+      #
+      # return format_data(response)
     end
 
     # Returns the iam id of the query, a string otherwise
@@ -32,18 +33,40 @@ module ChatBotCommand
     def get_iam_id query
       command = query.shift
       command = command[0].downcase # required since shift returns an array
-      iam_id = -1
+      query = query.join(" ")       # Convert query to a string
+      iam_id = "No result found"
 
       case command
       when "name"
+        puts "Querying fullName #{query}"
+        # TODO:  May have to refactor the command to do -first -last else we can't determine it
+        iam_id = "Currently unavailable."
       when "first"
+        puts "Querying firstName #{query}"
+        api = "api/iam/people/search";
+        query = {"dFirstName" => query}
       when "last"
+        puts "Querying lastName #{query}"
+        api = "api/iam/people/search";
+        query = {"dLastName" => query}
       when "iamid"
+        puts "Querying iamid #{query}"
+        return query
       when "loginid"
+        puts "Querying loginid #{query}"
+        api = "api/iam/people/prikerbacct/search"
+        query = {"userId" => query}
       when "email"
+        query = decode_slack(query)
+        puts "Querying email #{query}"
+        api = "api/iam/people/contactinfo/search"
+        query = {"email" => query}
       else
         return command + " is not a valid option. !help iam for more details"
       end
+
+      result = get_from_api(api, query)
+      iam_id = result["responseData"]["results"][0]["iamId"] unless result["responseData"]["results"].empty?
 
       return iam_id
     end
@@ -56,35 +79,39 @@ module ChatBotCommand
 
     end
 
-    def generate_users_hash
-      # @users = Hash.new
-      # # Get a list of user data from slack api
-      # uri = URI.parse("https://slack.com/api/users.list")
-      # args = {token: $SETTINGS["SLACK_API_TOKEN"]}
-      # uri.query = URI.encode_www_form(args)
-      # http = Net::HTTP.new(uri.host, uri.port)
-      # http.use_ssl = true
-      # request = Net::HTTP::Get.new(uri.request_uri)
-      # response = http.request(request)
-      #
-      # if response.code == "200"
-      #   result = JSON.parse(response.body)
-      #   users = result["members"]
-      #   users.each do |user|
-      #     username = user["name"]
-      #     user_id = user["id"]
-      #     user_full_name = user["real_name"]
-      #     user_email = user["profile"]["email"]
-      #
-      #     @users[user_id] = user_email
-      #     @users[username] = user_email
-      #     @users[user_full_name] = user_email
-      #   end
-      # else
-      #   $logger.error "Could not connect to Slack API due to #{response.code}"
-      #   return "Could not connect to Slack API due to #{response.code}"
-      # end
-    end # def generate_user_array
+    def get_from_api api, query
+      uri = URI.parse($SETTINGS["IAM_HOST"] + "/" + api);
+      query["key"] = $SETTINGS["IAM_API_TOKEN"]
+      uri.query = URI.encode_www_form(query)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+      request = Net::HTTP::Get.new(uri.request_uri)
+      response = http.request(request)
+
+      if response.code == "200"
+        data = JSON.parse(response.body)
+        if data["responseStatus"] == 0
+          return data
+        else
+          $logger.warn "IAM is down"
+          return "IAM is currently down"
+        end
+      else
+        $logger.error "Could not connect to Slack API due to #{response.code}"
+        return "Could not connect to Slack API due to #{response.code}"
+      end
+    end
+
+    # Removes any Slack-specific encoding
+    def decode_slack(string)
+      if string
+        # Strip e-mail encoding (sample: "<mailto:somebody@ucdavis.edu|somebody@ucdavis.edu>")
+        mail_match = /mailto:([\S]+)\|/.match(string)
+        string = mail_match[1] if mail_match
+      end
+
+      return string
+    end
 
     # Essential to make commands a singleton
     @@instance = Iam.new
