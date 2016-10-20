@@ -16,6 +16,7 @@ module ChatBotCommand
                 + "```"
                 + "example: `!iam email user@ucdavis.edu`"
 
+    # TODO: Update to show multiple results
     def run(message, channel)
       # Grab the query to run for IAM
       query = message.scan(/(\S+)/)
@@ -39,6 +40,12 @@ module ChatBotCommand
       api = "api/iam/people/search/"
       affiliations = get_from_api(api, {"iamId" => iam_id})
       affiliations = affiliations[0]
+
+      # Get all common information
+      # api/iam/people/search | name, affiliations, id
+      # api/iam/people/contactinfo/search | contact info
+      # api/iam/people/prikerbacct/search | kerberos
+      # api/iam/associations/pps/search? -- check normal students
 
       # Get data based on affiliations
       if affiliations["isEmployee"]
