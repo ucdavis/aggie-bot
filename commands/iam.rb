@@ -35,8 +35,8 @@ module ChatBotCommand
     # @param iam_id - iam_id of user
     def gather_data iam_id
       # Determine affiliation
-
-      query = {"iamId" => iam_id}
+      api = "api/iam/people/affiliations/" + iam_id
+      affiliations = get_from_api(api, {})
 
     end
 
@@ -81,6 +81,9 @@ module ChatBotCommand
 
     end
 
+    # Returns an object containing a response from an api call
+    # @param api - specific api extension to append
+    # @param query - parameters to add in the GET call
     def get_from_api api, query
       uri = URI.parse($SETTINGS["IAM_HOST"] + "/" + api);
       query["key"] = $SETTINGS["IAM_API_TOKEN"]
