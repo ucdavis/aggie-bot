@@ -131,17 +131,21 @@ module ChatBotCommand
       office = "Not Listed"
       office = data["contact_info"]["addrStreet"] unless data["contact_info"].empty? || data["contact_info"]["addrStreet"] == nil
 
-      department = "Not Listed"
-      title = "Not Listed"
+      affiliations = []
+      odr = "*ODR Affiliation* "
       if !data["odr_info"].empty?
-        department = data["odr_info"]["deptDisplayName"] unless data["odr_info"]["deptDisplayName"] == nil
-        title = data["odr_info"]["titleDisplayName"] unless data["odr_info"]["titleDisplayName"] == nil
-      elsif !data["pps_info"].empty?
-        department = data["pps_info"]["deptDisplayName"] + " (" + data["pps_info"]["deptCode"] + ")" unless data["pps_info"]["deptDisplayName"] == nil
-        title = data["pps_info"]["titleDisplayName"] unless data["pps_info"]["titleDisplayName"] == nil
+        odr += data["odr_info"]["deptDisplayName"] unless data["odr_info"]["deptDisplayName"] == nil
+        odr += " (" + data["odr_info"]["titleDisplayName"] + ")" unless data["odr_info"]["titleDisplayName"] == nil
+        affiliations.push odr
       end
 
-      affiliations = []
+      pps = "*PPS Affiliation* "
+      if !data["pps_info"].empty?
+        pps += data["pps_info"]["deptDisplayName"]unless data["pps_info"]["deptDisplayName"] == nil
+        pps += " (" + data["pps_info"]["titleDisplayName"] + ")" unless data["pps_info"]["titleDisplayName"] == nil
+        affiliations.push pps
+      end
+
       if data["basic_info"]["isStaff"]
         staff = "*Staff Affiliation* "
         staff += data["pps_info"]["positionType"].to_s unless data["pps_info"].empty?
@@ -175,8 +179,6 @@ module ChatBotCommand
       response = "*Name* #{name}\n"
       response += "*Login* #{loginid}\n"
       response += "*E-mail* #{email}\n"
-      response += "*Department* #{department}\n"
-      response += "*Title* #{title}\n"
       response += "*Office* #{office}\n"
       response += affiliations
 
