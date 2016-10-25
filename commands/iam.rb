@@ -5,15 +5,15 @@ module ChatBotCommand
     TITLE = "Iam"        # Title of the command
     REGEX = /^!iam/      # REGEX the command needs to look for
     COMMAND = "!iam <options> <query>"     # Command to use
-    DESCRIPTION = "Searches campus IAM for information about a given individual."
-                + "```options: \n"
-                + "\tfirst   - queries by first name"
-                + "\tlast    - queries by last name"
-                + "\temail   - queries by email"
-                + "\tloginid - queries by kerberos username"
-                + "\tiamid   - queries by iamid"
-                + "```"
-                + "example: `!iam email user@ucdavis.edu`"
+    DESCRIPTION = "Searches campus IAM for information about a given individual." +
+                 " \n*<options>* \n" +
+                 ">\tfirst   - queries by first name\n" +
+                 ">\tlast    - queries by last name\n" +
+                 ">\temail   - queries by email\n" +
+                 ">\tloginid - queries by kerberos username\n" +
+                 ">\tiamid   - queries by iamid\n" +
+                 "example: `!iam email user@ucdavis.edu`"
+
 
     def run(message, channel)
       # Grab the query to run for IAM
