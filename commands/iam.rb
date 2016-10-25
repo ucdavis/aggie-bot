@@ -7,7 +7,6 @@ module ChatBotCommand
     COMMAND = "!iam <options> <query>"     # Command to use
     DESCRIPTION = "Searches campus IAM for information about a given individual."
                 + "```options: \n"
-                + "\tname    - queries by full display name"
                 + "\tfirst   - queries by first name"
                 + "\tlast    - queries by last name"
                 + "\temail   - queries by email"
@@ -29,6 +28,8 @@ module ChatBotCommand
 
       puts "Gathering data"
       response = gather_data(iam_id)
+      puts response
+      return "hi"
       #
       # return format_data(response)
     end
@@ -36,46 +37,37 @@ module ChatBotCommand
     # Returns an hash-map with all the necessary data to output
     # @param iam_id - iam_id of user
     def gather_data iam_id
-      # Determine affiliation
-      api = "api/iam/people/search/"
-      affiliations = get_from_api(api, {"iamId" => iam_id})
-      affiliations = affiliations[0]
+      result = {}
 
-      # Get all common information
-      # api/iam/people/search | name, affiliations, id
-      # api/iam/people/contactinfo/search | contact info
-      # api/iam/people/prikerbacct/search | kerberos
-      # api/iam/associations/pps/search? -- check normal students
+      # Get ids, names and affiliations
+      basic_info = get_from_api("api/iam/people/search", {"iamId" => iam_id})
+      result["basic_info"] = basic_info.empty? ? [] : basic_info[0]
 
-      # Get data based on affiliations
-      if affiliations["isEmployee"]
-        # iam/associations/odr/search ?
-        puts "An employee"
-      end
+      # Get email, postaladdress, phone numbers
+      contact_info = get_from_api("api/iam/people/contactinfo/search", {"iamId" => iam_id})
+      result["contact_info"] = contact_info.empty? ? [] : contact_info[0]
 
-      if affiliations["isHSEmployee"]
-        # api/iam/associations/hs/search
-        puts "an HS employee"
-      end
+      # Get kerberos loginid
+      kerberos_info = get_from_api("api/iam/people/prikerbacct/search", {"iamId" => iam_id})
+      result["kerberos_info"] = kerberos_info.empty? ? [] : kerberos_info[0]
 
-      if affiliations["isFaculty"]
-        puts "a faculty"
-      end
+      # Get PPS department, title, and position type
+      pps_info = get_from_api("api/iam/associations/pps/search", {"iamId" => iam_id})
+      result["pps_info"] = pps_info.empty? ? [] : pps_info[0]
 
-      if affiliations["isStudent"]
-        # api/iam/associations/pps/search ? all ?
-        # api/iam/associations/sis/search
-        puts "a student"
-      end
+      # Get ODR department and title
+      odr_info = get_from_api("api/iam/associations/odr/search", {"iamId" => iam_id})
+      result["odr_info"] = odr_info.empty? ? [] : odr_info[0]
 
-      if affiliations["isStaff"]
-        # iam/associations/odr/search ?
-        puts "a staff"
-      end
+      # Get HS employee information
+      hs_info = get_from_api("api/iam/associations/hs/search", {"iamId" => iam_id})
+      result["hs_info"] = hs_info.empty? ? [] : hs_info[0]
 
-      if affiliations["isExternal"]
-        puts "an external"
-      end
+      # Get student information
+      student_info = get_from_api("api/iam/associations/sis/search", {"iamId" => iam_id})
+      result["student_info"] = student_info.empty? ? [] : student_info[0]
+
+      return result
     end
 
     # Returns the iam id of the query, a string otherwise
