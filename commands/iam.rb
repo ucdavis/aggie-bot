@@ -15,7 +15,6 @@ module ChatBotCommand
                 + "```"
                 + "example: `!iam email user@ucdavis.edu`"
 
-    # TODO: Update to show multiple results
     def run(message, channel)
       # Grab the query to run for IAM
       query = message.scan(/(\S+)/)
@@ -28,7 +27,7 @@ module ChatBotCommand
       if iam_id.size > 10
         return "Too many individuals to show"
       end
-      
+
       response = ""
       iam_id.each do |id|
         data = gather_data(id)
@@ -39,10 +38,12 @@ module ChatBotCommand
       return response
     end
 
-    # Returns an hash-map with all the necessary data to output
+    # Returns an hash-map with all the necessary data to output else an empty hash
     # @param iam_id - iam_id of user
     def gather_data iam_id
       result = {}
+      # Each we use ___[0] because get_from_api returns an array
+      # We know we only need [0] because we are querying by iamId
 
       # Get ids, names and affiliations
       basic_info = get_from_api("api/iam/people/search", {"iamId" => iam_id})
@@ -75,7 +76,7 @@ module ChatBotCommand
       return result
     end
 
-    # Returns the iam id of the query, a string otherwise
+    # Returns an array of iam_ids, a string if no iam_id is found
     # @param query - Slack message without !iam
     def get_iam_id query
       command = query.shift
@@ -94,7 +95,7 @@ module ChatBotCommand
         api = "api/iam/people/search";
         query = {"dLastName" => query}
       when "iamid"
-        return query
+        return [query]
       when "loginid"
         # TODO: Could also be non-kerberos? HSAD
         # api/iam/people/prihsadacct/search
@@ -121,11 +122,14 @@ module ChatBotCommand
       return iam_id
     end
 
+    # Formats the data from IAM API to a prettier format
+    # @param data - the hash obtained from gather_data
     def format_data data
       name = data["basic_info"]["dFullName"]
       loginid = data["kerberos_info"].empty? ? "Not Listed" : data["kerberos_info"]["userId"]
       email = data["contact_info"].empty? ? "Not Listed" : data["contact_info"]["email"]
-      office = data["contact_info"].empty? ? "Not Listed" : data["contact_info"]["addrStreet"]
+      office = "Not Listed"
+      office = data["contact_info"]["addrStreet"] unless data["contact_info"].empty? || data["contact_info"]["addrStreet"] == nil
 
       department = "Not Listed"
       title = "Not Listed"
@@ -139,43 +143,42 @@ module ChatBotCommand
 
       affiliations = []
       if data["basic_info"]["isStaff"]
-        staff = "staff: "
+        staff = "*Staff Affiliation* "
         staff += data["pps_info"]["positionType"].to_s unless data["pps_info"].empty?
         affiliations.push staff
       end
 
       if data["basic_info"]["isStudent"]
-        student = "student: "
+        student = "*Student Affiliation* "
         unless data["student_info"].empty?
-          student += data["student_info"]["levelName"]
-          student +=  ", " + data["student_info"]["majorName"]
+          student += data["student_info"]["majorName"] + " ("
+          student += data["student_info"]["levelName"].scan(/\S+/)[0] # Only grab the first word
+          student +=  ", " + data["student_info"]["className"] + ")"
         end
         affiliations.push student
       end
 
       if data["basic_info"]["isExternal"]
-        affiliations.push "external:"
+        affiliations.push "*External Affiliation* "
       end
 
       if data["basic_info"]["isFaculty"]
-        affiliations.push "faculty:"
+        affiliations.push "*Faculty Affiliation* "
       end
 
       if data["basic_info"]["isHSEmployee"]
-        affiliations.push "HS employee"
+        affiliations.push "*HS Employee Affiliation* "
       end
 
-      if data["basic_info"]["isEmployee"]
-        affiliations.push "employee:"
-      end
-
-      affiliations = affiliations.empty? ? "Not Listed" : affiliations.join(" | ")
+      affiliations = affiliations.empty? ? "Not Listed" : affiliations.join("\n")
 
       response = "*Name* #{name}\n"
+      response += "*Login* #{loginid}\n"
+      response += "*E-mail* #{email}\n"
       response += "*Department* #{department}\n"
       response += "*Title* #{title}\n"
       response += "*Office* #{office}\n"
-      response += "*Affiliations* #{affiliations}"
+      response += affiliations
 
       return response
     end
