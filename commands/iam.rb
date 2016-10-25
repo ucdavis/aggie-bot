@@ -22,12 +22,17 @@ module ChatBotCommand
       query.shift # gets rid of !iam
 
       iam_id = get_iam_id(query)
-
       # Returns early if iam_id is an error message
-      return iam_id unless iam_id.to_i != 0
+      return iam_id unless iam_id.class != String
 
-      response = gather_data(iam_id)
-      return format_data(response)
+      response = ""
+      iam_id.each do |id|
+        data = gather_data(id)
+        response = response + format_data(data)
+        response = response + "\n\n"
+      end
+
+      return response
     end
 
     # Returns an hash-map with all the necessary data to output
@@ -102,43 +107,71 @@ module ChatBotCommand
       result = get_from_api(api, query)
 
       # get_from_api returns a string message if iamId is not found
-      iam_id = result.class == String ? result : result[0]["iamId"] unless result.empty?
+      unless result.empty?
+        iam_id = []
+        result.each do |data|
+          iam_id.push data["iamId"]
+        end
+      end
 
       return iam_id
     end
 
     def format_data data
-      response = "*Name* " + data["basic_info"]["dFullName"] + "\n"
-               + "*Login ID* " + data["kerberos_info"]["userId"] + "\n"
-               + "*E-Mail* " + data["contact_info"]["email"] + "\n"
+      name = data["basic_info"]["dFullName"]
+      loginid = data["kerberos_info"].empty? ? "Not Listed" : data["kerberos_info"]["userId"]
+      email = data["contact_info"].empty? ? "Not Listed" : data["contact_info"]["email"]
+      office = data["contact_info"].empty? ? "Not Listed" : data["contact_info"]["addrStreet"]
 
-      response += "*Department* "
+      department = "Not Listed"
+      title = "Not Listed"
       if !data["odr_info"].empty?
-        response += data["odr_info"]["deptDisplayName"]
+        department = data["odr_info"]["deptDisplayName"] unless data["odr_info"]["deptDisplayName"] == nil
+        title = data["odr_info"]["titleDisplayName"] unless data["odr_info"]["titleDisplayName"] == nil
       elsif !data["pps_info"].empty?
-        response += data["pps_info"]["deptDisplayName"] + " (" + data["pps_info"]["deptCode"] + ")"
-      else
-        response += "Not Listed"
+        department = data["pps_info"]["deptDisplayName"] + " (" + data["pps_info"]["deptCode"] + ")" unless data["pps_info"]["deptDisplayName"] == nil
+        title = data["pps_info"]["titleDisplayName"] unless data["pps_info"]["titleDisplayName"] == nil
       end
-      response += "\n"
 
-      response += "*Title* "
-      if !data["odr_info"].empty?
-        response += data["odr_info"]["titleDisplayName"]
-      elsif !data["pps_info"].empty?
-        response += data["pps_info"]["titleDisplayName"]
-      else
-        response += "Not Listed"
+      affiliations = []
+      if data["basic_info"]["isStaff"]
+        staff = "staff: "
+        staff += data["pps_info"]["positionType"].to_s unless data["pps_info"].empty?
+        affiliations.push staff
       end
-      response += "\n"
 
-      response += "*Office* " + data["contact_info"]["addrStreet"] + "\n"
+      if data["basic_info"]["isStudent"]
+        student = "student: "
+        unless data["student_info"].empty?
+          student += data["student_info"]["levelName"]
+          student +=  ", " + data["student_info"]["majorName"]
+        end
+        affiliations.push student
+      end
 
+      if data["basic_info"]["isExternal"]
+        affiliations.push "external:"
+      end
 
-      response += "*Affiliations* "
-      response = data["basic_info"]["isStaff"] ? response + "staff: " + data["pps_info"]["positionType"] : response
+      if data["basic_info"]["isFaculty"]
+        affiliations.push "faculty:"
+      end
 
-      response = data["basic_info"]["isStudent"] ? response + " student: " + data["student_info"]["levelName"] + ", " + data["student_info"]["majorName"] : response
+      if data["basic_info"]["isHSEmployee"]
+        affiliations.push "HS employee"
+      end
+
+      if data["basic_info"]["isEmployee"]
+        affiliations.push "employee:"
+      end
+
+      affiliations = affiliations.empty? ? "Not Listed" : affiliations.join(" | ")
+
+      response = "*Name* #{name}\n"
+      response += "*Department* #{department}\n"
+      response += "*Title* #{title}\n"
+      response += "*Office* #{office}\n"
+      response += "*Affiliations* #{affiliations}"
 
       return response
     end
