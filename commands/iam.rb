@@ -25,6 +25,10 @@ module ChatBotCommand
       # Returns early if iam_id is an error message
       return iam_id unless iam_id.class != String
 
+      if iam_id.size > 10
+        return "Too many individuals to show"
+      end
+      
       response = ""
       iam_id.each do |id|
         data = gather_data(id)
