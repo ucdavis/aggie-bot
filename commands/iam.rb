@@ -26,12 +26,8 @@ module ChatBotCommand
       # Returns early if iam_id is an error message
       return iam_id unless iam_id.to_i != 0
 
-      puts "Gathering data"
       response = gather_data(iam_id)
-      puts response
-      return "hi"
-      #
-      # return format_data(response)
+      return format_data(response)
     end
 
     # Returns an hash-map with all the necessary data to output
@@ -112,7 +108,39 @@ module ChatBotCommand
     end
 
     def format_data data
+      response = "*Name* " + data["basic_info"]["dFullName"] + "\n"
+               + "*Login ID* " + data["kerberos_info"]["userId"] + "\n"
+               + "*E-Mail* " + data["contact_info"]["email"] + "\n"
 
+      response += "*Department* "
+      if !data["odr_info"].empty?
+        response += data["odr_info"]["deptDisplayName"]
+      elsif !data["pps_info"].empty?
+        response += data["pps_info"]["deptDisplayName"] + " (" + data["pps_info"]["deptCode"] + ")"
+      else
+        response += "Not Listed"
+      end
+      response += "\n"
+
+      response += "*Title* "
+      if !data["odr_info"].empty?
+        response += data["odr_info"]["titleDisplayName"]
+      elsif !data["pps_info"].empty?
+        response += data["pps_info"]["titleDisplayName"]
+      else
+        response += "Not Listed"
+      end
+      response += "\n"
+
+      response += "*Office* " + data["contact_info"]["addrStreet"] + "\n"
+
+
+      response += "*Affiliations* "
+      response = data["basic_info"]["isStaff"] ? response + "staff: " + data["pps_info"]["positionType"] : response
+
+      response = data["basic_info"]["isStudent"] ? response + " student: " + data["student_info"]["levelName"] + ", " + data["student_info"]["majorName"] : response
+
+      return response
     end
 
     # Returns an object containing the result from an api call
