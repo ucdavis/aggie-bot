@@ -125,62 +125,68 @@ module ChatBotCommand
     # Formats the data from IAM API to a prettier format
     # @param data - the hash obtained from gather_data
     def format_data data
+      # Format name with flags
       name = data["basic_info"]["dFullName"]
+
+      flags = []
+      if data["basic_info"]["isEmployee"]
+        flags.push "employee"
+      end
+      if data["basic_info"]["isHSEmployee"]
+        flags.push "hs employee"
+      end
+      if data["basic_info"]["isFaculty"]
+        flags.push "faculty"
+      end
+      if data["basic_info"]["isStudent"]
+        flags.push "student"
+      end
+      if data["basic_info"]["isStaff"]
+        flags.push "staff"
+      end
+      if data["basic_info"]["isExternal"]
+        flags.push "external"
+      end
+      flags = " _(" + flags.join(", ") + ")_"
+      name += flags
+
+      # Format Kerberos information
       loginid = data["kerberos_info"].empty? ? "Not Listed" : data["kerberos_info"]["userId"]
+
+      # Format contact information
       email = data["contact_info"].empty? ? "Not Listed" : data["contact_info"]["email"]
       office = "Not Listed"
       office = data["contact_info"]["addrStreet"] unless data["contact_info"].empty? || data["contact_info"]["addrStreet"] == nil
 
       affiliations = []
-      odr = "*ODR Affiliation* "
       if !data["odr_info"].empty?
-        odr += data["odr_info"]["deptDisplayName"] unless data["odr_info"]["deptDisplayName"] == nil
-        odr += " (" + data["odr_info"]["titleDisplayName"] + ")" unless data["odr_info"]["titleDisplayName"] == nil
+        odr = "*ODR Affiliation* "
+        odr += data["odr_info"]["deptDisplayName"] + ": " unless data["odr_info"]["deptDisplayName"] == nil
+        odr += data["odr_info"]["titleDisplayName"] unless data["odr_info"]["titleDisplayName"] == nil
         affiliations.push odr
       end
 
-      pps = "*PPS Affiliation* "
       if !data["pps_info"].empty?
-        pps += data["pps_info"]["deptDisplayName"]unless data["pps_info"]["deptDisplayName"] == nil
-        pps += " (" + data["pps_info"]["titleDisplayName"] + ")" unless data["pps_info"]["titleDisplayName"] == nil
+        pps = "*PPS Affiliation* "
+        pps += data["pps_info"]["deptDisplayName"] + ": " unless data["pps_info"]["deptDisplayName"] == nil
+        pps += data["pps_info"]["titleDisplayName"]unless data["pps_info"]["titleDisplayName"] == nil
+        pps += " (" + data["pps_info"]["positionType"] + ")" unless data["pps_info"]["positionType"] == nil
         affiliations.push pps
       end
-
-      if data["basic_info"]["isStaff"]
-        staff = "*Staff Affiliation* "
-        staff += data["pps_info"]["positionType"].to_s unless data["pps_info"].empty?
-        affiliations.push staff
-      end
-
-      if data["basic_info"]["isStudent"]
+  
+      if !data["student_info"].empty?
         student = "*Student Affiliation* "
-        unless data["student_info"].empty?
-          student += data["student_info"]["majorName"] + " ("
-          student += data["student_info"]["levelName"].scan(/\S+/)[0] # Only grab the first word
-          student +=  ", " + data["student_info"]["className"] + ")"
-        end
+        student += data["student_info"]["majorName"] + " ("
+        student += data["student_info"]["levelName"].scan(/\S+/)[0] # Only grab the first word
+        student +=  ", " + data["student_info"]["className"] + ")"
         affiliations.push student
       end
-
-      if data["basic_info"]["isExternal"]
-        affiliations.push "*External Affiliation* "
-      end
-
-      if data["basic_info"]["isFaculty"]
-        affiliations.push "*Faculty Affiliation* "
-      end
-
-      if data["basic_info"]["isHSEmployee"]
-        affiliations.push "*HS Employee Affiliation* "
-      end
-
-      affiliations = affiliations.empty? ? "Not Listed" : affiliations.join("\n")
 
       response = "*Name* #{name}\n"
       response += "*Login* #{loginid}\n"
       response += "*E-mail* #{email}\n"
       response += "*Office* #{office}\n"
-      response += affiliations
+      response += affiliations.empty? ? "" : affiliations.join("\n")
 
       return response
     end
