@@ -193,6 +193,18 @@ module ChatBotCommand
         formatted_data.push "*Office* Not Listed"
       end
 
+      # Format HS information
+      # HS Affiliation Nurse Clinical II (D-10 Pediatric ICU/PCICU)
+      if !data["hs_info"].empty?
+        data["hs_info"].each do |info|
+          hs = "*HS Affiliation* "
+          hs += info["titleDisplayName"] unless info["titleDisplayName"] == nil
+          hs += " (" + info["costCenterDisplayName"] + ")" unless info["costCenterDisplayName"] == nil
+
+          formatted_data.push hs
+        end
+      end
+
       # Format ODR information
       # ODR Affiliation DSSIT: STD4 (Casual)
       if !data["odr_info"].empty?
