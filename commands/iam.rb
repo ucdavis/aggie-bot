@@ -38,7 +38,7 @@ module ChatBotCommand
       return response
     end
 
-    # Returns an hash-map with all the necessary data to output else an empty hash
+    # Returns a hash-map with all the necessary data to output else an empty hash
     # @param iam_id - iam_id of user
     def gather_data iam_id
       result = {}
@@ -158,7 +158,10 @@ module ChatBotCommand
       office = "Not Listed"
       office = data["contact_info"]["addrStreet"] unless data["contact_info"].empty? || data["contact_info"]["addrStreet"] == nil
 
+      # Store affiliations in this array
       affiliations = []
+
+      # Format ODR information
       if !data["odr_info"].empty?
         odr = "*ODR Affiliation* "
         odr += data["odr_info"]["deptDisplayName"] + ": " unless data["odr_info"]["deptDisplayName"] == nil
@@ -166,6 +169,7 @@ module ChatBotCommand
         affiliations.push odr
       end
 
+      # Format PPS information
       if !data["pps_info"].empty?
         pps = "*PPS Affiliation* "
         pps += data["pps_info"]["deptDisplayName"] + ": " unless data["pps_info"]["deptDisplayName"] == nil
@@ -173,7 +177,8 @@ module ChatBotCommand
         pps += " (" + data["pps_info"]["positionType"] + ")" unless data["pps_info"]["positionType"] == nil
         affiliations.push pps
       end
-  
+
+      # Format student information
       if !data["student_info"].empty?
         student = "*Student Affiliation* "
         student += data["student_info"]["majorName"] + " ("
@@ -182,6 +187,7 @@ module ChatBotCommand
         affiliations.push student
       end
 
+      # Format response
       response = "*Name* #{name}\n"
       response += "*Login* #{loginid}\n"
       response += "*E-mail* #{email}\n"
@@ -191,7 +197,7 @@ module ChatBotCommand
       return response
     end
 
-    # Returns an object containing the result from an api call
+    # Returns an object containing the result from an api call, else an error message
     # @param api - specific api extension to append
     # @param query - parameters to add in the GET call
     def get_from_api api, query
