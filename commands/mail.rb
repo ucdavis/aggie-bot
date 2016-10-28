@@ -26,37 +26,37 @@ module ChatBotCommand
       login_id = data[1].text.split(" ")
       title = login_id.shift(2).join(" ")
       value = login_id[0]
-      response.push "*#{title}* \n>#{value}"
+      response.push "*#{title}* #{value}"
 
       # Mail ID
       mail_id = data[2].text.split(" ")
       title = mail_id[0]
       value = mail_id[1]
-      response.push "*#{title}* \n>#{value}"
+      response.push "*#{title}* #{value}"
 
       # Email
       email = data[3].text.split(" ")
       title = email[0]
       value = email[1]
-      response.push "*#{title}* \n>#{value}"
+      response.push "*#{title}* #{value}"
 
       # IMAP
       imap = data[4].text.split(" ")
       value = imap.pop
       title = imap.join(" ")
-      response.push "*#{title}* \n>#{value}"
+      response.push "*#{title}* #{value}"
 
       # POP
       pop = data[5].text.split(" ")
       value = pop.pop
       title = pop.join(" ")
-      response.push "*#{title}* \n>#{value}"
+      response.push "*#{title}* #{value}"
 
       # SMTP
       smtp = data[6].text.split(" ")
       value = smtp.pop
       title = smtp.join(" ")
-      response.push "*#{title}* \n>#{value}"
+      response.push "*#{title}* #{value}"
 
       # Email Settings
       email_settings = data[7].text.split(" ")
@@ -64,7 +64,7 @@ module ChatBotCommand
       value = email_settings.join(" ")
       response.push "*#{title}* \n>#{value}"
 
-      return response.join("\n\n")
+      return response.join("\n")
     end
 
     # Retrieves mail forwarding infomration from iet.ucdavis.edu
