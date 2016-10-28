@@ -50,17 +50,11 @@ module ChatBotCommand
     # Returns a hash of :user => email of all users in the team else a string
     def generate_users_hash
       @users = Hash.new
-      # Get a list of user data from slack api
-      uri = URI.parse("https://slack.com/api/users.list")
-      args = {token: $SETTINGS["SLACK_API_TOKEN"]}
-      uri.query = URI.encode_www_form(args)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      request = Net::HTTP::Get.new(uri.request_uri)
-      response = http.request(request)
 
-      if response.code == "200"
-        result = JSON.parse(response.body)
+      # Get a list of user data from slack api
+      result = ChatBotCommand.slack_api("users.list", {})
+
+      unless result == nil
         users = result["members"]
         users.each do |user|
           username = user["name"]
@@ -72,9 +66,6 @@ module ChatBotCommand
           @users[username] = user_email
           @users[user_full_name] = user_email
         end
-      else
-        $logger.error "Could not connect to Slack API due to #{response.code}"
-        return "Could not connect to Slack API due to #{response.code}"
       end
     end # def generate_user_array
 
