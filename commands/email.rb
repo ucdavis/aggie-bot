@@ -22,7 +22,7 @@ module ChatBotCommand
         # we only need SOMEID
         user = user[2...user.index(">")]
         queried_users.push(user)
-      when /(\S+)/ # query by "msdiez" / "Mark Diez"
+      else /(\S+)/ # query by "msdiez" / "Mark Diez"
         # shift to remove !email
         query = message.scan(/(\S+)/)
         query.shift
