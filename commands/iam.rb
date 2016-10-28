@@ -130,6 +130,7 @@ module ChatBotCommand
 
       # Format name with flags
       # Name Mark Diez (student, employee, staff)
+      # IAM ID 1234566
       if !data["basic_info"].empty?
         data["basic_info"].each do |info|
           name = "*Name* " + info["dFullName"]
@@ -157,6 +158,7 @@ module ChatBotCommand
           name += flags
 
           formatted_data.push name
+          formatted_data.push "*IAM ID* #{info["iamId"]}"
         end
       end
 
