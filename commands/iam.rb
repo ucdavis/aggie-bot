@@ -283,8 +283,9 @@ module ChatBotCommand
       return string
     end
 
+    @@instance = Iam.new
     def self.get_instance
-      @@instance ||= Iam.new
+      return @@instance
     end
 
     # Avoids any "accidental" call to new outside of the class

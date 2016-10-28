@@ -38,8 +38,9 @@ module ChatBotCommand
       return response.empty? ? "No such command" : response
     end # def run
 
+    @@instance = Help.new
     def self.get_instance
-      @@instance ||= Help.new
+      return @@instance
     end
 
     private_class_method :new

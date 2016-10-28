@@ -78,8 +78,9 @@ module ChatBotCommand
       end
     end # def generate_user_array
 
+    @@instance = Email.new
     def self.get_instance
-      @@instance ||= Email.new
+      return @@instance
     end
 
     private_class_method :new

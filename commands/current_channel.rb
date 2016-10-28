@@ -9,8 +9,9 @@ module ChatBotCommand
       return channel
     end
 
+    @@instance = CurrentChannel.new
     def self.get_instance
-      @@instance ||= CurrentChannel.new
+      return @@instance
     end
 
     private_class_method :new

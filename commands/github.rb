@@ -67,8 +67,9 @@ module ChatBotCommand
       return messages
     end
 
+    @@instance = GitHub.new
     def self.get_instance
-      @@instance ||= GitHub.new
+      return @@instance
     end
 
     private_class_method :new

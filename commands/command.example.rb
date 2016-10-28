@@ -15,8 +15,9 @@
 #     end
 # =>
 #     # Essential to make commands a singleton
+#     @@instance = Visioneers.new
 #     def self.get_instance
-#     @@instance ||= Visioneers.new
+#       return @@instance
 #     end
 #
 #     # Avoids any "accidental" call to new outside of the class
