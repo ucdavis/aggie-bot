@@ -34,7 +34,8 @@ module ChatBotCommand
         end
       end # ChatBotCommand.constants loop
 
-      response = specific_command ? response : response + "\n You can post `!help <title>` for more information on the command. E.g. `!help devboard`"
+      response = specific_command.empty? ? response + "\n You can post `!help <title>` for more information on the command. E.g. `!help devboard`" : response
+      
       return response.empty? ? "No such command" : response
     end # def run
 
