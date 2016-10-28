@@ -11,6 +11,7 @@ require 'logger'
 require 'yaml'
 require 'cgi'
 require 'slack-ruby-client'
+
 load './chat_commands.rb'
 
 # Store the current working directory as Daemons.run_proc() will change it
@@ -84,8 +85,8 @@ Daemons.run_proc('dss-chatbot.rb') do
     rescue StandardError => e
       logger.error e
       raise e
-    #ensure
-      #client = nil
+    # ensure
+      # client = nil
     end
   end
 

@@ -40,7 +40,7 @@ module ChatBotCommand
 
     # Returns a hash-map with all the necessary data to output else an empty hash
     # @param iam_id - iam_id of user
-    def gather_data iam_id
+    def gather_data(iam_id)
       result = {}
       # Each we use ___[0] because get_from_api returns an array
       # We know we only need [0] because we are querying by iamId
@@ -78,7 +78,7 @@ module ChatBotCommand
 
     # Returns an array of iam_ids, a string if no iam_id is found
     # @param query - Slack message without !iam
-    def get_iam_id query
+    def get_iam_id(query)
       command = query.shift
       command = command[0].downcase # required since shift returns an array
       query = query.join(" ")       # Convert query to a string
@@ -124,7 +124,7 @@ module ChatBotCommand
 
     # Formats the data from IAM API to a prettier format
     # @param data - the hash obtained from gather_data
-    def format_data data
+    def format_data(data)
       # Store all formatted data in this array
       formatted_data = []
 
@@ -249,7 +249,7 @@ module ChatBotCommand
     # Returns an object containing the result from an api call, else an error message
     # @param api - specific api extension to append
     # @param query - parameters to add in the GET call
-    def get_from_api api, query
+    def get_from_api(api, query)
       uri = URI.parse($SETTINGS["IAM_HOST"] + "/" + api);
       query["key"] = $SETTINGS["IAM_API_TOKEN"]
       uri.query = URI.encode_www_form(query)
