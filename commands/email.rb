@@ -47,6 +47,7 @@ module ChatBotCommand
       return response.empty? ? "User does not exist" : response
     end # def run
 
+    # Returns a hash of :user => email of all users in the team else a string
     def generate_users_hash
       @users = Hash.new
       # Get a list of user data from slack api
@@ -77,9 +78,8 @@ module ChatBotCommand
       end
     end # def generate_user_array
 
-    @@instance = Email.new
     def self.get_instance
-      return @@instance
+      @@instance ||= Email.new
     end
 
     private_class_method :new

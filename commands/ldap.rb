@@ -182,9 +182,8 @@ module ChatBotCommand
       end
     end
 
-    @@instance = Ldap.new
     def self.get_instance
-      return @@instance
+      @@instance ||= Ldap.new
     end
 
     private_class_method :new

@@ -53,9 +53,8 @@ module ChatBotCommand
       end
     end
 
-    @@instance = Host.new
     def self.get_instance
-      return @@instance
+      @@instance ||= Host.new
     end
 
     private_class_method :new

@@ -283,10 +283,8 @@ module ChatBotCommand
       return string
     end
 
-    # Essential to make commands a singleton
-    @@instance = Iam.new
     def self.get_instance
-      return @@instance
+      @@instance ||= Iam.new
     end
 
     # Avoids any "accidental" call to new outside of the class

@@ -23,9 +23,8 @@ module ChatBotCommand
       end
     end
 
-    @@instance = Roles.new
     def self.get_instance
-      return @@instance
+      @@instance ||= Roles.new
     end
 
     private_class_method :new

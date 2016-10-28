@@ -13,9 +13,8 @@ module ChatBotCommand
       end
     end
 
-    @@instance = Visioneers.new
     def self.get_instance
-      return @@instance
+      @@instance ||= Visioneers.new
     end
 
     private_class_method :new
