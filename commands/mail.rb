@@ -23,46 +23,28 @@ module ChatBotCommand
       response = []
 
       # Login ID
-      login_id = data[1].text.split(" ")
-      title = login_id.shift(2).join(" ")
-      value = login_id[0]
-      response.push "*#{title}* #{value}"
+      value = data[1].text.split(" ")[2]
+      response.push "*Login ID* #{value}"
 
       # Mail ID
-      mail_id = data[2].text.split(" ")
-      title = mail_id[0]
-      value = mail_id[1]
-      response.push "*#{title}* #{value}"
+      value = data[2].text.split(" ")[1]
+      response.push "*Mail ID* #{value}"
 
       # Email
-      email = data[3].text.split(" ")
-      title = email[0]
-      value = email[1]
-      response.push "*#{title}* #{value}"
+      value = data[3].text.split(" ")[1]
+      response.push "*E-mail* #{value}"
 
       # IMAP
-      imap = data[4].text.split(" ")
-      value = imap.pop
-      title = imap.join(" ")
-      response.push "*#{title}* #{value}"
+      value = data[4].text.split(" ").pop
+      response.push "*IMAP* #{value}"
 
       # POP
-      pop = data[5].text.split(" ")
-      value = pop.pop
-      title = pop.join(" ")
-      response.push "*#{title}* #{value}"
+      value = data[5].text.split(" ").pop
+      response.push "*POP* #{value}"
 
       # SMTP
-      smtp = data[6].text.split(" ")
-      value = smtp.pop
-      title = smtp.join(" ")
-      response.push "*#{title}* #{value}"
-
-      # Email Settings
-      email_settings = data[7].text.split(" ")
-      title = email_settings.shift(2).join(" ")
-      value = email_settings.join(" ")
-      response.push "*#{title}* \n>#{value}"
+      value = data[6].text.split(" ").pop
+      response.push "*SMTP* #{value}"
 
       return response.join("\n")
     end
