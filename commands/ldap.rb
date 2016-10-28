@@ -26,17 +26,6 @@ module ChatBotCommand
       string.gsub(LDAP_ESCAPE_RE) { |char| "\\" + LDAP_ESCAPES[char] } if string
     end
 
-    # Removes any Slack-specific encoding
-    def decode_slack(string)
-      if string
-        # Strip e-mail encoding (sample: "<mailto:somebody@ucdavis.edu|somebody@ucdavis.edu>")
-        mail_match = /mailto:([\S]+)\|/.match(string)
-        string = mail_match[1] if mail_match
-      end
-
-      return string
-    end
-
     def run(message, channel)
       parameters = message[5..-1] # Strip away the beginning "ldap "
 
@@ -73,7 +62,7 @@ module ChatBotCommand
           # Multiple words but no known commands. Use CN wildcard strategy.
           words = parameters.split
 
-          words.map!{ |w| ldap_escape( decode_slack(w) ) }
+          words.map!{ |w| ldap_escape( ChatBotCommand.decode_slack(w) ) }
 
           search_terms = "(cn=*" + words.join("*") + "*)"
         end
@@ -93,7 +82,7 @@ module ChatBotCommand
         # Set up LDAP search string for attribute-specific or broad-based search
 
         # Decode any Slack formatting
-        query = decode_slack(query)
+        query = ChatBotCommand.decode_slack(query)
 
         # Avoid LDAP injection attacks, thanks John Knoll
         query = ldap_escape(query)

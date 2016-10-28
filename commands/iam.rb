@@ -102,7 +102,7 @@ module ChatBotCommand
         api = "api/iam/people/prikerbacct/search"
         query = {"userId" => query}
       when "email"
-        query = decode_slack(query)
+        query = ChatBotCommand.decode_slack(query)
         api = "api/iam/people/contactinfo/search"
         query = {"email" => query}
       else
@@ -272,17 +272,6 @@ module ChatBotCommand
         $logger.error "Could not connect to Slack API due to #{response.code}"
         return "Could not connect to Slack API due to #{response.code}"
       end
-    end
-
-    # Removes any Slack-specific encoding
-    def decode_slack(string)
-      if string
-        # Strip e-mail encoding (sample: "<mailto:somebody@ucdavis.edu|somebody@ucdavis.edu>")
-        mail_match = /mailto:([\S]+)\|/.match(string)
-        string = mail_match[1] if mail_match
-      end
-
-      return string
     end
 
     @@instance = Iam.new
