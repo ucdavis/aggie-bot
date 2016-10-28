@@ -89,6 +89,14 @@ module ChatBotCommand
     request = Net::HTTP::Get.new(uri.request_uri)
 
     response = http.request(request)
-    return response.code == "200" ? JSON.parse(response.body) : nil
+
+    if response.code == "200"
+      return JSON.parse(response.body)
+    else
+      $logger.error "Could not connect to Slack API due to #{response.code}"
+      return nil
+    end
   end
+
+
 end
