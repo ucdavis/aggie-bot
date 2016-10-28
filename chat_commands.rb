@@ -98,5 +98,15 @@ module ChatBotCommand
     end
   end
 
+  # Removes any Slack-specific encoding
+  def ChatBotCommand.decode_slack(string)
+    if string
+      # Strip e-mail encoding (sample: "<mailto:somebody@ucdavis.edu|somebody@ucdavis.edu>")
+      mail_match = /mailto:([\S]+)\|/.match(string)
+      string = mail_match[1] if mail_match
+    end
+
+    return string
+  end
 
 end
