@@ -1,3 +1,5 @@
+require "net/http"
+
 # Module that wraps around each command
 module ChatBotCommand
 
@@ -35,9 +37,14 @@ module ChatBotCommand
   end # def ChatBotCommand.run
 
   # Check if a command is enabled for the channel
-  # @param channel - Where the message was posted
+  # @param channel - ID of where the message was posted
   # @param command_title - Title of the command
   def ChatBotCommand.is_enabled_for(channel, command_title)
+    # Create a hash :channel_id => channel_name of both private and public channels
+    @channel_names ||= get_channel_list
+
+    # Convert channel from channel ID to channel name
+    channel = @channel_names[channel]
     channel = "GLOBAL" unless $SETTINGS[channel]
 
     # If the command is not specified on the channel,
@@ -47,5 +54,41 @@ module ChatBotCommand
     else
       return $SETTINGS[channel][command_title]
     end
+  end
+
+  # Returns :id => name hash of both public and private channel names else nil
+  def ChatBotCommand.get_channel_list
+    channels = {}
+    response = slack_api("channels.list", {})
+    unless response == nil
+      response["channels"].each do |channel|
+        channels[channel["id"]] = channel["name"]
+      end
+    end
+
+    response = slack_api("groups.list", {})
+    unless response == nil
+      response["groups"].each do |channel|
+        channels[channel["id"]] = channel["name"]
+      end
+    end
+
+    return channels.empty? ? nil : channels
+  end
+
+  # Returns a parsed JSON of the Net::HTTPResponse object of the API call else nil
+  # @param method - a string name of the method to use
+  # @param args - a hash of additional paramaters for the method
+  def ChatBotCommand.slack_api(method, args)
+    api = "https://slack.com/api/" + method
+    uri = URI.parse(api)
+    args["token"] = $SETTINGS["SLACK_API_TOKEN"]
+    uri.query = URI.encode_www_form(args)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    request = Net::HTTP::Get.new(uri.request_uri)
+
+    response = http.request(request)
+    return response.code == "200" ? JSON.parse(response.body) : nil
   end
 end
