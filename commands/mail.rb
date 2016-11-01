@@ -74,7 +74,7 @@ module ChatBotCommand
       page = agent.submit(mail_id_form, mail_id_form.buttons.first)
 
       unless page.code == "200"
-        return "Could not complete the task due to " + page.code
+        return "Could not fetch Mail ID information due to error while reading webpage. Received code:  " + page.code
       end
 
       return page.css("div.form-item.form-type-item")
