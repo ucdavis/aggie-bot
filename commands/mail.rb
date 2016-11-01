@@ -10,7 +10,7 @@ module ChatBotCommand
     # Run MUST return a string
     def run(message, channel)
       # Get information
-      response = get_information message.split(" ")[1]
+      response = fetch_mail_settings message.split(" ")[1]
 
       return response if response.class == String
 
@@ -54,7 +54,7 @@ module ChatBotCommand
     # Retrieves mail forwarding information from iet.ucdavis.edu
     # @param login_id - Kerberos login id to query
     # @return - an array of Nokogiri objects
-    def get_information(login_id)
+    def fetch_mail_settings(login_id)
       # Success! Load the page and use the CAS credentials
       agent = Mechanize.new
 
