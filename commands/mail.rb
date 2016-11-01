@@ -21,7 +21,7 @@ module ChatBotCommand
     # Returns formatted string of the user's mail forwarding information
     # @param data - an array of Nokogiri objects
     def format_response(data)
-      return "No user found" unless !data.empty?
+      return "No user found" if data.empty?
       response = []
 
       # Login ID
