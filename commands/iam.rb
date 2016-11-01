@@ -14,6 +14,8 @@ module ChatBotCommand
                  ">\tiamid   - queries by iamid\n" +
                  "example: `!iam email user@ucdavis.edu`"
 
+    # Maximum number of individuals to show in one call of this command
+    PEOPLE_MAX = 10
 
     def run(message, channel)
       # Grab the query to run for IAM
@@ -22,15 +24,15 @@ module ChatBotCommand
 
       iam_id = get_iam_id(query)
       # Returns early if iam_id is an error message
-      return iam_id unless iam_id.class != String
+      return iam_id if iam_id.class == String
 
-      if iam_id.size > 10
+      if iam_id.size > PEOPLE_MAX
         return "Too many individuals to show"
       end
 
       response = ""
       iam_id.each do |id|
-        data = gather_data(id)
+        data = fetch_user_details id
         response = response + format_data(data)
         response = response + "\n\n"
       end
@@ -40,7 +42,7 @@ module ChatBotCommand
 
     # Returns a hash-map with all the necessary data to output else an empty hash
     # @param iam_id - iam_id of user
-    def gather_data iam_id
+    def fetch_user_details(iam_id)
       result = {}
       # Each we use ___[0] because get_from_api returns an array
       # We know we only need [0] because we are querying by iamId
@@ -78,16 +80,13 @@ module ChatBotCommand
 
     # Returns an array of iam_ids, a string if no iam_id is found
     # @param query - Slack message without !iam
-    def get_iam_id query
+    # e.g. query = {"dFirstName" => Mark Emmanuel}
+    def get_iam_id(query)
       command = query.shift
       command = command[0].downcase # required since shift returns an array
       query = query.join(" ")       # Convert query to a string
-      iam_id = "No result found"
 
       case command
-      when "name"
-        # TODO:  May have to refactor the command to do -first -last else we can't determine it
-        iam_id = "Currently unavailable."
       when "first"
         api = "api/iam/people/search";
         query = {"dFirstName" => query}
@@ -95,6 +94,7 @@ module ChatBotCommand
         api = "api/iam/people/search";
         query = {"dLastName" => query}
       when "iamid"
+        # Return the iamid in a array
         return [query]
       when "loginid"
         # TODO: Could also be non-kerberos? HSAD
@@ -102,9 +102,8 @@ module ChatBotCommand
         api = "api/iam/people/prikerbacct/search"
         query = {"userId" => query}
       when "email"
-        query = decode_slack(query)
+        query = {"email" => ChatBotCommand.decode_slack(query)}
         api = "api/iam/people/contactinfo/search"
-        query = {"email" => query}
       else
         return command + " is not a valid option. !help iam for more details"
       end
@@ -117,6 +116,8 @@ module ChatBotCommand
         result.each do |data|
           iam_id.push data["iamId"]
         end
+      else
+        return "No result found"
       end
 
       return iam_id
@@ -124,12 +125,13 @@ module ChatBotCommand
 
     # Formats the data from IAM API to a prettier format
     # @param data - the hash obtained from gather_data
-    def format_data data
+    def format_data(data)
       # Store all formatted data in this array
       formatted_data = []
 
       # Format name with flags
       # Name Mark Diez (student, employee, staff)
+      # IAM ID 1234566
       if !data["basic_info"].empty?
         data["basic_info"].each do |info|
           name = "*Name* " + info["dFullName"]
@@ -157,6 +159,7 @@ module ChatBotCommand
           name += flags
 
           formatted_data.push name
+          formatted_data.push "*IAM ID* #{info["iamId"]}"
         end
       end
 
@@ -246,44 +249,49 @@ module ChatBotCommand
       return formatted_data.join("\n")
     end
 
-    # Returns an object containing the result from an api call, else an error message
+    # Returns an object containing the result from an api call, else a string with the error message
     # @param api - specific api extension to append
     # @param query - parameters to add in the GET call
-    def get_from_api api, query
+    def get_from_api(api, query)
       uri = URI.parse($SETTINGS["IAM_HOST"] + "/" + api);
       query["key"] = $SETTINGS["IAM_API_TOKEN"]
       uri.query = URI.encode_www_form(query)
+
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
+
       request = Net::HTTP::Get.new(uri.request_uri)
       response = http.request(request)
 
       if response.code == "200"
         data = JSON.parse(response.body)
-        if data["responseStatus"] == 0
+        case data["responseStatus"]
+        when 0 # Success
           return data["responseData"]["results"]
+        when 1 # Sucess but no data in results
+          return data["responseData"]["results"]
+        when 2 # Invalid API key
+          $logger.error "Invalid IAM API key"
+          return "Could not access IAM, check log for details"
+        when 3 # Generic System Error
+          $logger.warn "IAM encountered a generic system error"
+          return "IAM hit a snag!"
+        when 4 # Data error
+          $logger.warn "IAM encountered a data error"
+          return "IAM encountered a data error"
+        when 5 # Missing parameters
+          $logger.error "Missing parameters in IAM API call"
+          return "Query could not be finished"
         else
-          $logger.warn "IAM is down"
-          return "IAM is currently down"
+          $logger.warn "New response code from IAM"
+          return "Query could not be finished"
         end
       else
-        $logger.error "Could not connect to Slack API due to #{response.code}"
-        return "Could not connect to Slack API due to #{response.code}"
+        $logger.error "Could not connect to IAM API due to #{response.code}"
+        return "Could not connect to IAM API due to #{response.code}"
       end
     end
 
-    # Removes any Slack-specific encoding
-    def decode_slack(string)
-      if string
-        # Strip e-mail encoding (sample: "<mailto:somebody@ucdavis.edu|somebody@ucdavis.edu>")
-        mail_match = /mailto:([\S]+)\|/.match(string)
-        string = mail_match[1] if mail_match
-      end
-
-      return string
-    end
-
-    # Essential to make commands a singleton
     @@instance = Iam.new
     def self.get_instance
       return @@instance

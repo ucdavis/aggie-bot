@@ -11,7 +11,8 @@ require 'logger'
 require 'yaml'
 require 'cgi'
 require 'slack-ruby-client'
-load './chat_commands.rb'
+
+load './chat_bot_command.rb'
 
 # Store the current working directory as Daemons.run_proc() will change it
 $cwd = Dir.getwd
@@ -35,7 +36,7 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   # Set up chat commands plugin
-  ChatBotCommand.initializeCommands($cwd)
+  ChatBotCommand.initialize($cwd)
 
   # Set up Slack connection
   Slack.configure do |config|
@@ -60,7 +61,7 @@ Daemons.run_proc('dss-chatbot.rb') do
 
     # Parse the received message for valid Chat Bot commands
     if data['text']
-      response = ChatBotCommand.run(data['text'], data['channel'])
+      response = ChatBotCommand.dispatch(data['text'], data['channel'])
       client.message(channel: data['channel'], text: response) unless response == nil
     end
   end
@@ -84,8 +85,8 @@ Daemons.run_proc('dss-chatbot.rb') do
     rescue StandardError => e
       logger.error e
       raise e
-    #ensure
-      #client = nil
+    # ensure
+      # client = nil
     end
   end
 

@@ -38,9 +38,7 @@ GLOBAL:
   GitHub: true
 
 # To add local configuration for a channel, do the following:
-# Run !channel to get your channel's code
-# Now, you are ready to set local configurations
-# <code>:
-#   <command_title>: true/false
+# your-channel-name:
+#   "The Command": true/false
 #
 # If you do not specify a command, it will use the GLOBAL config
