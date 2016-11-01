@@ -12,6 +12,8 @@ module ChatBotCommand
       # Get information
       response = get_information message.split(" ")[1]
 
+      return response if response.class == String
+
       # Format information
       format_information response
     end
@@ -49,7 +51,7 @@ module ChatBotCommand
       return response.join("\n")
     end
 
-    # Retrieves mail forwarding infomration from iet.ucdavis.edu
+    # Retrieves mail forwarding information from iet.ucdavis.edu
     # @param login_id - Kerberos login id to query
     # @return - an array of Nokogiri objects
     def get_information(login_id)
