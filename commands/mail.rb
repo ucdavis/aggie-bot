@@ -61,23 +61,45 @@ module ChatBotCommand
       # Certain web servers check the user agent string for compatibility
       agent.user_agent_alias = 'Mac Firefox'
 
-      # Run Mail ID lookup
-      page = agent.get('https://iet.ucdavis.edu/itprovider')
+      begin
+        # Run Mail ID lookup
+        page = agent.get('https://iet.ucdavis.edu/itprovider')
 
-      # Find form TODO: try to see if we can find it dynamically?
-      mail_id_form = page.forms[2]
+        # Find Mail ID form
+        mail_id_form = nil
+        page.forms.each do |form|
+          if (form["form_id"] == "ucde_email_id_detective_form_block")
+            mail_id_form = form
+          end
+        end
 
-      # Fill form
-      mail_id_form.fields[0].value = login_id
+        if mail_id_form == nil
+          $logger.error "Mail ID information not found. Did the page format change?"
+          return "Could not fetch Mail ID information due to error finding the proper form"
+        end
 
-      # Submit Form
-      page = agent.submit(mail_id_form, mail_id_form.buttons.first)
+        # Fill form
+        mail_id_form.fields[0].value = login_id
 
-      unless page.code == "200"
-        return "Could not fetch Mail ID information due to error while reading webpage. Received code:  " + page.code
+        # Submit Form
+        page = agent.submit(mail_id_form, mail_id_form.buttons.first)
+      rescue SocketError
+        $logger.error "Could not fetch Mail ID information due to error loading the webpage. Did the link change?"
+        return "Could not fetch Mail ID information due to error loading the webpage"
+      else
+        unless page.code == "200"
+          $logger.warn "Could not fetch Mail ID information due to error while reading webpage. Received code:  " + page.code
+          return "Could not fetch Mail ID information due to error while reading webpage. Received code:  " + page.code
+        end
+
+        forwarding_info = page.css("div.form-item.form-type-item")
+        unless forwarding_info.empty?
+          return forwarding_info
+        else
+          $logger.error "Mail ID information not found. Did the page format change?"
+          return "Could not fetch Mail ID information"
+        end
       end
-
-      return page.css("div.form-item.form-type-item")
     end
 
     # Essential to make commands a singleton
