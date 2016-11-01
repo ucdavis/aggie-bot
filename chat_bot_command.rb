@@ -4,17 +4,17 @@ require "net/http"
 module ChatBotCommand
 
   # Load all the commands from the commands folder
-  # @param cwd - current working directory of the project
-  def ChatBotCommand.initialize(cwd)
+  # @param dir - current working directory of the project
+  def ChatBotCommand.initialize(dir)
     # Load all commands
-    Dir[cwd + "/commands/*.rb"].each {|file| require file }
+    Dir[dir + "/commands/*.rb"].each { |file| require file }
   end
 
   # Runs the proper command based on the message
   # Returns a string to output if a command is found, else nil
   # @param message - The message sent on slackbot e.g. !help
   # @param channel - The channel where the message was sent e.g. dss-it-appdev
-  def ChatBotCommand.run(message, channel)
+  def ChatBotCommand.dispatch(message, channel)
     # Match the message to the first compatible command
     ChatBotCommand.constants.each do |command|
       # Get a reference of the command class
@@ -22,25 +22,26 @@ module ChatBotCommand
 
       # Check if the assigned REGEX matches the message passed
       if command_class_reference::REGEX.match(message)
-        # Run the command and return its response message unless it is not enabled
+        # Run the command and return its response message if it is enabled
         if is_enabled_for(channel, command_class_reference::TITLE)
           response = command_class_reference.get_instance.run(message, channel)
-          if response.is_a? (String)
+          if response.is_a? String
             return response
           else
-            $logger.error(command_class_reference::TITLE + " does not return a String")
+            $logger.error(command_class_reference::TITLE + " did not return a String")
             return nil
           end
         end
       end
     end
-  end # def ChatBotCommand.run
+  end
 
-  # Check if a command is enabled for the channel
+  # Returns true if a command is enabled for the channel, otherwise false / nil
   # @param channel - ID of where the message was posted
   # @param command_title - Title of the command
   def ChatBotCommand.is_enabled_for(channel, command_title)
     # Create a hash :channel_id => channel_name of both private and public channels
+    # get_channel_list is called once
     @channel_names ||= get_channel_list
 
     # Convert channel from channel ID to channel name
@@ -82,12 +83,14 @@ module ChatBotCommand
   def ChatBotCommand.slack_api(method, args)
     api = "https://slack.com/api/" + method
     uri = URI.parse(api)
+
     args["token"] = $SETTINGS["SLACK_API_TOKEN"]
     uri.query = URI.encode_www_form(args)
+
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-    request = Net::HTTP::Get.new(uri.request_uri)
 
+    request = Net::HTTP::Get.new(uri.request_uri)
     response = http.request(request)
 
     if response.code == "200"
