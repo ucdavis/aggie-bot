@@ -12,7 +12,7 @@ module ChatBotCommand
       # Get information
       response = fetch_mail_settings message.split(" ")[1]
 
-      return response if response.class == String
+      return response if response.class != Nokogiri::XML::NodeSet
 
       # Format information
       format_response response
@@ -93,12 +93,14 @@ module ChatBotCommand
         end
 
         forwarding_info = page.css("div.form-item.form-type-item")
-        unless forwarding_info.empty?
-          return forwarding_info
-        else
-          $logger.error "Mail ID information not found. Did the page format change?"
-          return "Could not fetch Mail ID information"
-        end
+        # TODO: forwarding_info is empty if the user does not exist or the css is not found on the page
+        #     : figure out how to distinguish
+        # unless forwarding_info.empty?
+        #   return forwarding_info
+        # else
+        #   $logger.error "Mail ID information not found. Page layout not recognized."
+        #   return "Mail ID information not found. Page layout not recognized."
+        # end
       end
     end
 
