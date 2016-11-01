@@ -1,15 +1,14 @@
 # This value must be set.
 SLACK_API_TOKEN: ""
 
-# Set these values for SysAid support. Switch _ENABLED to true.
-SYSAID_ENABLED: false
-SYSAID_ACCOUNT: ""
-SYSAID_USER: ""
-SYSAID_PASSWORD: ""
-SYSAID_URI: "https://your.sysaid.server/services/SysaidApiService?wsdl"
+# Set these values for GitHub support.
+GITHUB_TOKEN: ""
+
+GITHUB_PROJECTS:
+  - tag1: "gh_org/gh_project_name"
+  - tag2: "gh_org/gh_project_name"
 
 # Set these values for LDAP lookup support. Switch _ENABLED to true.
-LDAP_ENABLED: false
 LDAP_HOST: ""
 LDAP_PORT: ""
 LDAP_BASE_DN: ""
@@ -17,23 +16,29 @@ LDAP_BASE_PW: ""
 LDAP_SEARCH_DN: ""
 
 # Set these values for Roles Management support. Switch _ENABLED to true.
-ROLES_ENABLED: false
 ROLES_URL: ""
 ROLES_USERNAME: ""
 ROLES_TOKEN: ""
 
-# Enable piping to the UNIX 'host' command (with validation)
-HOST_ENABLED: false
-
-# An Easter Egg command. Prints the number of minutes of "productivity" left
-# until 5:00pm.
-VISIONEERS_ENABLED: false
-
-# If true, requires separate github.yml file
-GITHUB_ENABLED: false
-
-#Devboard Data
-DEVBOARD_ENABLED: false
+# Set these values for Devboard lookup support.
 DEVBOARD_URL: ""
+DEVBOARD_JSON: ""
 DEVBOARD_API_USER: ""
 DEVBOARD_API_SECRET: ""
+
+# Define where a command is enabled here
+GLOBAL:
+  "Current Channel": true
+  Help: true
+  Visioneers: true
+  LDAP: true
+  Host: true
+  Roles: true
+  Devboard: true
+  GitHub: true
+
+# To add local configuration for a channel, do the following:
+# your-channel-name:
+#   "The Command": true/false
+#
+# If you do not specify a command, it will use the GLOBAL config

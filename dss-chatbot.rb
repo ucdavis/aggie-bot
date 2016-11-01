@@ -12,13 +12,15 @@ require 'yaml'
 require 'cgi'
 require 'slack-ruby-client'
 
+load './chat_bot_command.rb'
+
 # Store the current working directory as Daemons.run_proc() will change it
 $cwd = Dir.getwd
 
 # 'Daemonize' the process (see 'daemons' gem for more information)
 Daemons.run_proc('dss-chatbot.rb') do
   # Keep a log file (auto-rotate at 1 MB, keep 10 rotations)
-  @logger = logger = Logger.new($cwd + '/dss-chatbot.log', 10, 1024000)
+  $logger = logger = Logger.new($cwd + '/dss-chatbot.log', 10, 1024000)
 
   logger.info "DSS ChatBot started at #{Time.now}"
 
@@ -33,91 +35,19 @@ Daemons.run_proc('dss-chatbot.rb') do
     exit
   end
 
+  # Set up chat commands plugin
+  ChatBotCommand.initialize($cwd)
+
   # Set up Slack connection
   Slack.configure do |config|
     config.token = $SETTINGS['SLACK_API_TOKEN']
-  end
-
-  # Set up LDAP support, if enabled
-  if $SETTINGS['LDAP_ENABLED']
-    require 'ldap'
-    load $cwd + '/commands/ldap.rb'
-
-    logger.info "LDAP command(s) enabled."
-  end
-  
-  # Set up DEVBOARD support, if enabled
-  if $SETTINGS['DEVBOARD_ENABLED']
-    load $cwd + '/commands/devboard.rb'
-    
-    logger.info "DevBoard command(s) enabled."
-  end
-
-  # Set up SysAid support, if enabled
-  if $SETTINGS['SYSAID_ENABLED']
-    require 'sysaid'
-
-    # Log into SysAid
-    begin
-      SysAid::login $SETTINGS['SYSAID_ACCOUNT'], $SETTINGS['SYSAID_USER'], $SETTINGS['SYSAID_PASSWORD'], $SETTINGS['SYSAID_URI']
-      logger.info "Logged into SysAid."
-    rescue Exception => e
-      $stderr.puts "Failed to connect to SysAid: #{e}"
-      logger.error "DSS ChatBot could not start because it failed to connect to SysAid. Exception: #{e}"
-      exit
-    end
-
-    load $cwd + '/commands/sysaid.rb'
-
-    logger.info "SysAid command(s) enabled."
-  end
-
-  # Set up Roles Management support, if enabled
-  if $SETTINGS['ROLES_ENABLED']
-    require 'roles-management-api'
-    load $cwd + '/commands/roles.rb'
-
-    logger.info "Roles Management command(s) enabled."
-  end
-
-  if $SETTINGS['HOST_ENABLED']
-    load $cwd + '/commands/host.rb'
-
-    logger.info "'host' command enabled."
-  end
-
-  # Set up GitHub support, if enabled
-  if $SETTINGS['GITHUB_ENABLED']
-    require 'octokit'
-
-    # Load GitHub-specific settings from config/github.yml
-    github_settings_file = $cwd + '/config/github.yml'
-    if File.file?(github_settings_file)
-      $GITHUB_SETTINGS = YAML.load_file(github_settings_file)
-      logger.info "GitHub settings loaded."
-    else
-      $stderr.puts "You need to set up #{github_settings_file} to enable GitHub support."
-      logger.error "DSS ChatBot could not start because #{github_settings_file} does not exist. See config/github.example.yml."
-      exit
-    end
-
-    load $cwd + '/commands/github.rb'
-
-    logger.info "GitHub command(s) enabled."
-  end
-
-  # Set up the easter egg 'visioneers' command, if enabled
-  if $SETTINGS['VISIONEERS_ENABLED']
-    load $cwd + '/commands/visioneers.rb'
-
-    logger.info "Nonsense command(s) enabled."
   end
 
   client = Slack::RealTime::Client.new
   client.on :hello do
     logger.info "Successfully connected, welcome '#{client.self['name']}' to the '#{client.team['name']}' team at https://#{client.team['domain']}.slack.com."
   end
-  
+
   client.on :close do
     logger.info "Caught close signal. Attempting to restart ..."
     EM.stop
@@ -130,45 +60,9 @@ Daemons.run_proc('dss-chatbot.rb') do
     next if data["user"] == self_id
 
     # Parse the received message for valid Chat Bot commands
-    case data['text']
-    when /^sysaid/i then
-      if $SETTINGS['SYSAID_ENABLED']
-        client.message channel: data['channel'], text: sysaid_command(data['text'])
-      end
-    when /#[\d]+(\s|$|\z|\D)/ then # looks for #123 followed by space, end of string, or end of line
-      if $SETTINGS['SYSAID_ENABLED']
-        client.message channel: data['channel'], text: sysaid_command(data['text'])
-      end
-    when /^ldap/ then
-      if $SETTINGS['LDAP_ENABLED']
-        client.message channel: data['channel'], text: ldap_command(data['text'])
-      end
-    when /^host/ then
-      if $SETTINGS['HOST_ENABLED']
-        client.message channel: data['channel'], text: host_command(Slack::Messages::Formatting.unescape(data['text']))
-      end
-    when /^visioneers/ then
-      if $SETTINGS['VISIONEERS_ENABLED']
-        client.message channel: data['channel'], text: visioneers_command
-      end
-    when /([\w]+)\/([\d]+)/ then # look for characters followed by / followed by numbers, e.g. dw/123
-      if $SETTINGS['GITHUB_ENABLED']
-        github_command(data['text']).each do |message|
-          client.message channel: data['channel'], text: message
-        end
-      end
-    when /^!assignments/ then
-      if $SETTINGS["DEVBOARD_ENABLED"]
-        client.message channel: data['channel'], text: devboard_command
-      end
-    #when /good morning/i then
-      #greetings = ['Which in ghosts make merry on this last of dear October days? Hm ... Well, good morning!', 'Where there is no imagination, there is no horror. Good morning!', 'There are nights when the wolves are silent and only the moon howls. Good morning!', 'They that are born on Halloween shall see more than other folk. Good morning!', 'Clothes make a statement. Costumes tell a story. Good morning!', 'I see dead people. Good morning!', 'October, tuck tiny candy bars in my pockets and carve my smile into a thousand pumpkins .... Merry October, and good morning!', 'Proof of our society\'s decline is that Halloween has become a broad daylight event for many. Good morning!', 'When black cats prowl and pumpkins gleam, may luck be yours on Halloween. Good morning!', 'Look, there\'s no metaphysics on earth like chocolates. Good morning!', 'Shadows of a thousand years rise again unseen, voices whisper in the trees, "Tonight is Halloween!" Also, good morning!', 'When witches go riding, and black cats are seen, the moon laughs and whispers, ‘tis near Halloween. Good morning!', 'Hold on, man. We don\'t go anywhere with "scary," "spooky," "haunted," or "forbidden" in the title. ~From Scooby-Doo. Good morning!', 'Eat, drink and be scary. And have a good morning!']
-      #greetings = ['Dobro jutro', 'Goedemorgen', 'Bonjour', 'Guten Morgen', 'Howdy', 'Buongiorno', 'Dzień dobry', 'Доброе утро', 'Habari ya asubuhi', 'Bună dimineaţa']
-      #client.message channel: data['channel'], text: greetings.sample #+ "!"
-    when /^roles [\S]+$/i then
-      if $SETTINGS['ROLES_ENABLED']
-        client.message channel: data['channel'], text: roles_command(data['text'][6..-1])
-      end
+    if data['text']
+      response = ChatBotCommand.dispatch(data['text'], data['channel'])
+      client.message(channel: data['channel'], text: response) unless response == nil
     end
   end
 
@@ -191,8 +85,8 @@ Daemons.run_proc('dss-chatbot.rb') do
     rescue StandardError => e
       logger.error e
       raise e
-    #ensure
-      #client = nil
+    # ensure
+      # client = nil
     end
   end
 
