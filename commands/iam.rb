@@ -2,7 +2,7 @@ require "net/http"
 
 module ChatBotCommand
   class Iam
-    TITLE = "Iam"        # Title of the command
+    TITLE = "IAM"        # Title of the command
     REGEX = /^!iam/      # REGEX the command needs to look for
     COMMAND = "!iam <options> <query>"     # Command to use
     DESCRIPTION = "Searches campus IAM for information about a given individual." +
@@ -18,6 +18,11 @@ module ChatBotCommand
     PEOPLE_MAX = 10
 
     def run(message, channel)
+      unless $SETTINGS["IAM_HOST"] && $SETTINGS["IAM_API_TOKEN"]
+        $logger.error "Could not run IAM comamnd. Check that IAM_HOST and IAM_API_TOKEN are defined in settings."
+        return "IAM command is not configured correctly."
+      end
+
       # Grab the query to run for IAM
       query = message.scan(/(\S+)/)
       query.shift # gets rid of !iam
