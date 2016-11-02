@@ -93,14 +93,12 @@ module ChatBotCommand
         end
 
         forwarding_info = page.css("div.form-item.form-type-item")
-        # TODO: forwarding_info is empty if the user does not exist or the css is not found on the page
-        #     : figure out how to distinguish
-        # unless forwarding_info.empty?
-        #   return forwarding_info
-        # else
-        #   $logger.error "Mail ID information not found. Page layout not recognized."
-        #   return "Mail ID information not found. Page layout not recognized."
-        # end
+        unless forwarding_info.empty?
+          return forwarding_info
+        else
+          $logger.error "Mail ID information not found. Page layout not recognized."
+          return "No such user."
+        end
       end
     end
 
