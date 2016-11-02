@@ -17,8 +17,7 @@ ADD Gemfile.lock $HOME/
 RUN bundle install
 
 # Set up chatbot environment
-RUN mkdir $HOME/config
-RUN mkdir $HOME/commands
+RUN mkdir $HOME/{config,commands}
 
 # Add ChatBot files
 ADD ./dss-chatbot.rb $HOME/
