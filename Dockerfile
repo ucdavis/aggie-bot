@@ -12,7 +12,6 @@ WORKDIR $HOME
 
 # Install gems
 ADD Gemfile* $HOME/
-RUN gem install ruby-ldap -v '0.9.17'
 RUN bundle install
 
 # Add ChatBot files
