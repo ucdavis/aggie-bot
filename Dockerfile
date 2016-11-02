@@ -5,7 +5,7 @@ RUN apt-get update
 RUN apt-get install libsasl2-dev
 RUN apt-get install libssl-dev
 RUN apt-get install -y libldap2-dev
-RUN apt-get install -y gnome-schedule
+RUN apt-get install -y cron
 
 # Set up environment to avoid adding files to root home
 ENV HOME /home
