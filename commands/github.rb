@@ -1,3 +1,5 @@
+require 'octokit'
+
 module ChatBotCommand
   class GitHub
     TITLE = "GitHub"
@@ -12,8 +14,8 @@ module ChatBotCommand
 
     def run(message, channel)
       unless $SETTINGS["GITHUB_TOKEN"]
-        puts "You need to setup GitHub settings to enable GitHub support."
-        return ""
+        $logger.error "Cannot run GitHub command: ensure GITHUB_TOKEN is in settings."
+        return "GitHub support not correctly configured."
       end
 
       messages = []
@@ -33,7 +35,8 @@ module ChatBotCommand
         client = Octokit::Client.new(:access_token => $SETTINGS["GITHUB_TOKEN"])
         client.login
       rescue Octokit::Unauthorized => e
-        return ["Unable to log into GitHub. Check credentials."]
+        $logger.error "Unable to log into GitHub. Check credentials."
+        return "Cannot run GitHub command, credentials rejected."
       end
 
       matches.each do |m|
@@ -64,7 +67,7 @@ module ChatBotCommand
         end
       end
 
-      return messages
+      return messages.join("\n")
     end
 
     @@instance = GitHub.new

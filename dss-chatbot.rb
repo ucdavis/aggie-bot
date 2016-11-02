@@ -28,6 +28,13 @@ Daemons.run_proc('dss-chatbot.rb') do
   settings_file = $cwd + '/config/settings.yml'
   if File.file?(settings_file)
     $SETTINGS = YAML.load_file(settings_file)
+
+    if $SETTINGS["GLOBAL"] == nil
+      $stderr.puts "Settings file found but missing GLOBAL section. Cannot proceed."
+      logger.error "DSS ChatBot could not start because #{settings_file} does not have a GLOBAL section. See config/settings.example.yml."
+      exit
+    end
+
     logger.info "Settings loaded."
   else
     $stderr.puts "You need to set up #{settings_file} before running this script."

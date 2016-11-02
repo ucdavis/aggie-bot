@@ -23,11 +23,14 @@ module ChatBotCommand
     # Runs the UNIX 'host' command with the given query.
     # Expects 'message' to begin with 'host ' + the given query, e.g. 'host www.ucdavis.edu'
     def run(message, channel)
+      # Remove the Slack formatting that is surely on the URL, e.g. <http://ucdavis.edu|ucdavis.edu> => ucdavis.edu
+      message = Slack::Messages::Formatting.unescape(message)
+
       query = message[5..-1] # Strip away the beginning "host "
 
       unless valid_ip_or_hostname(query)
         $logger.warn "Invalid IP or hostname for 'host' command: '#{query}'"
-        return "Query does not appear to be an IP address nor hostname."
+        return "Query '#{query}' does not appear to be an IP address nor hostname."
       end
 
       # Call the script, piping the JSON

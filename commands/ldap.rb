@@ -1,3 +1,5 @@
+require 'ldap'
+
 module ChatBotCommand
   class Ldap
     TITLE = "LDAP"

@@ -7,7 +7,7 @@ module ChatBotCommand
     COMMAND = "!mailid <Login ID>"
     DESCRIPTION = "Shows the mail forwarding information of a user e.g. `!mailid cmthielen`"
 
-    # Run MUST return a string
+    # Run always returns a string
     def run(message, channel)
       # Get information
       response = fetch_mail_settings message.split(" ")[1]
@@ -18,7 +18,7 @@ module ChatBotCommand
       format_response response
     end
 
-    # Returns formatted string of the user's mail forwarding information
+    # Returns a formatted string of the user's mail forwarding information
     # @param data - an array of Nokogiri objects
     def format_response(data)
       return "No user found" if data.empty?
@@ -55,7 +55,6 @@ module ChatBotCommand
     # @param login_id - Kerberos login id to query
     # @return - an array of Nokogiri objects
     def fetch_mail_settings(login_id)
-      # Success! Load the page and use the CAS credentials
       agent = Mechanize.new
 
       # Certain web servers check the user agent string for compatibility
