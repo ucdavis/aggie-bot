@@ -12,7 +12,8 @@ ENV HOME /home
 WORKDIR $HOME
 
 # Install gems
-ADD Gemfile* $HOME/
+ADD Gemfile $HOME/
+ADD Gemfile.lock $HOME/
 RUN bundle install
 
 # Set up chatbot environment
