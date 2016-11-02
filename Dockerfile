@@ -21,10 +21,10 @@ RUN mkdir $HOME/{config,commands}
 # Add ChatBot files
 ADD ./dss-chatbot.rb $HOME/
 ADD ./chat_bot_command.rb $HOME/
-ADD ./config/settings.yml $HOME/config
+ADD ./config/settings.yml $HOME/config/
 
 # Add Commands
-ADD ./commands/* $HOME/commands
+ADD ./commands/* $HOME/commands/
 
 # Run chatbot
 ENTRYPOINT ["./dss-chatbot.rb", "run"]
