@@ -26,16 +26,7 @@ ADD ./config/schedule.rb $HOME/config
 ADD ./config/settings.yml $HOME/config
 
 # Add Commands
-ADD ./commands/devboard.rb $HOME/commands
-ADD ./commands/email.rb $HOME/commands
-ADD ./commands/github.rb $HOME/commands
-ADD ./commands/help.rb $HOME/commands
-ADD ./commands/host.rb $HOME/commands
-ADD ./commands/iam.rb $HOME/commands
-ADD ./commands/ldap.rb $HOME/commands
-ADD ./commands/mail.rb $HOME/commands
-ADD ./commands/roles.rb $HOME/commands
-ADD ./commands/visioneers.rb $HOME/commands
+ADD ./commands/* $HOME/commands
 
 # Update crontab from whenever gem
 RUN whenever --update-crontab
