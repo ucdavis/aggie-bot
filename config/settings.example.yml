@@ -1,6 +1,9 @@
 # This value must be set.
 SLACK_API_TOKEN: ""
 
+IAM_HOST: ""
+IAM_API_TOKEN: ""
+
 # Set these values for GitHub support.
 GITHUB_TOKEN: ""
 
