@@ -16,3 +16,6 @@ gem 'faraday-http-cache' # (provides etag caching in octokit)
 
 # For cron tasks
 gem 'whenever', :require => false
+
+# For crawling with Mail ID command
+gem 'mechanize'
