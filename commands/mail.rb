@@ -3,8 +3,8 @@ require 'mechanize'
 module ChatBotCommand
   class Mail
     TITLE = "Mail ID"
-    REGEX = /^!mailid\s+\S+\s*$/
-    COMMAND = "!mailid <Login ID>"
+    REGEX = /^mailid\s+\S+\s*$/
+    COMMAND = "mailid <Login ID>"
     DESCRIPTION = "Shows the mail forwarding information of a user e.g. `!mailid cmthielen`"
 
     # Run always returns a string

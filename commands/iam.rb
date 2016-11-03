@@ -3,8 +3,8 @@ require "net/http"
 module ChatBotCommand
   class Iam
     TITLE = "IAM"        # Title of the command
-    REGEX = /^!iam/      # REGEX the command needs to look for
-    COMMAND = "!iam <options> <query>"     # Command to use
+    REGEX = /^iam/      # REGEX the command needs to look for
+    COMMAND = "iam <options> <query>"     # Command to use
     DESCRIPTION = "Searches campus IAM for information about a given individual." +
                  " \n*<options>* \n" +
                  ">\tfirst   - queries by first name\n" +
