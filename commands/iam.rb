@@ -27,7 +27,7 @@ module ChatBotCommand
       query = message.scan(/(\S+)/)
       query.shift # gets rid of !iam
 
-      iam_id = get_iam_id(query)
+      iam_id = get_iam_id query
       # Returns early if iam_id is an error message
       return iam_id if iam_id.class == String
 
@@ -85,7 +85,7 @@ module ChatBotCommand
 
     # Returns an array of iam_ids, a string if no iam_id is found
     # @param query - Slack message without !iam
-    # e.g. query = {"dFirstName" => Mark Emmanuel}
+    # e.g. query = ["dFirstName", "Mark", "Emmanuel"]
     def get_iam_id(query)
       command = query.shift
       command = command[0].downcase # required since shift returns an array
@@ -110,7 +110,22 @@ module ChatBotCommand
         query = {"email" => ChatBotCommand.decode_slack(query)}
         api = "api/iam/people/contactinfo/search"
       else
-        return command + " is not a valid option. !help iam for more details"
+        # Search by login ID, e-mail, first name, and last name
+        # Return if the search retrieves an iamid, otherwise try another search
+        query = query == nil ? command : "#{command} #{query}"
+
+        search = get_iam_id "loginid #{query}".scan(/(\S+)/)
+        return search unless search.class == String
+
+        search = get_iam_id "email #{query}".scan(/(\S+)/)
+        return search unless search.class == String
+
+        search = get_iam_id "last #{query}".scan(/(\S+)/)
+        return search unless search.class == String
+
+        # Last option for searching, return regardless of result
+        search = get_iam_id "first #{query}".scan(/(\S+)/)
+        return search 
       end
 
       result = get_from_api(api, query)
