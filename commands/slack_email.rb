@@ -69,11 +69,11 @@ module ChatBotCommand
       end
     end # def generate_user_array
 
-    @@instance = Email.new
+    @@instance = SlackEmail.new
     def self.get_instance
       return @@instance
     end
 
     private_class_method :new
-  end # class Email
+  end # class SlackEmail
 end # module ChatBotCommand
