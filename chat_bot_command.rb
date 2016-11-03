@@ -101,6 +101,14 @@ module ChatBotCommand
     end
   end
 
+  # Updates chatbot's configuration / data
+  def ChatBotCommand.reload
+    # Update channel list
+    @channel_names = get_channel_list
+
+    return "Chatbot reloaded."
+  end
+
   # Removes any Slack-specific encoding
   def ChatBotCommand.decode_slack(string)
     if string
