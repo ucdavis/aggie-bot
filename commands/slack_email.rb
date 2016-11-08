@@ -15,9 +15,9 @@ module ChatBotCommand
 
       queried_users = []
       case message
-      when /^!email\s+(<\S+>)\s*$/ # query by @user
+      when /^email\s+(<\S+>)\s*$/ # query by @user
         # at this point, user is "<@SOMEID>"
-        user = /^!email\s+(<\S+>)\s*$/.match(message)[1]
+        user = /^email\s+(<\S+>)\s*$/.match(message)[1]
 
         # we only need SOMEID
         user = user[2...user.index(">")]
