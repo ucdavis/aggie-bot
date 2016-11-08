@@ -115,6 +115,9 @@ module ChatBotCommand
     @channel_names = get_channel_list
   end
 
+  # Outputs the username and email of customer to the log
+  # @param user - SlackRubyClient::User object of customer
+  # @param customer_log - Logger to output
   def ChatBotCommand.log(user, customer_log)
     customer_log.info user.name + " " + user.profile.email
   end
