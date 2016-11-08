@@ -142,13 +142,11 @@ module ChatBotCommand
   def ChatBotCommand.is_eligible_for_private_data(command, username)
     # Return false if the command does not have a private list of users
     # PRIVATE is optional so the chatbot does not need to exit if it does not exist
-    return false if $SETTINGS["PRIVATE"] == nil || $SETTINGS["PRIVATE"][command] == nil
-
-    $SETTINGS["PRIVATE"][command].each do |user|
-      return true if user == username
+    if $SETTINGS["PRIVATE"] == nil || $SETTINGS["PRIVATE"][command] == nil
+      return false
+    else
+      return !$SETTINGS["PRIVATE"][command].find_index(username).nil?
     end
-
-    return false
   end
 
 end
