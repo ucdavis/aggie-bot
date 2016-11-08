@@ -19,8 +19,11 @@ $cwd = Dir.getwd
 
 # 'Daemonize' the process (see 'daemons' gem for more information)
 Daemons.run_proc('dss-chatbot.rb') do
-  # Keep a log file (auto-rotate at 1 MB, keep 10 rotations)
+  # Log errors / information to console
   $logger = logger = Logger.new(STDOUT)
+
+  # Keep a log file (auto-rotate at 1 MB, keep 10 rotations) of users using chatbot
+  customer_log = Logger.new($cwd + "/chatbot-customers.log", 10, 1024000)
 
   logger.info "DSS ChatBot started at #{Time.now}"
 
@@ -69,12 +72,15 @@ Daemons.run_proc('dss-chatbot.rb') do
     # Parse the received message for valid Chat Bot commands
     if data['text']
       response = ChatBotCommand.dispatch(data['text'], data['channel'])
-      client.message(channel: data['channel'], text: response) unless response == nil
+      unless response == nil || response.empty?
+        client.message(channel: data['channel'], text: response)
+        ChatBotCommand.log client.users[data["user"]], customer_log
+      end
     end
   end
 
   client.on :group_joined do
-    $logger.info "Entered private channe, reloading data"
+    $logger.info "Entered private channel, reloading data"
     ChatBotCommand.reload
   end
 

@@ -113,8 +113,10 @@ module ChatBotCommand
   def ChatBotCommand.reload
     # Update channel list
     @channel_names = get_channel_list
+  end
 
-    return "Chatbot reloaded."
+  def ChatBotCommand.log(user, customer_log)
+    customer_log.info user.name + " " + user.profile.email
   end
 
   # Removes any Slack-specific encoding
