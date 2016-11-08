@@ -14,7 +14,8 @@ module ChatBotCommand
   # Returns a string to output if a command is found, else nil
   # @param message - The message sent on slackbot e.g. !help
   # @param channel - The channel where the message was sent e.g. dss-it-appdev
-  def ChatBotCommand.dispatch(message, channel)
+  # @param user - User who sent the message
+  def ChatBotCommand.dispatch(message, channel, user)
     # Match the message to the first compatible command
     ChatBotCommand.constants.each do |command|
       # Get a reference of the command class
@@ -34,6 +35,7 @@ module ChatBotCommand
       if regex_match && is_enabled_for(channel, command_class_reference::TITLE)
         response = command_class_reference.get_instance.run(message, channel)
         if response.is_a? String
+          log_customer user, $customer_log
           return response
         else
           $logger.error(command_class_reference::TITLE + " did not return a String")
@@ -118,7 +120,7 @@ module ChatBotCommand
   # Outputs the username and email of customer to the log
   # @param user - SlackRubyClient::User object of customer
   # @param customer_log - Logger to output
-  def ChatBotCommand.log(user, customer_log)
+  def ChatBotCommand.log_customer(user, customer_log)
     customer_log.info user.name + " " + user.profile.email
   end
 
