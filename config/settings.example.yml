@@ -39,6 +39,10 @@ GLOBAL:
   Devboard: true
   GitHub: true
 
+# Define who can access extra details on a command
+PRIVATE:
+  Help: ["msdiez"]
+
 # To add local configuration for a channel, do the following:
 # your-channel-name:
 #   "The Command": true/false
