@@ -23,12 +23,8 @@ module ChatBotCommand
 
       # Check if the assigned REGEX matches the message passed
       regex_match = false
-      if command_class_reference::REGEX.class == Array
-        command_class_reference::REGEX.each do |regex|
-          regex_match = true unless regex.match(message) == nil
-        end
-      else
-        regex_match = true unless command_class_reference::REGEX.match(message) == nil
+      Array(command_class_reference::REGEX).each do |regex|
+        regex_match = true unless regex.match(message) == nil
       end
 
       # Run the command and return its response message if it is enabled
@@ -43,8 +39,9 @@ module ChatBotCommand
           return nil
         end
       end
-
     end
+    
+    return nil
   end
 
   # Returns true if a command is enabled for the channel, otherwise false / nil
