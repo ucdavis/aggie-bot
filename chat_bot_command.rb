@@ -21,18 +21,26 @@ module ChatBotCommand
       command_class_reference = ChatBotCommand.const_get(command)
 
       # Check if the assigned REGEX matches the message passed
-      if command_class_reference::REGEX.match(message)
-        # Run the command and return its response message if it is enabled
-        if is_enabled_for(channel, command_class_reference::TITLE)
-          response = command_class_reference.get_instance.run(message, channel)
-          if response.is_a? String
-            return response
-          else
-            $logger.error(command_class_reference::TITLE + " did not return a String")
-            return nil
-          end
+      regex_match = false
+      if command_class_reference::REGEX.class == Array
+        command_class_reference::REGEX.each do |regex|
+          regex_match = true unless regex.match(message) == nil
+        end
+      else
+        regex_match = true unless command_class_reference::REGEX.match(message) == nil
+      end
+
+      # Run the command and return its response message if it is enabled
+      if regex_match && is_enabled_for(channel, command_class_reference::TITLE)
+        response = command_class_reference.get_instance.run(message, channel)
+        if response.is_a? String
+          return response
+        else
+          $logger.error(command_class_reference::TITLE + " did not return a String")
+          return nil
         end
       end
+
     end
   end
 
