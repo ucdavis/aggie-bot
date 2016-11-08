@@ -113,7 +113,7 @@ module ChatBotCommand
   end
 
   # Updates chatbot's configuration / data
-  def ChatBotCommand.reload_channels
+  def ChatBotCommand.reload_channels!
     # Update channel list
     @channel_names = get_channel_list
   end

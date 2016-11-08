@@ -78,7 +78,7 @@ Daemons.run_proc('dss-chatbot.rb') do
 
   client.on :group_joined do
     $logger.info "Entered private channel, reloading data"
-    ChatBotCommand.reload_channels
+    ChatBotCommand.reload_channels!
   end
 
   # Loop itself credit slack-ruby-bot: https://github.com/dblock/slack-ruby-bot/blob/798d1305da8569381a6cd70b181733ce405e44ce/lib/slack-ruby-bot/app.rb#L45
