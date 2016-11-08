@@ -28,11 +28,11 @@ module ChatBotCommand
       end
 
       # Run the command and return its response message if it is enabled
-      if regex_match && is_enabled_for(channel, command_class_reference::TITLE)
-        eligible = is_eligible_for_private_data command_class_reference::TITLE, user.name
-        response = command_class_reference.get_instance.run(message, channel, eligible)
+      if is_enabled_for(channel, command_class_reference::TITLE) && regex_match
+        allow_private = is_eligible_for_private_data command_class_reference::TITLE, user.name
+        response = command_class_reference.get_instance.run(message, channel, allow_private)
         if response.is_a? String
-          log_customer user, $customer_log
+          log_user user, $customer_log
           return response
         else
           $logger.error(command_class_reference::TITLE + " did not return a String")
@@ -40,7 +40,7 @@ module ChatBotCommand
         end
       end
     end
-    
+
     return nil
   end
 
@@ -110,7 +110,7 @@ module ChatBotCommand
   end
 
   # Updates chatbot's configuration / data
-  def ChatBotCommand.reload
+  def ChatBotCommand.reload_channels
     # Update channel list
     @channel_names = get_channel_list
   end
@@ -118,7 +118,7 @@ module ChatBotCommand
   # Outputs the username and email of customer to the log
   # @param user - SlackRubyClient::User object of customer
   # @param customer_log - Logger to output
-  def ChatBotCommand.log_customer(user, customer_log)
+  def ChatBotCommand.log_user(user, customer_log)
     customer_log.info user.name + " " + user.profile.email
   end
 
@@ -138,7 +138,8 @@ module ChatBotCommand
   # @param usernam - Slack username of Slack user
   def ChatBotCommand.is_eligible_for_private_data(command, username)
     # Return false if the command does not have a private list of users
-    return false if $SETTINGS["PRIVATE"][command] == nil
+    # PRIVATE is optional so the chatbot does not need to exit if it does not exist
+    return false if $SETTINGS["PRIVATE"] == nil || $SETTINGS["PRIVATE"][command] == nil
 
     $SETTINGS["PRIVATE"][command].each do |user|
       return true if user == username
