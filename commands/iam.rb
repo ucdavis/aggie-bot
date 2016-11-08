@@ -17,7 +17,7 @@ module ChatBotCommand
     # Maximum number of individuals to show in one call of this command
     PEOPLE_MAX = 10
 
-    def run(message, channel, can_view_private)
+    def run(message, channel, private_allowed)
       unless $SETTINGS["IAM_HOST"] && $SETTINGS["IAM_API_TOKEN"]
         $logger.error "Could not run IAM comamnd. Check that IAM_HOST and IAM_API_TOKEN are defined in settings."
         return "IAM command is not configured correctly."
@@ -38,7 +38,7 @@ module ChatBotCommand
       response = ""
       iam_id.each do |id|
         data = fetch_user_details id
-        response = response + format_data(data, can_view_private)
+        response = response + format_data(data, private_allowed)
         response = response + "\n\n"
       end
 
@@ -145,7 +145,7 @@ module ChatBotCommand
 
     # Formats the data from IAM API to a prettier format
     # @param data - the hash obtained from gather_data
-    def format_data(data, can_view_private)
+    def format_data(data, private_allowed)
       # Store all formatted data in this array
       formatted_data = []
 
@@ -180,7 +180,7 @@ module ChatBotCommand
 
           formatted_data.push name
           formatted_data.push "*IAM ID* #{info["iamId"]}"
-          if can_view_private
+          if private_allowed
             formatted_data.push "*Student ID* #{info["studentId"]}" unless info["studentId"] == nil
             formatted_data.push "*PPS ID* #{info["ppsId"]}" unless info["ppsId"] == nil
           end

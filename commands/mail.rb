@@ -8,7 +8,7 @@ module ChatBotCommand
     DESCRIPTION = "Shows the mail forwarding information of a user e.g. `!mailid cmthielen`"
 
     # Run always returns a string
-    def run(message, channel, can_view_private)
+    def run(message, channel, private_allowed)
       # Get information
       response = fetch_mail_settings message.split(" ")[1]
 

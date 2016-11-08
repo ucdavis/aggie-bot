@@ -5,7 +5,7 @@ module ChatBotCommand
     COMMAND = '!help [command]'
     DESCRIPTION = "Lists all commands available on the channel. !help <title> for more details of a specific command"
 
-    def run(message, channel, can_view_private)
+    def run(message, channel, private_allowed)
       specific_command = message.scan(/(\S+)/)
       case message
       when /^!help/
