@@ -33,6 +33,8 @@ module ChatBotCommand
 
       # Run the command and return its response message if it is enabled
       if regex_match && is_enabled_for(channel, command_class_reference::TITLE)
+        private = is_eligible_for_private_data command_class_reference::TITLE, user.name
+        puts private
         response = command_class_reference.get_instance.run(message, channel)
         if response.is_a? String
           log_customer user, $customer_log
@@ -133,6 +135,20 @@ module ChatBotCommand
     end
 
     return string
+  end
+
+  # Returns true if the user is eligible to view private data, false otherwise
+  # @param command - Title of command
+  # @param usernam - Slack username of Slack user
+  def ChatBotCommand.is_eligible_for_private_data(command, username)
+    # Return false if the command does not have a private list of users
+    return false if $SETTINGS["PRIVATE"][command] == nil
+
+    $SETTINGS["PRIVATE"][command].each do |user|
+      return true if user == username
+    end
+
+    return false
   end
 
 end
