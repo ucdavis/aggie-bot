@@ -17,7 +17,7 @@ module ChatBotCommand
     # Maximum number of individuals to show in one call of this command
     PEOPLE_MAX = 10
 
-    def run(message, channel)
+    def run(message, channel, can_view_private)
       unless $SETTINGS["IAM_HOST"] && $SETTINGS["IAM_API_TOKEN"]
         $logger.error "Could not run IAM comamnd. Check that IAM_HOST and IAM_API_TOKEN are defined in settings."
         return "IAM command is not configured correctly."
@@ -125,7 +125,7 @@ module ChatBotCommand
 
         # Last option for searching, return regardless of result
         search = get_iam_id "first #{query}".scan(/(\S+)/)
-        return search 
+        return search
       end
 
       result = get_from_api(api, query)

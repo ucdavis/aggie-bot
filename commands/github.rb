@@ -12,7 +12,7 @@ module ChatBotCommand
       true if Float(string) rescue false
     end
 
-    def run(message, channel)
+    def run(message, channel, can_view_private)
       unless $SETTINGS["GITHUB_TOKEN"]
         $logger.error "Cannot run GitHub command: ensure GITHUB_TOKEN is in settings."
         return "GitHub support not correctly configured."

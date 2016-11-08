@@ -28,7 +28,7 @@ module ChatBotCommand
       string.gsub(LDAP_ESCAPE_RE) { |char| "\\" + LDAP_ESCAPES[char] } if string
     end
 
-    def run(message, channel)
+    def run(message, channel, can_view_private)
       parameters = message[5..-1] # Strip away the beginning "ldap "
 
       # In case we're called with less than five characters in 'message'

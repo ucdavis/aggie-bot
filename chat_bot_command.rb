@@ -33,9 +33,8 @@ module ChatBotCommand
 
       # Run the command and return its response message if it is enabled
       if regex_match && is_enabled_for(channel, command_class_reference::TITLE)
-        private = is_eligible_for_private_data command_class_reference::TITLE, user.name
-        puts private
-        response = command_class_reference.get_instance.run(message, channel)
+        eligible = is_eligible_for_private_data command_class_reference::TITLE, user.name
+        response = command_class_reference.get_instance.run(message, channel, eligible)
         if response.is_a? String
           log_customer user, $customer_log
           return response
