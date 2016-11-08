@@ -23,7 +23,9 @@ Daemons.run_proc('dss-chatbot.rb') do
   $logger = logger = Logger.new(STDOUT)
 
   # Keep a log file (auto-rotate at 1 MB, keep 10 rotations) of users using chatbot
-  $customer_log = Logger.new($cwd + "/chatbot-customers.log", 10, 1024000)
+  ROTATIONS = 10
+  LOG_SIZE = 1024000
+  $customer_log = Logger.new($cwd + "/chatbot-customers.log", ROTATIONS, LOG_SIZE)
 
   logger.info "DSS ChatBot started at #{Time.now}"
 
