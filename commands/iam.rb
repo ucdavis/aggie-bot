@@ -38,7 +38,7 @@ module ChatBotCommand
       response = ""
       iam_id.each do |id|
         data = fetch_user_details id
-        response = response + format_data(data)
+        response = response + format_data(data, can_view_private)
         response = response + "\n\n"
       end
 
@@ -145,7 +145,7 @@ module ChatBotCommand
 
     # Formats the data from IAM API to a prettier format
     # @param data - the hash obtained from gather_data
-    def format_data(data)
+    def format_data(data, can_view_private)
       # Store all formatted data in this array
       formatted_data = []
 
@@ -180,6 +180,11 @@ module ChatBotCommand
 
           formatted_data.push name
           formatted_data.push "*IAM ID* #{info["iamId"]}"
+          if can_view_private
+            formatted_data.push "*Student ID* #{info["studentId"]}" unless info["studentId"] == nil
+            formatted_data.push "*PPS ID* #{info["ppsId"]}" unless info["ppsId"] == nil
+          end
+
         end
       end
 
