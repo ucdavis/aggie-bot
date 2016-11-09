@@ -35,7 +35,7 @@ module ChatBotCommand
 
         # If regex matches, run the command
         if regex_match
-          allow_private = is_dm ? is_allowed_private(command_class_reference::TITLE, user.name) : false
+          allow_private = is_dm && is_allowed_private(command_class_reference::TITLE, user.name)
           response = command_class_reference.get_instance.run(message, channel, allow_private)
           if response.is_a? String
             log_user user, $customer_log
