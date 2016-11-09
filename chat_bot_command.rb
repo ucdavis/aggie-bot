@@ -21,25 +21,28 @@ module ChatBotCommand
       # Get a reference of the command class
       command_class_reference = ChatBotCommand.const_get(command)
 
-      # Check if the assigned REGEX matches the message passed
-      regex_match = false
-      Array(command_class_reference::REGEX).each do |regex|
-        unless regex.match(message) == nil
-          regex_match = true
-          break
-        end
-      end
-
       # Run the command and return its response message if it is enabled
-      if is_enabled_for(channel, command_class_reference::TITLE) && regex_match
-        allow_private = is_eligible_for_private_data command_class_reference::TITLE, user.name
-        response = command_class_reference.get_instance.run(message, channel, allow_private)
-        if response.is_a? String
-          log_user user, $customer_log
-          return response
-        else
-          $logger.error(command_class_reference::TITLE + " did not return a String")
-          return nil
+      if is_enabled_for(channel, command_class_reference::TITLE)
+        # Check if the assigned REGEX matches the message passed
+        regex_match = false
+        Array(command_class_reference::REGEX).each do |regex|
+          unless regex.match(message) == nil
+            regex_match = true
+            break
+          end
+        end
+
+        # If regex matches, run the command
+        if regex_match
+          allow_private = is_allowed_private(command_class_reference::TITLE, user.name)
+          response = command_class_reference.get_instance.run(message, channel, allow_private)
+          if response.is_a? String
+            log_user user, $customer_log
+            return response
+          else
+            $logger.error(command_class_reference::TITLE + " did not return a String")
+            return nil
+          end
         end
       end
     end
@@ -139,7 +142,7 @@ module ChatBotCommand
   # Returns true if the user is eligible to view private data, false otherwise
   # @param command - Title of command
   # @param usernam - Slack username of Slack user
-  def ChatBotCommand.is_eligible_for_private_data(command, username)
+  def ChatBotCommand.is_allowed_private(command, username)
     # Return false if the command does not have a private list of users
     # PRIVATE is optional so the chatbot does not need to exit if it does not exist
     if $SETTINGS["PRIVATE"] == nil || $SETTINGS["PRIVATE"][command] == nil
