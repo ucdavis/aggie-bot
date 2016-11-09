@@ -10,8 +10,10 @@ module ChatBotCommand
     # @param channel - the channel where the message was posted
     # @param private_allowed - flag if extra data can be outputted
     def run(message, channel, private_allowed)
-      $SETTINGS = load_sensitive_settings $settings_file
-      return $SETTINGS == nil ? "Unable to reload settings" : "Settings reloaded"
+      if private_allowed
+        $SETTINGS = load_sensitive_settings $settings_file
+        return $SETTINGS == nil ? "Unable to reload settings" : "Settings reloaded"
+      end
     end
 
     # Essential to make commands a singleton
