@@ -17,6 +17,28 @@ load './chat_bot_command.rb'
 # Store the current working directory as Daemons.run_proc() will change it
 $cwd = Dir.getwd
 
+# Returns nil if file is not found or global settings is not set up
+# @param path - file path
+def load_sensitive_settings(path)
+  if File.file?(path)
+    settings = YAML.load_file(path)
+
+    if settings["GLOBAL"] == nil
+      $stderr.puts "Settings file found but missing GLOBAL section. Cannot proceed."
+      $logger.error "DSS ChatBot could not start because #{path} does not have a GLOBAL section. See config/settings.example.yml."
+      return nil
+    end
+
+    $logger.info "Settings loaded."
+  else
+    $stderr.puts "You need to set up #{path} before running this script."
+    $logger.error "DSS ChatBot could not start because #{path} does not exist. See config/settings.example.yml."
+    return nil
+  end
+
+  return settings
+end
+
 # 'Daemonize' the process (see 'daemons' gem for more information)
 Daemons.run_proc('dss-chatbot.rb') do
   # Log errors / information to console
@@ -30,22 +52,9 @@ Daemons.run_proc('dss-chatbot.rb') do
   logger.info "DSS ChatBot started at #{Time.now}"
 
   # Load sensitive settings from config/*
-  settings_file = $cwd + '/config/settings.yml'
-  if File.file?(settings_file)
-    $SETTINGS = YAML.load_file(settings_file)
-
-    if $SETTINGS["GLOBAL"] == nil
-      $stderr.puts "Settings file found but missing GLOBAL section. Cannot proceed."
-      logger.error "DSS ChatBot could not start because #{settings_file} does not have a GLOBAL section. See config/settings.example.yml."
-      exit
-    end
-
-    logger.info "Settings loaded."
-  else
-    $stderr.puts "You need to set up #{settings_file} before running this script."
-    logger.error "DSS ChatBot could not start because #{settings_file} does not exist. See config/settings.example.yml."
-    exit
-  end
+  $settings_file = $cwd + '/config/settings.yml'
+  $SETTINGS = load_sensitive_settings $settings_file
+  exit if $SETTINGS == nil
 
   # Set up chat commands plugin
   ChatBotCommand.initialize($cwd)
@@ -71,9 +80,11 @@ Daemons.run_proc('dss-chatbot.rb') do
     self_id = client.self["id"]
     next if data["user"] == self_id
 
+    # True if the channel is one of the channels directly messaging chatbot
+    is_dm = client.ims[data["channel"]] != nil
     # Parse the received message for valid Chat Bot commands
     if data['text']
-      response = ChatBotCommand.dispatch(data['text'], data['channel'], client.users[data["user"]])
+      response = ChatBotCommand.dispatch(data['text'], data['channel'], client.users[data["user"]], is_dm)
       client.message(channel: data['channel'], text: response) unless response == nil
     end
   end
