@@ -71,9 +71,11 @@ Daemons.run_proc('dss-chatbot.rb') do
     self_id = client.self["id"]
     next if data["user"] == self_id
 
+    # True if the channel is one of the channels directly messaging chatbot
+    is_dm = client.ims[data["channel"]] == nil ? false : true
     # Parse the received message for valid Chat Bot commands
     if data['text']
-      response = ChatBotCommand.dispatch(data['text'], data['channel'], client.users[data["user"]])
+      response = ChatBotCommand.dispatch(data['text'], data['channel'], client.users[data["user"]], is_dm)
       client.message(channel: data['channel'], text: response) unless response == nil
     end
   end

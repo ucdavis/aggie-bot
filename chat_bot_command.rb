@@ -15,7 +15,8 @@ module ChatBotCommand
   # @param message - The message sent on slackbot e.g. !help
   # @param channel - The channel where the message was sent e.g. dss-it-appdev
   # @param user - User who sent the message
-  def ChatBotCommand.dispatch(message, channel, user)
+  # @param is_dm - flag if the event was a direct message
+  def ChatBotCommand.dispatch(message, channel, user, is_dm)
     # Match the message to the first compatible command
     ChatBotCommand.constants.each do |command|
       # Get a reference of the command class
@@ -34,7 +35,7 @@ module ChatBotCommand
 
         # If regex matches, run the command
         if regex_match
-          allow_private = is_allowed_private(command_class_reference::TITLE, user.name)
+          allow_private = is_dm ? is_allowed_private(command_class_reference::TITLE, user.name) : false
           response = command_class_reference.get_instance.run(message, channel, allow_private)
           if response.is_a? String
             log_user user, $customer_log
