@@ -11,7 +11,7 @@ module ChatBotCommand
     # @param private_allowed - flag if extra data can be outputted
     def run(message, channel, private_allowed)
       if private_allowed
-        $SETTINGS = load_sensitive_settings $settings_file
+        $SETTINGS = load_settings($settings_file)
         return $SETTINGS == nil ? "Unable to reload settings" : "Settings reloaded"
       end
     end

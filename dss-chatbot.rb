@@ -19,7 +19,7 @@ $cwd = Dir.getwd
 
 # Returns nil if file is not found or global settings is not set up
 # @param path - file path
-def load_sensitive_settings(path)
+def load_settings(path)
   if File.file?(path)
     settings = YAML.load_file(path)
 
@@ -53,7 +53,7 @@ Daemons.run_proc('dss-chatbot.rb') do
 
   # Load sensitive settings from config/*
   $settings_file = $cwd + '/config/settings.yml'
-  $SETTINGS = load_sensitive_settings $settings_file
+  $SETTINGS = load_settings($settings_file)
   exit if $SETTINGS == nil
 
   # Set up chat commands plugin
