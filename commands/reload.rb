@@ -14,6 +14,7 @@ module ChatBotCommand
         $SETTINGS = load_settings($settings_file)
         return $SETTINGS == nil ? "Unable to reload settings" : "Settings reloaded"
       end
+      return ""
     end
 
     # Essential to make commands a singleton
