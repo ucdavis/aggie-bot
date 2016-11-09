@@ -3,29 +3,15 @@ module ChatBotCommand
     TITLE = "Reload"        # Title of the command
     REGEX = /^!reload/      # REGEX the command needs to look for
     COMMAND = "!reload"     # Command to use
-    DESCRIPTION = "Reloads chatbot config files"       # Description of the command
+    DESCRIPTION = "Reloads ChatBot config files"       # Description of the command
 
     # Returns a string indicating if chatbot reloaded its $SETTINGS properly or not
     # @param message - message posted
     # @param channel - the channel where the message was posted
-    # @param can_view_private - flag if extra data can be outputted
+    # @param private_allowed - flag if extra data can be outputted
     def run(message, channel, private_allowed)
-      # Reload sensitive settings from config/*
-      settings_file = $cwd + '/config/settings.yml'
-      if File.file?(settings_file)
-        $SETTINGS = YAML.load_file(settings_file)
-
-        if $SETTINGS["GLOBAL"] == nil
-          $logger.error "DSS ChatBot could not reload because #{settings_file} does not have a GLOBAL section. See config/settings.example.yml."
-          return "Settings file found but missing GLOBAL section. Cannot proceed."
-          exit
-        end
-
-        return "Settings reloaded."
-      else
-        $logger.error "DSS ChatBot could not reload because #{settings_file} does not exist. See config/settings.example.yml."
-        return "DSS ChatBot could not reload because #{settings_file} does not exist."
-      end
+      $SETTINGS = load_sensitive_settings $settings_file
+      return $SETTINGS == nil ? "Unable to reload settings" : "Settings reloaded"
     end
 
     # Essential to make commands a singleton
