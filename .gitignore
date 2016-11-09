@@ -7,4 +7,4 @@ Gemfile.lock
 
 # Do not check log files into the repository
 dss-chatbot.log
-
+chatbot-customers.log

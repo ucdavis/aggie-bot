@@ -19,8 +19,13 @@ $cwd = Dir.getwd
 
 # 'Daemonize' the process (see 'daemons' gem for more information)
 Daemons.run_proc('dss-chatbot.rb') do
-  # Keep a log file (auto-rotate at 1 MB, keep 10 rotations)
+  # Log errors / information to console
   $logger = logger = Logger.new(STDOUT)
+
+  # Keep a log file (auto-rotate at 1 MB, keep 10 rotations) of users using chatbot
+  ROTATIONS = 10
+  LOG_SIZE = 1024000
+  $customer_log = Logger.new($cwd + "/chatbot-customers.log", ROTATIONS, LOG_SIZE)
 
   logger.info "DSS ChatBot started at #{Time.now}"
 
@@ -68,9 +73,14 @@ Daemons.run_proc('dss-chatbot.rb') do
 
     # Parse the received message for valid Chat Bot commands
     if data['text']
-      response = ChatBotCommand.dispatch(data['text'], data['channel'])
+      response = ChatBotCommand.dispatch(data['text'], data['channel'], client.users[data["user"]])
       client.message(channel: data['channel'], text: response) unless response == nil
     end
+  end
+
+  client.on :group_joined do
+    $logger.info "Entered private channel, reloading data"
+    ChatBotCommand.reload_channels!
   end
 
   # Loop itself credit slack-ruby-bot: https://github.com/dblock/slack-ruby-bot/blob/798d1305da8569381a6cd70b181733ce405e44ce/lib/slack-ruby-bot/app.rb#L45

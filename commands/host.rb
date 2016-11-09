@@ -22,7 +22,7 @@ module ChatBotCommand
 
     # Runs the UNIX 'host' command with the given query.
     # Expects 'message' to begin with 'host ' + the given query, e.g. 'host www.ucdavis.edu'
-    def run(message, channel)
+    def run(message, channel, private_allowed)
       # Remove the Slack formatting that is surely on the URL, e.g. <http://ucdavis.edu|ucdavis.edu> => ucdavis.edu
       message = Slack::Messages::Formatting.unescape(message)
 

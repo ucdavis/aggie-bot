@@ -14,18 +14,30 @@ module ChatBotCommand
   # Returns a string to output if a command is found, else nil
   # @param message - The message sent on slackbot e.g. !help
   # @param channel - The channel where the message was sent e.g. dss-it-appdev
-  def ChatBotCommand.dispatch(message, channel)
+  # @param user - User who sent the message
+  def ChatBotCommand.dispatch(message, channel, user)
     # Match the message to the first compatible command
     ChatBotCommand.constants.each do |command|
       # Get a reference of the command class
       command_class_reference = ChatBotCommand.const_get(command)
 
-      # Check if the assigned REGEX matches the message passed
-      if command_class_reference::REGEX.match(message)
-        # Run the command and return its response message if it is enabled
-        if is_enabled_for(channel, command_class_reference::TITLE)
-          response = command_class_reference.get_instance.run(message, channel)
+      # Run the command and return its response message if it is enabled
+      if is_enabled_for(channel, command_class_reference::TITLE)
+        # Check if the assigned REGEX matches the message passed
+        regex_match = false
+        Array(command_class_reference::REGEX).each do |regex|
+          unless regex.match(message) == nil
+            regex_match = true
+            break
+          end
+        end
+
+        # If regex matches, run the command
+        if regex_match
+          allow_private = is_allowed_private(command_class_reference::TITLE, user.name)
+          response = command_class_reference.get_instance.run(message, channel, allow_private)
           if response.is_a? String
+            log_user user, $customer_log
             return response
           else
             $logger.error(command_class_reference::TITLE + " did not return a String")
@@ -34,6 +46,8 @@ module ChatBotCommand
         end
       end
     end
+
+    return nil
   end
 
   # Returns true if a command is enabled for the channel, otherwise false / nil
@@ -101,6 +115,19 @@ module ChatBotCommand
     end
   end
 
+  # Reloads the channels
+  def ChatBotCommand.reload_channels!
+    # Update channel list
+    @channel_names = get_channel_list
+  end
+
+  # Outputs the username and email of customer to the log
+  # @param user - SlackRubyClient::User object of customer
+  # @param customer_log - Logger to output
+  def ChatBotCommand.log_user(user, customer_log)
+    customer_log.info user.name + " " + user.profile.email
+  end
+
   # Removes any Slack-specific encoding
   def ChatBotCommand.decode_slack(string)
     if string
@@ -110,6 +137,19 @@ module ChatBotCommand
     end
 
     return string
+  end
+
+  # Returns true if the user is eligible to view private data, false otherwise
+  # @param command - Title of command
+  # @param usernam - Slack username of Slack user
+  def ChatBotCommand.is_allowed_private(command, username)
+    # Return false if the command does not have a private list of users
+    # PRIVATE is optional so the chatbot does not need to exit if it does not exist
+    if $SETTINGS["PRIVATE"] == nil || $SETTINGS["PRIVATE"][command] == nil
+      return false
+    else
+      return !$SETTINGS["PRIVATE"][command].find_index(username).nil?
+    end
   end
 
 end

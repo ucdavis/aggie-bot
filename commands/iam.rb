@@ -17,7 +17,7 @@ module ChatBotCommand
     # Maximum number of individuals to show in one call of this command
     PEOPLE_MAX = 10
 
-    def run(message, channel)
+    def run(message, channel, private_allowed)
       unless $SETTINGS["IAM_HOST"] && $SETTINGS["IAM_API_TOKEN"]
         $logger.error "Could not run IAM comamnd. Check that IAM_HOST and IAM_API_TOKEN are defined in settings."
         return "IAM command is not configured correctly."
@@ -27,7 +27,7 @@ module ChatBotCommand
       query = message.scan(/(\S+)/)
       query.shift # gets rid of !iam
 
-      iam_id = get_iam_id(query)
+      iam_id = get_iam_id query
       # Returns early if iam_id is an error message
       return iam_id if iam_id.class == String
 
@@ -38,7 +38,7 @@ module ChatBotCommand
       response = ""
       iam_id.each do |id|
         data = fetch_user_details id
-        response = response + format_data(data)
+        response = response + format_data(data, private_allowed)
         response = response + "\n\n"
       end
 
@@ -85,7 +85,7 @@ module ChatBotCommand
 
     # Returns an array of iam_ids, a string if no iam_id is found
     # @param query - Slack message without !iam
-    # e.g. query = {"dFirstName" => Mark Emmanuel}
+    # e.g. query = ["dFirstName", "Mark", "Emmanuel"]
     def get_iam_id(query)
       command = query.shift
       command = command[0].downcase # required since shift returns an array
@@ -110,7 +110,22 @@ module ChatBotCommand
         query = {"email" => ChatBotCommand.decode_slack(query)}
         api = "api/iam/people/contactinfo/search"
       else
-        return command + " is not a valid option. !help iam for more details"
+        # Search by login ID, e-mail, first name, and last name
+        # Return if the search retrieves an iamid, otherwise try another search
+        query = query == nil ? command : "#{command} #{query}"
+
+        search = get_iam_id "loginid #{query}".scan(/(\S+)/)
+        return search unless search.class == String
+
+        search = get_iam_id "email #{query}".scan(/(\S+)/)
+        return search unless search.class == String
+
+        search = get_iam_id "last #{query}".scan(/(\S+)/)
+        return search unless search.class == String
+
+        # Last option for searching, return regardless of result
+        search = get_iam_id "first #{query}".scan(/(\S+)/)
+        return search
       end
 
       result = get_from_api(api, query)
@@ -130,7 +145,7 @@ module ChatBotCommand
 
     # Formats the data from IAM API to a prettier format
     # @param data - the hash obtained from gather_data
-    def format_data(data)
+    def format_data(data, private_allowed)
       # Store all formatted data in this array
       formatted_data = []
 
@@ -165,6 +180,11 @@ module ChatBotCommand
 
           formatted_data.push name
           formatted_data.push "*IAM ID* #{info["iamId"]}"
+          if private_allowed
+            formatted_data.push "*Student ID* #{info["studentId"]}" unless info["studentId"] == nil
+            formatted_data.push "*PPS ID* #{info["ppsId"]}" unless info["ppsId"] == nil
+          end
+
         end
       end
 
