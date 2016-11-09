@@ -23,7 +23,7 @@ module ChatBotCommand
       command_class_reference = ChatBotCommand.const_get(command)
 
       # Run the command and return its response message if it is enabled
-      if is_enabled_for(channel, command_class_reference::TITLE)
+      if is_enabled_for(channel, command_class_reference::TITLE) || is_allowed_private(command_class_reference::TITLE, user.name)
         # Check if the assigned REGEX matches the message passed
         regex_match = false
         Array(command_class_reference::REGEX).each do |regex|
@@ -54,6 +54,7 @@ module ChatBotCommand
   # Returns true if a command is enabled for the channel, otherwise false / nil
   # @param channel - ID of where the message was posted
   # @param command_title - Title of the command
+  # @param username - username of slack user
   def ChatBotCommand.is_enabled_for(channel, command_title)
     # Create a hash :channel_id => channel_name of both private and public channels
     # get_channel_list is called once
