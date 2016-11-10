@@ -1,3 +1,5 @@
+require 'roles-management-api'
+
 module ChatBotCommand
   class Roles
     TITLE = "Roles"
@@ -9,7 +11,9 @@ module ChatBotCommand
       @roles_client ||= RolesManagementAPI.login($SETTINGS['ROLES_URL'], $SETTINGS['ROLES_USERNAME'], $SETTINGS['ROLES_TOKEN'])
     end
 
-    def run(loginid, channel, private_allowed)
+    def run(message, channel, private_allowed)
+      loginid = message.split(" ")[1]
+
       if roles_client.connected?
         p = roles_client.find_person_by_loginid(loginid)
 
