@@ -7,23 +7,38 @@ module ChatBotCommand
   # @param dir - current working directory of the project
   def ChatBotCommand.initialize(dir)
     # Load all commands
-    Dir[dir + "/commands/*.rb"].each { |file| require file }
+    Dir[dir + "/commands/*.rb"].each do |file|
+      begin
+        require file
+      rescue LoadError
+        $logger.error "Cannot load command from #{file}, a LoadError occurred."
+      end
+    end
   end
 
   # Runs the proper command based on the message
+  #
   # Returns a string to output if a command is found, else nil
+  #
   # @param message - The message sent on slackbot e.g. !help
   # @param channel - The channel where the message was sent e.g. dss-it-appdev
   # @param user - User who sent the message
   # @param is_dm - flag if the event was a direct message
   def ChatBotCommand.dispatch(message, channel, user, is_dm)
+    $logger.debug "Dispatch received:"
+    $logger.debug "\tMessage : #{message}"
+    $logger.debug "\tChannel : #{channel}"
+    $logger.debug "\tPrivate : #{is_dm}"
+
     # Match the message to the first compatible command
     ChatBotCommand.constants.each do |command|
       # Get a reference of the command class
       command_class_reference = ChatBotCommand.const_get(command)
+      command_enabled_on_channel = is_enabled_for(channel, command_class_reference::TITLE)
+      command_allowed_private = is_allowed_private(command_class_reference::TITLE, user.name)
 
       # Run the command and return its response message if it is enabled
-      if is_enabled_for(channel, command_class_reference::TITLE) || is_allowed_private(command_class_reference::TITLE, user.name)
+      if command_enabled_on_channel || command_allowed_private
         # Check if the assigned REGEX matches the message passed
         regex_match = false
         Array(command_class_reference::REGEX).each do |regex|
@@ -35,7 +50,8 @@ module ChatBotCommand
 
         # If regex matches, run the command
         if regex_match
-          allow_private = is_dm && is_allowed_private(command_class_reference::TITLE, user.name)
+          $logger.debug "Sending message to #{command_class_reference} as it matches the regex."
+          allow_private = is_dm && command_allowed_private
           response = command_class_reference.get_instance.run(message, channel, allow_private)
           if response.is_a? String
             log_user user, $customer_log
@@ -44,6 +60,15 @@ module ChatBotCommand
             $logger.error(command_class_reference::TITLE + " did not return a String")
             return nil
           end
+        else
+          $logger.debug "Not sending message to #{command_class_reference} as it fails to match the regex."
+        end
+      else
+        unless command_enabled_on_channel
+          $logger.debug "Not sending message to #{command_class_reference} as it is not enabled."
+        end
+        unless command_allowed_private
+          $logger.debug "Not sending message to #{command_class_reference} as it is not allowing private messages."
         end
       end
     end
