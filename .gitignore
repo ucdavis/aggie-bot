@@ -1,10 +1,10 @@
 # Ignore sensitive settings
-config/settings.yml
-config/github.yml
+settings.yml
+github.yml
 
 # Do not check Gemfile.lock as directed by the Bundler folks
 Gemfile.lock
 
 # Do not check log files into the repository
-dss-chatbot.log
-chatbot-customers.log
+chatbot.log
+customers.log
