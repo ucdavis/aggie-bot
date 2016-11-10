@@ -19,12 +19,15 @@ RUN bundle install
 RUN mkdir $HOME/{config,commands}
 
 # Add ChatBot files
-ADD ./dss-chatbot.rb $HOME/
+ADD ./dss_chatbot.rb $HOME/
 ADD ./chat_bot_command.rb $HOME/
-ADD ./config/settings.yml $HOME/config/
+ADD ./settings.yml $HOME/config/
 
 # Add Commands
 ADD ./commands/* $HOME/commands/
+
+# Redirect log to 'Docker log'
+RUN ln -sf /dev/stdout $HOME/chatbot.log
 
 # Run chatbot
 ENTRYPOINT ["./dss-chatbot.rb", "run"]
