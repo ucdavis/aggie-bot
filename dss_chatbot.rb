@@ -4,9 +4,14 @@
 # Version 0.7 2016-11-09
 # See AUTHORS file
 
+LOG_FILENAME = "chatbot.log"
+LOG_ROTATIONS = 10
+LOG_SIZE = 1024000
+
+CUSTOMER_LOG_FILENAME = "customers.log"
 CUSTOMER_LOG_ROTATIONS = 10
 CUSTOMER_LOG_SIZE = 1024000
-# Will be resolved as current working directory + "/" + SETTINGS_FILENAME
+
 SETTINGS_FILENAME = "settings.yml"
 
 require 'rubygems'
@@ -18,9 +23,6 @@ require 'cgi'
 require 'slack-ruby-client'
 
 load './chat_bot_command.rb'
-
-# Store the current working directory as Daemons.run_proc() will change it
-$cwd = Dir.getwd
 
 # Load settings from disk
 # Returns nil if file is not found or global settings is not set up
@@ -35,7 +37,7 @@ def load_settings(filepath)
       return nil
     end
 
-    $logger.info "Settings loaded from ."
+    $logger.info "Settings loaded from #{filepath}."
   else
     #$stderr.puts "You need to set up #{filepath} before running this script."
     $logger.error "DSS ChatBot could not start because #{filepath} does not exist. See example."
@@ -45,13 +47,17 @@ def load_settings(filepath)
   return settings
 end
 
+# Store the current working directory as Daemons.run_proc() will change it
+$cwd = Dir.getwd
+
 # 'Daemonize' the process (see 'daemons' gem for more information)
-Daemons.run_proc('dss-chatbot.rb') do
+Daemons.run_proc('dss_chatbot.rb') do
   # Log errors / information to console
-  $logger = Logger.new(STDOUT)
+  $logger = Logger.new($cwd + '/' + LOG_FILENAME, LOG_ROTATIONS, LOG_SIZE)
+  $logger.level = Logger::DEBUG
 
   # Keep a log file of users using chatbot
-  $customer_log = Logger.new($cwd + "/chatbot-customers.log", CUSTOMER_LOG_ROTATIONS, CUSTOMER_LOG_SIZE)
+  $customer_log = Logger.new($cwd + '/' + CUSTOMER_LOG_FILENAME, CUSTOMER_LOG_ROTATIONS, CUSTOMER_LOG_SIZE)
 
   $logger.info "DSS ChatBot started at #{Time.now}"
 
@@ -76,7 +82,7 @@ Daemons.run_proc('dss-chatbot.rb') do
   end
 
   client.on :close do
-    $logger.info "Caught close signal. Attempting to restart ..."
+    $logger.warn "Caught close signal."
     EM.stop
   end
 
@@ -88,7 +94,7 @@ Daemons.run_proc('dss-chatbot.rb') do
     is_dm = client.ims[data["channel"]] != nil
     
     # Parse the received message for valid Chat Bot commands
-    if data['text']
+    if data["text"]
       # Parse message based on commands found in commands/*.rb
       response = ChatBotCommand.dispatch(data['text'], data['channel'], client.users[data["user"]], is_dm)
 
@@ -104,7 +110,7 @@ Daemons.run_proc('dss-chatbot.rb') do
 
   # Loop itself credit slack-ruby-bot: https://github.com/dblock/slack-ruby-bot/blob/798d1305da8569381a6cd70b181733ce405e44ce/lib/slack-ruby-bot/app.rb#L45
   loop do
-    $logger.info "Marking the start of the client loop!"
+    $logger.debug "Client loop has started."
     begin
       client.start!
     rescue Slack::Web::Api::Error => e
@@ -118,6 +124,10 @@ Daemons.run_proc('dss-chatbot.rb') do
     rescue Faraday::Error::TimeoutError, Faraday::Error::ConnectionFailed, Faraday::Error::SSLError, Faraday::ClientError => e
       $logger.error e
       sleep 5 # ignore, try again
+    rescue Slack::RealTime::Client::ClientAlreadyStartedError => e
+      # We receive this exception when ChatBot is killed via ctrl+c but otherwise had no error.
+      # Correct behavior is to exit.
+      break
     rescue StandardError => e
       $logger.error e
       raise e
