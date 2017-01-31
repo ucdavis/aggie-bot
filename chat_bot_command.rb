@@ -172,10 +172,17 @@ module ChatBotCommand
   def ChatBotCommand.is_allowed_private(command, username)
     # Return false if the command does not have a private list of users
     # PRIVATE is optional so the chatbot does not need to exit if it does not exist
-    if $SETTINGS["PRIVATE"] == nil || $SETTINGS["PRIVATE"][command] == nil
-      return false
-    else
+    return false if $SETTINGS["PRIVATE"] == nil || $SETTINGS["PRIVATE"][command] == nil
+
+    command_value = $SETTINGS["PRIVATE"][command]
+
+    if command_value.is_a? TrueClass
+      return true
+    elsif command_value.is_a? Array
       return !$SETTINGS["PRIVATE"][command].find_index(username).nil?
+    else
+      # settings.yml should only use 'true' or an array
+      return false
     end
   end
 
