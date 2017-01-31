@@ -1,3 +1,7 @@
+2017-01-31 Christopher Thielen <cmthielen@ucdavis.edu>:
+  * Added ServiceNow command
+  * Renamed from 'DSS ChatBot' to 'Aggie Bot'
+
 2016-06-02 Christopher Thielen <cmthielen@ucdavis.edu>:
   * Added 'title' field to LDAP command
 

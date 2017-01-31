@@ -1,9 +1,9 @@
-DSS ChatBot
-===========
+Aggie Bot
+=========
 
-Version 0.7 2016-11-09
+Version 0.71 2017-01-31
 
-DSS ChatBot is a Slack-compatible chat bot designed for use by the
+Aggie Bot is a Slack-compatible chat bot designed for use by the
 UC Davis IT community. It originated in the UC Davis Division of Social
 Science IT group.
 
@@ -17,22 +17,22 @@ Requirements
 
 Installation Instructions
 -------------------------
- 1. Place the dss-chatbot folder where you prefer to keep web applications.
- 2. 'cd' into 'dss-chatbot' and run 'bundle install'
+ 1. Place the aggie-bot folder where you prefer to keep web applications.
+ 2. 'cd' into 'aggie-bot' and run 'bundle install'
  3. Copy config/settings.example.yml to config/settings.yml and ensure each
     setting is configured correctly.
- 4. Run ./dss-chatbot.rb start (also repsonds to status, stop, and restart)
+ 4. Run ./aggie-bot.rb start (also repsonds to status, stop, and restart)
 
 Usage
 -----
-Once you have chosen a username for DSS ChatBot (we'll assume it's @bot in this
+Once you have chosen a username for Aggie Bot (we'll assume it's @bot in this
 documentation), invite @bot to the room you'd like to use it in.
 
 You can then type commands in the form: "<command> <query>", e.g. "ldap smith"
 to perform an LDAP lookup using the query term "smith".
 
 LDAP Attribute-Specific Search
-==============================
+------------------------------
 When using the 'ldap' command, you can narrow your search to a specific field
 if you wish, e.g. "ldap last smith" will search only the last name attribute
 for 'smith' or e.g. "ldap loginid smith" will search only the login ID attribute

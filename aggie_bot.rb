@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # DSS ChatBot
-# Version 0.7 2016-11-09
+# Version 0.71 2017-01-31
 # See AUTHORS file
 
 LOG_FILENAME = "chatbot.log"
@@ -51,7 +51,7 @@ end
 $cwd = Dir.getwd
 
 # 'Daemonize' the process (see 'daemons' gem for more information)
-Daemons.run_proc('dss_chatbot.rb') do
+Daemons.run_proc('aggie_bot.rb') do
   # Log errors / information to console
   $logger = Logger.new($cwd + '/' + LOG_FILENAME, LOG_ROTATIONS, LOG_SIZE)
   $logger.level = Logger::DEBUG
@@ -59,7 +59,7 @@ Daemons.run_proc('dss_chatbot.rb') do
   # Keep a log file of users using chatbot
   $customer_log = Logger.new($cwd + '/' + CUSTOMER_LOG_FILENAME, CUSTOMER_LOG_ROTATIONS, CUSTOMER_LOG_SIZE)
 
-  $logger.info "DSS ChatBot started at #{Time.now}"
+  $logger.info "Aggie Bot started at #{Time.now}"
 
   # Load settings from disk
   $settings_file = $cwd + '/' + SETTINGS_FILENAME
@@ -134,5 +134,5 @@ Daemons.run_proc('dss_chatbot.rb') do
     end
   end
 
-  $logger.info "DSS ChatBot ended at #{Time.now}"
+  $logger.info "Aggie Bot ended at #{Time.now}"
 end
