@@ -33,14 +33,13 @@ def load_settings(filepath)
 
     if settings["GLOBAL"] == nil
       $stderr.puts "Settings file found but missing GLOBAL section. Cannot proceed."
-      $logger.error "DSS ChatBot could not start because #{filepath} does not have a GLOBAL section. See example."
+      $logger.error "Aggie Bot could not start because #{filepath} does not have a GLOBAL section. See example."
       return nil
     end
 
     $logger.info "Settings loaded from #{filepath}."
   else
-    #$stderr.puts "You need to set up #{filepath} before running this script."
-    $logger.error "DSS ChatBot could not start because #{filepath} does not exist. See example."
+    $logger.error "Aggie Bot could not start because #{filepath} does not exist. See example."
     return nil
   end
 
