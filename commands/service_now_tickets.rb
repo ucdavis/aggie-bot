@@ -1,6 +1,6 @@
 module ChatBotCommand
-  class ServiceNow
-    TITLE = "ServiceNow"
+  class ServiceNowTickets
+    TITLE = "ServiceNowTickets"
     REGEX = /\b(INC[0-9]+)/i # look for 'INC' followed by numbers, e.g. INC012983
     COMMAND = "Offers links to ServiceNow when incident numbers are mentioned, e.g. INC12345"
     DESCRIPTION = "Offers a link to ServiceNow incidents when they're mentioned"
@@ -11,9 +11,9 @@ module ChatBotCommand
     end
 
     def run(message, channel, private_allowed)
-      unless $SETTINGS["SERVICENOW_URL"]
-        $logger.error "Cannot run ServiceNow command: ensure SERVICENOW_URL is in settings."
-        return "ServiceNow support not correctly configured."
+      unless $SETTINGS["SERVICENOW_TICKETS_URL"]
+        $logger.error "Cannot run ServiceNowTickets command: ensure SERVICENOW_TICKETS_URL is in settings."
+        return "ServiceNowTickets support not correctly configured."
       end
 
       messages = []
@@ -29,13 +29,13 @@ module ChatBotCommand
       return [] unless matches
 
       matches.each do |m|
-        messages.push "#{$SETTINGS["SERVICENOW_URL"]}" + m[0]
+        messages.push "#{$SETTINGS["SERVICENOW_TICKETS_URL"]}" + m[0]
       end
 
       return messages.join("\n")
     end
 
-    @@instance = ServiceNow.new
+    @@instance = ServiceNowTickets.new
     def self.get_instance
       return @@instance
     end

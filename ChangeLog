@@ -1,3 +1,7 @@
+2017-02-13 Christopher Thielen <cmthielen@ucdavis.edu>:
+  * Renamed ServiceNow command to ServiceNowTickets command
+  * Added ServiceNowKb command
+
 2017-01-31 Christopher Thielen <cmthielen@ucdavis.edu>:
   * Added ServiceNow command
   * Renamed from 'DSS ChatBot' to 'Aggie Bot'

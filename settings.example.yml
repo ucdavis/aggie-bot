@@ -11,7 +11,8 @@ GITHUB_PROJECTS:
   - tag1: "gh_org/gh_project_name"
   - tag2: "gh_org/gh_project_name"
 
-SERVICENOW_URL: ""
+SERVICENOW_TICKETS_URL: ""
+SERVICENOW_KB_URL: ""
 
 # Set these values for LDAP lookup support. Switch _ENABLED to true.
 LDAP_HOST: ""
@@ -40,7 +41,7 @@ GLOBAL:
   Roles: true
   Devboard: true
   GitHub: true
-  ServiceNow: false
+  ServiceNowTickets: false
 
 # Define who can access extra details on a command
 PRIVATE:
