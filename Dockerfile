@@ -2,8 +2,8 @@ FROM ruby:2.3
 
 # Install necessary libraries
 RUN apt-get update
-RUN apt-get install libsasl2-dev
-RUN apt-get install libssl-dev
+RUN apt-get install -y libsasl2-dev
+RUN apt-get install -y libssl-dev
 RUN apt-get install -y libldap2-dev
 
 # Set up environment to avoid adding files to root home
@@ -16,12 +16,12 @@ ADD Gemfile.lock $HOME/
 RUN bundle install
 
 # Set up chatbot environment
-RUN mkdir $HOME/{config,commands}
+RUN mkdir $HOME/{commands}
 
 # Add ChatBot files
-ADD ./dss_chatbot.rb $HOME/
+ADD ./aggie_bot.rb $HOME/
 ADD ./chat_bot_command.rb $HOME/
-ADD ./settings.yml $HOME/config/
+ADD ./settings.yml $HOME/
 
 # Add Commands
 ADD ./commands/* $HOME/commands/
@@ -30,4 +30,4 @@ ADD ./commands/* $HOME/commands/
 RUN ln -sf /dev/stdout $HOME/chatbot.log
 
 # Run chatbot
-ENTRYPOINT ["./dss-chatbot.rb", "run"]
+ENTRYPOINT ["./aggie_bot.rb", "run"]
