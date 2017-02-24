@@ -7,7 +7,7 @@ module ChatBotCommand
     COMMAND = "ldap <individual>"
     DESCRIPTION = "Searches campus LDAP for information about a given individual."
 
-    LDAP_MAX_RESULTS = 8
+    LDAP_MAX_RESULTS = 10
 
     # LDAP escape code credit: ruby-net-ldap (https://github.com/ruby-ldap/ruby-net-ldap).
     LDAP_ESCAPES = {
@@ -26,6 +26,13 @@ module ChatBotCommand
     # Escape a string for use in an LDAP filter
     def ldap_escape(string)
       string.gsub(LDAP_ESCAPE_RE) { |char| "\\" + LDAP_ESCAPES[char] } if string
+    end
+
+    # Hides the ugly string logic used in determining if an LDAP field exists
+    # Returns field if it exists, "Not listed" if it doesn't, and nil if ldap_entry is invalid
+    def retrieve_field(ldap_entry, field)
+      return nil if ldap_entry.nil?
+      ldap_entry.get_values(field).to_s[2..-3].nil? ? "Not listed" : ldap_entry.get_values(field).to_s[2..-3]
     end
 
     def run(message, channel, private_allowed)
@@ -58,6 +65,8 @@ module ChatBotCommand
           ldap_field = 'ou'
         when 'title'
           ldap_field = 'title'
+        when 'phone', 'telephone'
+          ldap_field = 'telephoneNumber'
         when 'affiliation', 'ucdpersonaffiliation'
           ldap_field = 'ucdPersonAffiliation'
         else
@@ -106,52 +115,22 @@ module ChatBotCommand
 
         result_count = result_count + 1
 
-        unless entry.get_values('displayName').to_s[2..-3].nil?
-          name = entry.get_values('displayName').to_s[2..-3]
-        else
-          name = "Not listed"
-        end
-        unless entry.get_values('uid').to_s[2..-3].nil?
-          loginid = entry.get_values('uid').to_s[2..-3]
-        else
-          loginid = "Not listed"
-        end
-        unless entry.get_values('mail').to_s[2..-3].nil?
-          mail = entry.get_values('mail').to_s[2..-3]
-        else
-          mail = "Not listed"
-        end
-        unless entry.get_values('street').to_s[2..-3].nil?
-          office = entry.get_values('street').to_s[2..-3]
-        else
-          office = "Not listed"
-        end
-        unless entry.get_values('ou').to_s[2..-3].nil?
-          department = entry.get_values('ou').to_s[2..-3]
-        else
-          department = "Not listed"
-        end
-        unless entry.get_values('ucdAppointmentDepartmentCode').to_s[2..-3].nil?
-          departmentCode = entry.get_values('ucdAppointmentDepartmentCode').to_s[2..-3]
-        else
-          departmentCode = "Not listed"
-        end
-        unless entry.get_values('title').to_s[2..-3].nil?
-          title = entry.get_values('title').to_s[2..-3]
-        else
-          title = "Not listed"
-        end
+        name = retrieve_field(entry, 'displayName')
+        loginid = retrieve_field(entry, 'uid')
+        mail = retrieve_field(entry, 'mail')
+        office = retrieve_field(entry, 'street')
+        phone = retrieve_field(entry, 'telephoneNumber')
+        department = retrieve_field(entry, 'ou')
+        departmentCode = retrieve_field(entry, 'ucdAppointmentDepartmentCode')
+        title = retrieve_field(entry, 'title')
 
+        # Note: Some individuals have multiple affiliations or may be missing affiliations
         affiliations = []
-        # A person may have multiple affiliations
         entry.get_values('ucdPersonAffiliation').each do |affiliation_name|
           affiliations << affiliation_name
         end
-        if affiliations.length == 0
-          affiliations = "Not listed"
-        else
-          affiliations = affiliations.join(", ")
-        end
+
+        affiliations = (affiliations.length == 0 ? "Not listed" : affiliations = affiliations.join(", "))
 
         results += "*Name* #{name}\n"
         results += "*Login ID* #{loginid}\n"
@@ -159,6 +138,7 @@ module ChatBotCommand
         results += "*Department* #{department} (#{departmentCode})\n"
         results += "*Title* #{title}\n"
         results += "*Office* #{office}\n"
+        results += "*Telephone* #{phone}\n"
         results += "*Affiliation* #{affiliations}\n"
       end
 

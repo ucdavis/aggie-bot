@@ -1,3 +1,6 @@
+2017-02-24 Christopher Thielen <cmthielen@ucdavis.edu>:
+  * Added telephone field to LDAP command
+
 2017-02-13 Christopher Thielen <cmthielen@ucdavis.edu>:
   * Renamed ServiceNow command to ServiceNowTickets command
   * Added ServiceNowKb command
