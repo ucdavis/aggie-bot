@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # DSS ChatBot
-# Version 0.71 2017-01-31
+# Version 0.72 2017-02-24
 # See AUTHORS file
 
 LOG_FILENAME = "chatbot.log"
