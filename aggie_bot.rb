@@ -4,15 +4,15 @@
 # Version 0.72 2017-02-24
 # See AUTHORS file
 
-LOG_FILENAME = "chatbot.log"
+LOG_FILENAME = 'chatbot.log'.freeze
 LOG_ROTATIONS = 10
 LOG_SIZE = 1024000
 
-CUSTOMER_LOG_FILENAME = "customers.log"
+CUSTOMER_LOG_FILENAME = 'customers.log'.freeze
 CUSTOMER_LOG_ROTATIONS = 10
 CUSTOMER_LOG_SIZE = 1024000
 
-SETTINGS_FILENAME = "settings.yml"
+SETTINGS_FILENAME = 'settings.yml'.freeze
 
 require 'rubygems'
 require 'bundler/setup'
@@ -31,8 +31,8 @@ def load_settings(filepath)
   if File.file?(filepath)
     settings = YAML.load_file(filepath)
 
-    if settings["GLOBAL"] == nil
-      $stderr.puts "Settings file found but missing GLOBAL section. Cannot proceed."
+    if settings['GLOBAL'].nil?
+      $stderr.puts 'Settings file found but missing GLOBAL section.'
       $logger.error "Aggie Bot could not start because #{filepath} does not have a GLOBAL section. See example."
       return nil
     end
@@ -87,11 +87,11 @@ Daemons.run_proc('aggie_bot.rb') do
 
   client.on :message do |data|
     # Ignore messages from this bot
-    next if data["user"] == client.self["id"]
+    next if data['user'] == client.self['id']
 
     # True if the channel is one of the channels directly messaging chatbot
-    is_dm = client.ims[data["channel"]] != nil
-    
+    is_dm = client.ims[data['channel']] != nil
+
     # Parse the received message for valid Chat Bot commands
     if data["text"]
       # Parse message based on commands found in commands/*.rb
@@ -117,6 +117,8 @@ Daemons.run_proc('aggie_bot.rb') do
       case e.message
       when 'migration_in_progress'
         sleep 5 # ignore, try again
+      when 'account_inactive'
+        sleep 5 # technically, we should give up, but we received this once by accident, so ...
       else
         raise e
       end
