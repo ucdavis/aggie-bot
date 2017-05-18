@@ -5,11 +5,6 @@ module ChatBotCommand
     COMMAND = "Offers links to ServiceNow when incident numbers are mentioned, e.g. INC12345"
     DESCRIPTION = "Offers a link to ServiceNow incidents when they're mentioned"
 
-    # is_number? credit: http://stackoverflow.com/questions/5661466/test-if-string-is-a-number-in-ruby-on-rails
-    def is_number?(string)
-      true if Float(string) rescue false
-    end
-
     def run(message, channel, private_allowed)
       unless $SETTINGS["SERVICENOW_TICKETS_URL"]
         $logger.error "Cannot run ServiceNowTickets command: ensure SERVICENOW_TICKETS_URL is in settings."

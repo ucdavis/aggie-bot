@@ -5,11 +5,6 @@ module ChatBotCommand
     COMMAND = "Offers links to ServiceNow when knowledge base numbers are mentioned, e.g. KB12345"
     DESCRIPTION = "Offers a link to the ServiceNow knowledge base when KB articles are mentioned"
 
-    # is_number? credit: http://stackoverflow.com/questions/5661466/test-if-string-is-a-number-in-ruby-on-rails
-    def is_number?(string)
-      true if Float(string) rescue false
-    end
-
     def run(message, channel, private_allowed)
       unless $SETTINGS["SERVICENOW_KB_URL"]
         $logger.error "Cannot run ServiceNowKb command: ensure SERVICENOW_KB_URL is in settings."

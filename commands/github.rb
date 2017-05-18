@@ -7,11 +7,6 @@ module ChatBotCommand
     COMMAND = "{repository}/{issue_number}"
     DESCRIPTION = "Outputs the issue from github"
 
-    # is_number? credit: http://stackoverflow.com/questions/5661466/test-if-string-is-a-number-in-ruby-on-rails
-    def is_number?(string)
-      true if Float(string) rescue false
-    end
-
     def run(message, channel, private_allowed)
       unless $SETTINGS["GITHUB_TOKEN"]
         $logger.error "Cannot run GitHub command: ensure GITHUB_TOKEN is in settings."
