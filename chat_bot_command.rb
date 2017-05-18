@@ -28,6 +28,7 @@ module ChatBotCommand
     $logger.debug "Dispatch received:"
     $logger.debug "\tMessage : #{message}"
     $logger.debug "\tChannel : #{channel}"
+    $logger.debug "\tUser    : #{user}"
     $logger.debug "\tPrivate : #{is_dm}"
 
     # Match the message to the first compatible command
@@ -35,7 +36,7 @@ module ChatBotCommand
       # Get a reference of the command class
       command_class_reference = ChatBotCommand.const_get(command)
       command_enabled_on_channel = is_enabled_for(channel, command_class_reference::TITLE)
-      command_allowed_private = is_allowed_private(command_class_reference::TITLE, user.name)
+      command_allowed_private = is_allowed_private(command_class_reference::TITLE, user)
 
       # Run the command and return its response message if it is enabled
       if command_enabled_on_channel || command_allowed_private
@@ -152,7 +153,9 @@ module ChatBotCommand
   # @param user - SlackRubyClient::User object of customer
   # @param customer_log - Logger to output
   def ChatBotCommand.log_user(user, customer_log)
-    customer_log.info user.name + " " + user.profile.email
+    if defined? user
+      customer_log.info user.name + " " + user.profile.email
+    end
   end
 
   # Removes any Slack-specific encoding
@@ -168,18 +171,19 @@ module ChatBotCommand
 
   # Returns true if the user is eligible to view private data, false otherwise
   # @param command - Title of command
-  # @param usernam - Slack username of Slack user
-  def ChatBotCommand.is_allowed_private(command, username)
+  # @param user    - Slack user object, may be nil
+  def ChatBotCommand.is_allowed_private(command, user)
     # Return false if the command does not have a private list of users
     # PRIVATE is optional so the chatbot does not need to exit if it does not exist
     return false if $SETTINGS["PRIVATE"] == nil || $SETTINGS["PRIVATE"][command] == nil
+    return false unless defined? user
 
     command_value = $SETTINGS["PRIVATE"][command]
 
     if command_value.is_a? TrueClass
       return true
     elsif command_value.is_a? Array
-      return !$SETTINGS["PRIVATE"][command].find_index(username).nil?
+      return !$SETTINGS["PRIVATE"][command].find_index(user.name).nil?
     else
       # settings.yml should only use 'true' or an array
       return false
