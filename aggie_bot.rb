@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # DSS ChatBot
-# Version 0.72 2017-02-24
+# Version 0.73 2017-05-18
 # See AUTHORS file
 
 LOG_FILENAME = 'chatbot.log'.freeze
@@ -93,9 +93,9 @@ Daemons.run_proc('aggie_bot.rb') do
     is_dm = client.ims[data['channel']] != nil
 
     # Parse the received message for valid Chat Bot commands
-    if data["text"]
+    if data['text']
       # Parse message based on commands found in commands/*.rb
-      response = ChatBotCommand.dispatch(data['text'], data['channel'], client.users[data["user"]], is_dm)
+      response = ChatBotCommand.dispatch(data['text'], data['channel'], client.users[data['user']], is_dm)
 
       # Send reply (if any)
       client.message(channel: data['channel'], text: response) unless response == nil
