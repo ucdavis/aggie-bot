@@ -1,3 +1,7 @@
+2017-05-18 Christopher Thielen <cmthielen@ucdavis.edu>:
+  * Added Service Now Change Request and Standard Change Request commands
+  * Fixed a possible use of a nil User object in chat_bot_command.rb
+
 2017-02-24 Christopher Thielen <cmthielen@ucdavis.edu>:
   * Added telephone field to LDAP command
 

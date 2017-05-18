@@ -13,6 +13,8 @@ GITHUB_PROJECTS:
 
 SERVICENOW_TICKETS_URL: ""
 SERVICENOW_KB_URL: ""
+SERVICENOW_CR_URL: ""
+SERVICENOW_SCR_URL: ""
 
 # Set these values for LDAP lookup support. Switch _ENABLED to true.
 LDAP_HOST: ""
@@ -42,6 +44,8 @@ GLOBAL:
   Devboard: true
   GitHub: true
   ServiceNowTickets: false
+  ServiceNowChangeRequests: false
+  ServiceNowStdChangeRequests: false
 
 # Define who can access extra details on a command
 PRIVATE:
