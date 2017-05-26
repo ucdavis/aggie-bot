@@ -23,8 +23,13 @@ module ChatBotCommand
       # Returns early if results is an error message
       return results if results.class == String
 
-      response = ""
-      results.each do |result|
+      if results.length > 10
+        response = "Showing first 10 results:\n\n"
+      else
+        response = ""
+      end
+
+      results.first(10).each do |result|
         response = response + format_response(result)
         response = response + "\n\n"
       end
@@ -37,28 +42,28 @@ module ChatBotCommand
       # Store all formatted data in this array
       formatted_data = []
 
-      unless result["namNumber"].empty?
+      if result["namNumber"]
         formatted_data.push "*NAM #* #{result["namNumber"]} (#{result["status"]})"
       end
-      unless result["vlan"].empty?
+      if result["vlan"]
         formatted_data.push "*VLAN* #{result["vlan"]}"
       end
-      unless result["building"].empty? || result["room"].empty?
+      if result["building"] && result["room"]
         formatted_data.push "*Location* #{result["room"]} #{result["building"]}"
       end
-      unless result["subnet"].empty?
+      if result["subnet"]
         formatted_data.push "*Subnet* #{result["subnet"]}"
       end
-      unless result["mask"].empty?
+      if result["mask"]
         formatted_data.push "*Subnet Mask* #{result["mask"]}"
       end
-      unless result["caanZone"].empty?
+      if result["caanZone"]
         formatted_data.push "*CAAN Zone* #{result["caanZone"]}"
       end
-      unless result["billingId"].empty?
+      if result["billingId"]
         formatted_data.push "*Billing ID* #{result["billingId"]}"
       end
-      unless result["department"].empty?
+      if result["department"]
         unit = []
         unit.push(result["college"]) if result["college"]
         unit.push(result["division"]) if result["division"]
@@ -66,7 +71,7 @@ module ChatBotCommand
 
         formatted_data.push "*Unit* #{unit.join(', ')}"
       end
-      unless result["techContact"].empty? || result["email"].empty? || result["phone"].empty?
+      if result["techContact"] && result["email"] && result["phone"]
         formatted_data.push "*Contact* #{result["techContact"]} #{result["email"]} #{result["phone"]}"
       end
 
