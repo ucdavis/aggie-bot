@@ -19,7 +19,7 @@ module ChatBotCommand
       return "Namstr query not understood" if query.length < 2
       query.shift # gets rid of 'nam'
 
-      results = fetch_namstr_data(query[0][0])
+      results = fetch_namstr_data(query.join(' '))
       # Returns early if results is an error message
       return results if results.class == String
 
