@@ -16,6 +16,8 @@ SERVICENOW_KB_URL: ""
 SERVICENOW_CR_URL: ""
 SERVICENOW_SCR_URL: ""
 
+NAMSTR_URL: ""
+
 # Set these values for LDAP lookup support. Switch _ENABLED to true.
 LDAP_HOST: ""
 LDAP_PORT: ""
@@ -46,6 +48,7 @@ GLOBAL:
   ServiceNowTickets: false
   ServiceNowChangeRequests: false
   ServiceNowStdChangeRequests: false
+  Namstr: true
 
 # Define who can access extra details on a command
 PRIVATE:

@@ -1,3 +1,6 @@
+2017-05-26 Christopher Thielen <cmthielen@ucdavis.edu>:
+  * Added Namstr command
+
 2017-05-18 Christopher Thielen <cmthielen@ucdavis.edu>:
   * Added Service Now Change Request and Standard Change Request commands
   * Fixed a possible use of a nil User object in chat_bot_command.rb

@@ -9,11 +9,14 @@ module ChatBotCommand
     # Load all commands
     Dir[dir + "/commands/*.rb"].each do |file|
       begin
+        $logger.debug "Loading command #{file} ..."
         require file
       rescue LoadError
         $logger.error "Cannot load command from #{file}, a LoadError occurred."
       end
     end
+
+    $logger.debug "Commands available: #{ChatBotCommand.constants}"
   end
 
   # Runs the proper command based on the message
@@ -66,7 +69,7 @@ module ChatBotCommand
         end
       else
         unless command_enabled_on_channel
-          $logger.debug "Not sending message to #{command_class_reference} as it is not enabled."
+          $logger.debug "Not sending message to #{command_class_reference} as it is not enabled on channel and/or for private use."
         end
         unless command_allowed_private
           $logger.debug "Not sending message to #{command_class_reference} as it is not allowing private messages."

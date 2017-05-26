@@ -1,7 +1,7 @@
 Aggie Bot
 =========
 
-Version 0.73 2017-05-18
+Version 0.74 2017-05-26
 
 Aggie Bot is a Slack-compatible chat bot designed for use by the
 UC Davis IT community. It originated in the UC Davis Division of Social

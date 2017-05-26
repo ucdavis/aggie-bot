@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-# DSS ChatBot
-# Version 0.73 2017-05-18
+# Aggie Bot
+# Version 0.74 2017-05-26
 # See AUTHORS file
 
 LOG_FILENAME = 'chatbot.log'.freeze
