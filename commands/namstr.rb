@@ -23,6 +23,8 @@ module ChatBotCommand
       # Returns early if results is an error message
       return results if results.class == String
 
+      return "No results" if results.length == 0
+
       if results.length > 10
         response = "Showing first 10 results:\n\n"
       else
