@@ -17,6 +17,7 @@ SERVICENOW_CR_URL: ""
 SERVICENOW_SCR_URL: ""
 
 NAMSTR_URL: ""
+NAMSTR_API_KEY: ""
 
 # Set these values for LDAP lookup support. Switch _ENABLED to true.
 LDAP_HOST: ""

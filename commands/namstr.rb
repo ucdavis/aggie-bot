@@ -13,6 +13,10 @@ module ChatBotCommand
         $logger.error "Could not run Namstr comamnd. Check that NAMSTR_URL is defined in settings."
         return "Namstr command is not configured correctly."
       end
+      unless $SETTINGS["NAMSTR_API_KEY"]
+        $logger.error "Could not run Namstr comamnd. Check that NAMSTR_API_KEY is defined in settings."
+        return "Namstr command is not configured correctly."
+      end
 
       # Grab the query to run for Namstr
       query = message.scan(/(\S+)/)
@@ -83,7 +87,7 @@ module ChatBotCommand
     # Returns an object containing the result from an api call, else a string with the error message
     # @param query - parameters to add in the GET call
     def fetch_namstr_data(query)
-      uri = URI.parse($SETTINGS["NAMSTR_URL"] + '/' + URI.escape(query));
+      uri = URI.parse($SETTINGS["NAMSTR_URL"] + '/' + URI.escape(query) + "?key=" + $SETTINGS["NAMSTR_API_KEY"]);
 
       http = Net::HTTP.new(uri.host, uri.port)
       http.set_debug_output($logger)
