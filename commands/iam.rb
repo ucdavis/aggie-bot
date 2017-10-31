@@ -235,11 +235,11 @@ module ChatBotCommand
 
       # Format ODR information
       # ODR Affiliation DSSIT: STD4 (Casual)
-      if !data["odr_info"].empty?
-        data["odr_info"].each do |info|
-          odr = "*ODR Affiliation* "
-          odr += info["deptDisplayName"] + ": " unless info["deptDisplayName"] == nil
-          odr += info["titleDisplayName"] unless info["titleDisplayName"] == nil
+      unless data['odr_info'].empty?
+        data['odr_info'].each do |info|
+          odr = '*ODR Affiliation* '
+          odr += info['deptDisplayName'] + ': ' unless info['deptDisplayName'].nil?
+          odr += info['titleDisplayName'] unless info['titleDisplayName'].nil?
 
           formatted_data.push odr
         end
@@ -247,14 +247,15 @@ module ChatBotCommand
 
       # Format PPS information
       # PPS Affiliation DSSIT: STD4
-      if !data["pps_info"].empty?
-        data["pps_info"].each do |info|
-          pps = "*PPS Affiliation* "
-          pps += info["deptDisplayName"] + ": " unless info["deptDisplayName"] == nil
-          pps += info["titleDisplayName"]unless info["titleDisplayName"] == nil
-          pps += " (" + info["positionType"] + ")" unless info["positionType"] == nil
+      unless data['pps_info'].empty?
+        data['pps_info'].each do |info|
+          dept_name = info['deptDisplayName'] || 'Unknown Department'
+          dept_code = info['deptCode'] || 'Unknown Department Code'
+          title_name = info['titleDisplayName'] || 'Unknown Title'
+          title_code = info['titleCode'] || 'Unknown Title Code'
+          position_type = info['positionType'] || 'Unknown Position Type'
 
-          formatted_data.push pps
+          formatted_data.push "*PPS Affiliation* #{dept_name} (#{dept_code}): #{title_name} (#{title_code}) (#{position_type})"
         end
       end
 
