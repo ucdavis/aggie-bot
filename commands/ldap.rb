@@ -108,6 +108,8 @@ module ChatBotCommand
       results = ""
       result_count = 0
 
+      $logger.debug "LDAP search query: " + search_terms
+
       conn.search($SETTINGS['LDAP_SEARCH_DN'], LDAP::LDAP_SCOPE_SUBTREE, search_terms) do |entry|
         if result_count > 0
           results += "\n"
