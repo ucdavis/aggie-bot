@@ -69,7 +69,7 @@ module ChatBotCommand
       result["pps_info"] = !pps_info || pps_info.empty? ? [] : pps_info
 
       # Get ODR department and title
-      odr_info = get_from_api("api/iam/associations/odr/search", "iamId" => iam_id)
+      odr_info = get_from_api("api/iam/associations/odr/#{iam_id}")
       result["odr_info"] = !odr_info || odr_info.empty? ? [] : odr_info
 
       # Get HS employee information
@@ -279,9 +279,9 @@ module ChatBotCommand
     # Returns an object containing the result from an api call, else a string with the error message
     # @param api - specific api extension to append
     # @param query - parameters to add in the GET call
-    def get_from_api(api, query)
-      uri = URI.parse($SETTINGS["IAM_HOST"] + "/" + api);
-      query["key"] = $SETTINGS["IAM_API_TOKEN"]
+    def get_from_api(api, query = {})
+      uri = URI.parse($SETTINGS['IAM_HOST'] + '/' + api);
+      query['key'] = $SETTINGS['IAM_API_TOKEN']
       uri.query = URI.encode_www_form(query)
 
       http = Net::HTTP.new(uri.host, uri.port)
