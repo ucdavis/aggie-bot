@@ -32,14 +32,14 @@ module ChatBotCommand
       return iam_id if iam_id.class == String
 
       if iam_id.size > PEOPLE_MAX
-        return "Too many individuals to show"
+        return 'Too many individuals to show'
       end
 
-      response = ""
+      response = ''
       iam_id.each do |id|
         data = fetch_user_details id
-        response = response + format_data(data, private_allowed)
-        response = response + "\n\n"
+        response += format_data(data, private_allowed)
+        response += "\n\n"
       end
 
       return response
@@ -53,32 +53,32 @@ module ChatBotCommand
       # We know we only need [0] because we are querying by iamId
 
       # Get ids, names and affiliations
-      basic_info = get_from_api("api/iam/people/search", {"iamId" => iam_id})
-      result["basic_info"] = basic_info.empty? ? [] : basic_info
+      basic_info = get_from_api("api/iam/people/search", "iamId" => iam_id)
+      result["basic_info"] = !basic_info || basic_info.empty? ? [] : basic_info
 
       # Get email, postaladdress, phone numbers
-      contact_info = get_from_api("api/iam/people/contactinfo/search", {"iamId" => iam_id})
-      result["contact_info"] = contact_info.empty? ? [] : contact_info
+      contact_info = get_from_api("api/iam/people/contactinfo/search", "iamId" => iam_id)
+      result["contact_info"] = !contact_info || contact_info.empty? ? [] : contact_info
 
       # Get kerberos loginid
-      kerberos_info = get_from_api("api/iam/people/prikerbacct/search", {"iamId" => iam_id})
-      result["kerberos_info"] = kerberos_info.empty? ? [] : kerberos_info
+      kerberos_info = get_from_api("api/iam/people/prikerbacct/search", "iamId" => iam_id)
+      result["kerberos_info"] = !kerberos_info || kerberos_info.empty? ? [] : kerberos_info
 
       # Get PPS department, title, and position type
-      pps_info = get_from_api("api/iam/associations/pps/search", {"iamId" => iam_id})
-      result["pps_info"] = pps_info.empty? ? [] : pps_info
+      pps_info = get_from_api("api/iam/associations/pps/search", "iamId" => iam_id)
+      result["pps_info"] = !pps_info || pps_info.empty? ? [] : pps_info
 
       # Get ODR department and title
-      odr_info = get_from_api("api/iam/associations/odr/search", {"iamId" => iam_id})
-      result["odr_info"] = odr_info.empty? ? [] : odr_info
+      odr_info = get_from_api("api/iam/associations/odr/search", "iamId" => iam_id)
+      result["odr_info"] = !odr_info || odr_info.empty? ? [] : odr_info
 
       # Get HS employee information
-      hs_info = get_from_api("api/iam/associations/hs/search", {"iamId" => iam_id})
-      result["hs_info"] = hs_info.empty? ? [] : hs_info
+      hs_info = get_from_api("api/iam/associations/hs/search", "iamId" => iam_id)
+      result["hs_info"] = !hs_info || hs_info.empty? ? [] : hs_info
 
       # Get student information
-      student_info = get_from_api("api/iam/associations/sis/search", {"iamId" => iam_id})
-      result["student_info"] = student_info.empty? ? [] : student_info
+      student_info = get_from_api("api/iam/associations/sis/search", "iamId" => iam_id)
+      result["student_info"] = !student_info || student_info.empty? ? [] : student_info
 
       return result
     end
@@ -184,14 +184,13 @@ module ChatBotCommand
             formatted_data.push "*Student ID* #{info["studentId"]}" unless info["studentId"] == nil
             formatted_data.push "*PPS ID* #{info["ppsId"]}" unless info["ppsId"] == nil
           end
-
         end
       end
 
       # Format Kerberos information
       # Login ID msdiez, anotherid, ...
       if !data["kerberos_info"].empty?
-          ids = []
+        ids = []
         data["kerberos_info"].each do |info|
           id = info["userId"] == nil ? "Not Listed" : info["userId"]
           ids.push id
@@ -235,7 +234,9 @@ module ChatBotCommand
 
       # Format ODR information
       # ODR Affiliation DSSIT: STD4 (Casual)
-      unless data['odr_info'].empty?
+      require 'pp'
+      pp data
+      if !data['odr_info'].empty?
         data['odr_info'].each do |info|
           odr = '*ODR Affiliation* '
           odr += info['deptDisplayName'] + ': ' unless info['deptDisplayName'].nil?
@@ -247,7 +248,7 @@ module ChatBotCommand
 
       # Format PPS information
       # PPS Affiliation DSSIT: STD4
-      unless data['pps_info'].empty?
+      if !data['pps_info'].empty?
         data['pps_info'].each do |info|
           dept_name = info['deptDisplayName'] || 'Unknown Department'
           dept_code = info['deptCode'] || 'Unknown Department Code'
@@ -261,12 +262,12 @@ module ChatBotCommand
 
       # Format student information
       # Student Affiliation Computer Science (Undergraduate, Junior)
-      if !data["student_info"].empty?
-        data["student_info"].each do |info|
-          student = "*Student Affiliation* "
-          student += info["majorName"] + " ("
-          student += info["levelName"].scan(/\S+/)[0] # Only grab the first word
-          student +=  ", " + info["className"] + ")"
+      if !data['student_info'].empty?
+        data['student_info'].each do |info|
+          student = '*Student Affiliation* '
+          student += info['majorName'] + ' ('
+          student += info['levelName'].scan(/\S+/)[0] # Only grab the first word
+          student += ', ' + info['className'] + ')'
 
           formatted_data.push student
         end
@@ -289,32 +290,37 @@ module ChatBotCommand
       request = Net::HTTP::Get.new(uri.request_uri)
       response = http.request(request)
 
-      if response.code == "200"
+      if response.code == '200'
         data = JSON.parse(response.body)
-        case data["responseStatus"]
+        case data['responseStatus']
         when 0 # Success
-          return data["responseData"]["results"]
+          return data['responseData']['results']
         when 1 # Sucess but no data in results
-          return data["responseData"]["results"]
+          return data['responseData']['results']
         when 2 # Invalid API key
-          $logger.error "Invalid IAM API key"
-          return "Could not access IAM, check log for details"
+          $logger.error 'Invalid IAM API key'
+          return false
         when 3 # Generic System Error
-          $logger.warn "IAM encountered a generic system error"
-          return "IAM hit a snag!"
+          $logger.error 'IAM encountered a generic system error'
+          $logger.error response.body
+          return false
         when 4 # Data error
-          $logger.warn "IAM encountered a data error"
-          return "IAM encountered a data error"
+          $logger.error 'IAM encountered a data error'
+          $logger.error response.body
+          return false
         when 5 # Missing parameters
-          $logger.error "Missing parameters in IAM API call"
-          return "Query could not be finished"
+          $logger.error 'Missing parameters in IAM API call'
+          $logger.error response.body
+          return false
         else
-          $logger.warn "New response code from IAM"
-          return "Query could not be finished"
+          $logger.error 'Unknown response code from IAM'
+          $logger.error response.body
+          return false
         end
       else
         $logger.error "Could not connect to IAM API due to #{response.code}"
-        return "Could not connect to IAM API due to #{response.code}"
+        $logger.error response.body
+        return false
       end
     end
 
