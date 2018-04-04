@@ -1,4 +1,4 @@
-require "net/http"
+require 'net/http'
 
 # Module that wraps around each command
 module ChatBotCommand
@@ -7,7 +7,7 @@ module ChatBotCommand
   # @param dir - current working directory of the project
   def ChatBotCommand.initialize(dir)
     # Load all commands
-    Dir[dir + "/commands/*.rb"].each do |file|
+    Dir[dir + '/commands/*.rb'].each do |file|
       begin
         $logger.debug "Loading command #{file} ..."
         require file
@@ -28,7 +28,7 @@ module ChatBotCommand
   # @param user - User who sent the message
   # @param is_dm - flag if the event was a direct message
   def ChatBotCommand.dispatch(message, channel, user, is_dm)
-    $logger.debug "Dispatch received:"
+    $logger.debug 'Dispatch received:'
     $logger.debug "\tMessage : #{message}"
     $logger.debug "\tChannel : #{channel}"
     $logger.debug "\tUser    : #{user}"
@@ -178,10 +178,10 @@ module ChatBotCommand
   def ChatBotCommand.is_allowed_private(command, user)
     # Return false if the command does not have a private list of users
     # PRIVATE is optional so the chatbot does not need to exit if it does not exist
-    return false if $SETTINGS["PRIVATE"] == nil || $SETTINGS["PRIVATE"][command] == nil
+    return false if $SETTINGS['PRIVATE'] == nil || $SETTINGS['PRIVATE'][command] == nil
     return false unless defined? user
 
-    command_value = $SETTINGS["PRIVATE"][command]
+    command_value = $SETTINGS['PRIVATE'][command]
 
     if command_value.is_a? TrueClass
       return true
