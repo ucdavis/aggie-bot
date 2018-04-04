@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Aggie Bot
-# Version 0.74 2017-05-26
+# Version 0.80 2018-04-04
 # See AUTHORS file
 
 LOG_FILENAME = 'chatbot.log'.freeze
@@ -81,7 +81,7 @@ Daemons.run_proc('aggie_bot.rb') do
   end
 
   client.on :close do
-    $logger.warn "Caught close signal."
+    $logger.warn 'Caught close signal.'
     EM.stop
   end
 
@@ -97,19 +97,25 @@ Daemons.run_proc('aggie_bot.rb') do
       # Parse message based on commands found in commands/*.rb
       response = ChatBotCommand.dispatch(data['text'], data['channel'], client.users[data['user']], is_dm)
 
-      # Send reply (if any)
-      client.message(channel: data['channel'], text: response) unless response == nil
+      if response
+        # Send reply (if any)
+        if data['thread_ts']
+          client.message(channel: data['channel'], thread_ts: data['thread_ts'], text: response)
+        else
+          client.message(channel: data['channel'], text: response)
+        end
+      end
     end
   end
 
   client.on :group_joined do
-    $logger.debug "Entered private channel, reloading data"
+    $logger.debug 'Entered private channel, reloading data'
     ChatBotCommand.reload_channels!
   end
 
   # Loop itself credit slack-ruby-bot: https://github.com/dblock/slack-ruby-bot/blob/798d1305da8569381a6cd70b181733ce405e44ce/lib/slack-ruby-bot/app.rb#L45
   loop do
-    $logger.debug "Client loop has started."
+    $logger.debug 'Client loop has started.'
     begin
       client.start!
     rescue Slack::Web::Api::Error => e
