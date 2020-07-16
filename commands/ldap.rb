@@ -67,8 +67,8 @@ module ChatBotCommand
           ldap_field = 'title'
         when 'phone', 'telephone'
           ldap_field = 'telephoneNumber'
-        when 'affiliation', 'ucdpersonaffiliation'
-          ldap_field = 'ucdPersonAffiliation'
+        when 'affiliation', 'ucdpersonaffiliation', 'edupersonaffiliation'
+          ldap_field = 'eduPersonAffiliation'
         else
           # Multiple words but no known commands. Use CN wildcard strategy.
           words = parameters.split
