@@ -24,7 +24,8 @@ module ChatBotCommand
       return [] unless matches
 
       matches.each do |m|
-        messages.push "#{$SETTINGS["SERVICENOW_KB_URL"]}" + m[0]
+        kbNumber = m[0].split("KB")[1].rjust(7, "0")
+        messages.push "#{$SETTINGS["SERVICENOW_KB_URL"]}" + "KB" + kbNumber
       end
 
       return messages.join("\n")
