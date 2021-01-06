@@ -105,18 +105,24 @@ module ChatBotCommand
   # Returns :id => name hash of both public and private channel names else nil
   def ChatBotCommand.get_channel_list
     channels = {}
-    response = slack_api("channels.list", {})
-    unless response == nil
-      response["channels"].each do |channel|
-        channels[channel["id"]] = channel["name"]
-      end
-    end
+    args = {
+      cursor: "",
+      limit: 1000,
+      types: "public_channel,private_channel,mpim"
+    }
 
-    response = slack_api("groups.list", {})
-    unless response == nil
-      response["groups"].each do |channel|
-        channels[channel["id"]] = channel["name"]
+    loop do
+      response = slack_api("conversations.list", args)
+
+      unless response == nil
+        response["channels"].each do |channel|
+          channels[channel["id"]] = channel["name"]
+        end
       end
+
+      next_cursor = response["response_metadata"]["next_cursor"]
+      args[:cursor] = next_cursor
+      break if next_cursor.empty?
     end
 
     return channels.empty? ? nil : channels
