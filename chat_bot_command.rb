@@ -134,14 +134,13 @@ module ChatBotCommand
   def ChatBotCommand.slack_api(method, args)
     api = "https://slack.com/api/" + method
     uri = URI.parse(api)
-
-    args["token"] = $SETTINGS["SLACK_API_TOKEN"]
     uri.query = URI.encode_www_form(args)
 
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
 
     request = Net::HTTP::Get.new(uri.request_uri)
+    request["Authorization"] = "Bearer " + $SETTINGS["SLACK_API_TOKEN"]
     response = http.request(request)
 
     if response.code == "200"
