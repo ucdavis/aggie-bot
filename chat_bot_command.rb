@@ -106,9 +106,9 @@ module ChatBotCommand
   def ChatBotCommand.get_channel_list
     channels = {}
     args = {
-      cursor: "",
-      limit: 1000,
-      types: "public_channel,private_channel,mpim"
+      "cursor" => "",
+      "limit" => 1000,
+      "types" => "public_channel,private_channel"
     }
 
     loop do
@@ -121,8 +121,8 @@ module ChatBotCommand
       end
 
       next_cursor = response["response_metadata"]["next_cursor"]
-      args[:cursor] = next_cursor
       break if next_cursor.empty?
+      args["cursor"] = next_cursor
     end
 
     return channels.empty? ? nil : channels
