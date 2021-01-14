@@ -72,10 +72,6 @@ module ChatBotCommand
       odr_info = get_from_api("api/iam/associations/odr/#{iam_id}")
       result["odr_info"] = !odr_info || odr_info.empty? ? [] : odr_info
 
-      # Get HS employee information
-      hs_info = get_from_api("api/iam/associations/hs/search", "iamId" => iam_id)
-      result["hs_info"] = !hs_info || hs_info.empty? ? [] : hs_info
-
       # Get student information
       student_info = get_from_api("api/iam/associations/sis/search", "iamId" => iam_id)
       result["student_info"] = !student_info || student_info.empty? ? [] : student_info
@@ -218,18 +214,6 @@ module ChatBotCommand
       else
         formatted_data.push "*E-mail* Not Listed"
         formatted_data.push "*Office* Not Listed"
-      end
-
-      # Format HS information
-      # HS Affiliation Nurse Clinical II (D-10 Pediatric ICU/PCICU)
-      if !data["hs_info"].empty?
-        data["hs_info"].each do |info|
-          hs = "*HS Affiliation* "
-          hs += info["titleDisplayName"] unless info["titleDisplayName"] == nil
-          hs += " (" + info["costCenterDisplayName"] + ")" unless info["costCenterDisplayName"] == nil
-
-          formatted_data.push hs
-        end
       end
 
       # Format ODR information
