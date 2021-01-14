@@ -41,6 +41,16 @@ module ChatBotCommand
       # In case we're called with less than five characters in 'message'
       return "No results found." if parameters == nil
 
+      # check for -iam flag and strip
+      iam_flag = false
+      if /-iam/.match?(parameters)
+        iam_flag = true
+        parameters.sub!("-iam", "").strip!
+      elsif /-i/.match?(parameters)
+        iam_flag = true
+        parameters.sub!("-i", "").strip!
+      end
+
       # LDAP attribute to search; nil will imply all supported fields
       ldap_field = nil
 
@@ -145,6 +155,17 @@ module ChatBotCommand
       end
 
       conn.unbind
+
+      if iam_flag
+        results += "\n-----_IAM Result_-----\n"
+          if result_count == 1
+            loginid = results.split("\n")[1].sub!("*Login ID* ", "")
+            iam_result = Iam.get_instance.run("iam " + loginid, "", false)
+            results += iam_result
+          elsif result_count > 1
+            results += "More than one LDAP entry found. IAM flag only supports one user entry."
+          end
+      end
 
       if result_count > LDAP_MAX_RESULTS
         return "Too many results (#{result_count}). Try narrowing your search."
