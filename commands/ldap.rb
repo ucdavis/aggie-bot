@@ -117,6 +117,7 @@ module ChatBotCommand
 
       results = ""
       result_count = 0
+      loginids = []
 
       $logger.debug "LDAP search query: " + search_terms
 
@@ -135,6 +136,8 @@ module ChatBotCommand
         department = retrieve_field(entry, 'ou')
         departmentCode = retrieve_field(entry, 'ucdAppointmentDepartmentCode')
         title = retrieve_field(entry, 'title')
+
+        loginids << loginid
 
         # Note: Some individuals have multiple affiliations or may be missing affiliations
         affiliations = []
@@ -156,15 +159,9 @@ module ChatBotCommand
 
       conn.unbind
 
-      if iam_flag
+      if iam_flag && result_count < LDAP_MAX_RESULTS
         results += "\n-----_IAM Result_-----\n"
-          if result_count == 1
-            loginid = results.split("\n")[1].sub!("*Login ID* ", "")
-            iam_result = Iam.get_instance.run("iam " + loginid, "", false)
-            results += iam_result
-          elsif result_count > 1
-            results += "More than one LDAP entry found. IAM flag only supports one user entry."
-          end
+        loginids.each { |loginid| results += Iam.get_instance.run("iam " + loginid, channel, private_allowed)}
       end
 
       if result_count > LDAP_MAX_RESULTS
