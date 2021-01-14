@@ -239,8 +239,12 @@ module ChatBotCommand
           title_name = info['titleDisplayName'] || 'Unknown Title'
           title_code = info['titleCode'] || 'Unknown Title Code'
           position_type = info['positionType'] || 'Unknown Position Type'
+          employee_class = info['emplClassDesc'] || 'Unknown Employee Class'
 
-          formatted_data.push "*PPS Affiliation* #{dept_name} (#{dept_code}): #{title_name} (#{title_code}) (#{position_type})"
+          formatted_data.push "*PPS Affiliation*"
+          formatted_data.push "        Department: #{dept_name} (#{dept_code})"
+          formatted_data.push "        Title: #{title_name} (#{title_code}) (#{position_type})"
+          formatted_data.push "        Employee Class: #{employee_class}"
         end
       end
 
