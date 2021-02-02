@@ -41,6 +41,16 @@ module ChatBotCommand
       # In case we're called with less than five characters in 'message'
       return "No results found." if parameters == nil
 
+      # check for -iam flag and strip
+      iam_flag = false
+      if /-iam/.match?(parameters)
+        iam_flag = true
+        parameters.sub!("-iam", "").strip!
+      elsif /-i/.match?(parameters)
+        iam_flag = true
+        parameters.sub!("-i", "").strip!
+      end
+
       # LDAP attribute to search; nil will imply all supported fields
       ldap_field = nil
 
@@ -107,6 +117,7 @@ module ChatBotCommand
 
       results = ""
       result_count = 0
+      loginids = []
 
       $logger.debug "LDAP search query: " + search_terms
 
@@ -125,6 +136,8 @@ module ChatBotCommand
         department = retrieve_field(entry, 'ou')
         departmentCode = retrieve_field(entry, 'ucdAppointmentDepartmentCode')
         title = retrieve_field(entry, 'title')
+
+        loginids << loginid
 
         # Note: Some individuals have multiple affiliations or may be missing affiliations
         affiliations = []
@@ -145,6 +158,11 @@ module ChatBotCommand
       end
 
       conn.unbind
+
+      if iam_flag && result_count < LDAP_MAX_RESULTS
+        results += "\n-----_IAM Result_-----\n"
+        loginids.each { |loginid| results += Iam.get_instance.run("iam " + loginid, channel, private_allowed)}
+      end
 
       if result_count > LDAP_MAX_RESULTS
         return "Too many results (#{result_count}). Try narrowing your search."

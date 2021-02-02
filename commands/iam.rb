@@ -72,10 +72,6 @@ module ChatBotCommand
       odr_info = get_from_api("api/iam/associations/odr/#{iam_id}")
       result["odr_info"] = !odr_info || odr_info.empty? ? [] : odr_info
 
-      # Get HS employee information
-      hs_info = get_from_api("api/iam/associations/hs/search", "iamId" => iam_id)
-      result["hs_info"] = !hs_info || hs_info.empty? ? [] : hs_info
-
       # Get student information
       student_info = get_from_api("api/iam/associations/sis/search", "iamId" => iam_id)
       result["student_info"] = !student_info || student_info.empty? ? [] : student_info
@@ -220,18 +216,6 @@ module ChatBotCommand
         formatted_data.push "*Office* Not Listed"
       end
 
-      # Format HS information
-      # HS Affiliation Nurse Clinical II (D-10 Pediatric ICU/PCICU)
-      if !data["hs_info"].empty?
-        data["hs_info"].each do |info|
-          hs = "*HS Affiliation* "
-          hs += info["titleDisplayName"] unless info["titleDisplayName"] == nil
-          hs += " (" + info["costCenterDisplayName"] + ")" unless info["costCenterDisplayName"] == nil
-
-          formatted_data.push hs
-        end
-      end
-
       # Format ODR information
       # ODR Affiliation DSSIT: STD4 (Casual)
       require 'pp'
@@ -255,8 +239,12 @@ module ChatBotCommand
           title_name = info['titleDisplayName'] || 'Unknown Title'
           title_code = info['titleCode'] || 'Unknown Title Code'
           position_type = info['positionType'] || 'Unknown Position Type'
+          employee_class = info['emplClassDesc'] || 'Unknown Employee Class'
 
-          formatted_data.push "*PPS Affiliation* #{dept_name} (#{dept_code}): #{title_name} (#{title_code}) (#{position_type})"
+          formatted_data.push "*PPS Affiliation*"
+          formatted_data.push "        Department: #{dept_name} (#{dept_code})"
+          formatted_data.push "        Title: #{title_name} (#{title_code}) (#{position_type})"
+          formatted_data.push "        Employee Class: #{employee_class}"
         end
       end
 
