@@ -1,10 +1,8 @@
-FROM ruby:2.3
+FROM ruby:2.3-alpine
 
-# Install necessary libraries
-RUN apt-get update
-RUN apt-get install -y libsasl2-dev
-RUN apt-get install -y libssl-dev
-RUN apt-get install -y libldap2-dev
+RUN apk add --no-cache git && \
+    apk add --no-cache openldap-dev && \
+    apk add --no-cache build-base
 
 # Set up environment to avoid adding files to root home
 ENV HOME /home
