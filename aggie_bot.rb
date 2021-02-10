@@ -89,6 +89,9 @@ Daemons.run_proc('aggie_bot.rb') do
     # Ignore messages from this bot
     next if data['user'] == client.self['id']
 
+    # ignore all bot messages
+    next if data['bot_id']
+
     # True if the channel is one of the channels directly messaging chatbot
     is_dm = client.ims[data['channel']] != nil
 
