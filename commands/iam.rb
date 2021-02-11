@@ -26,6 +26,7 @@ module ChatBotCommand
       # Grab the query to run for IAM
       query = message.scan(/(\S+)/)
       query.shift # gets rid of !iam
+      return "No results found." if query.empty? # no args
 
       iam_id = get_iam_id query
       # Returns early if iam_id is an error message
