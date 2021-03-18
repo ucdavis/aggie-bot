@@ -1,4 +1,5 @@
 # Ignore sensitive settings
+.env
 settings.yml
 github.yml
 
