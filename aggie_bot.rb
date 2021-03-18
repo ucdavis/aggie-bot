@@ -29,7 +29,7 @@ load './chat_bot_command.rb'
 # @param filepath - file path
 def load_settings(filepath)
   if File.file?(filepath)
-    settings = YAML.load_file(filepath)
+    settings = YAML.load(ERB.new(File.read(filepath)).result)
 
     if settings['GLOBAL'].nil?
       $stderr.puts 'Settings file found but missing GLOBAL section.'
