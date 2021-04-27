@@ -1,5 +1,5 @@
 # Ignore sensitive settings
-settings.yml
+.env
 github.yml
 
 # Do not check log files into the repository

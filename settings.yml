@@ -1,0 +1,83 @@
+# This value must be set.
+SLACK_API_TOKEN: <%= ENV['SLACK_API_TOKEN'] %>
+
+IAM_HOST: <%= ENV['IAM_HOST'] %>
+IAM_API_TOKEN: <%= ENV['IAM_API_TOKEN'] %>
+
+LDAP_HOST: <%= ENV['LDAP_HOST'] %>
+LDAP_PORT: <%= ENV['LDAP_PORT'] %>
+LDAP_BASE_DN: <%= ENV['LDAP_BASE_DN'] %>
+LDAP_BASE_PW: <%= ENV['LDAP_BASE_PW'] %>
+LDAP_SEARCH_DN: <%= ENV['LDAP_SEARCH_DN'] %>
+
+ROLES_URL: <%= ENV['ROLES_URL'] %>
+ROLES_USERNAME: <%= ENV['ROLES_USERNAME'] %>
+ROLES_TOKEN: <%= ENV['ROLES_TOKEN'] %>
+
+SERVICENOW_TICKETS_URL: <%= ENV['SERVICENOW_TICKETS_URL'] %>
+SERVICENOW_KB_URL: <%= ENV['SERVICENOW_KB_URL'] %>
+SERVICENOW_CR_URL: <%= ENV['SERVICENOW_CR_URL'] %>
+SERVICENOW_SCR_URL: <%= ENV['SERVICENOW_SCR_URL'] %>
+
+GITHUB_TOKEN: <%= ENV['GITHUB_TOKEN'] %>
+
+GITHUB_PROJECTS:
+  - dw: "ucdavis/datawarehouse-web"
+  - roles: "dssit/roles-management"
+  - ipaajs: "ucdavis/ipa-client-angular"
+  - ipaweb: "ucdavis/ipa-web"
+  - ipafront: "ucdavis/ipa-client-angular"
+  - ipaback: "ucdavis/ipa-web"
+  - devboard: "dssit/devboard"
+
+NAMSTR_URL: <%= ENV['NAMSTR_API_KEY'] %>
+NAMSTR_API_KEY: <%= ENV['NAMSTR_API_KEY'] %>
+
+GLOBAL:
+  Help: true
+  Visioneers: false
+  LDAP: true
+  Host: true
+  Roles: false
+  Devboard: false
+  GitHub: false
+  IAM: true
+  Reload: false
+  ServiceNowTickets: false
+  ServiceNowKb: true
+  "Slack Email": true
+  "Mail ID": true
+  ServiceNowChangeRequests: true
+  ServiceNowStdChangeRequests: true
+  Namstr: true
+
+PRIVATE:
+  IAM: ["jeremyphillips"]
+  Reload: ["cthielen", "flcli"]
+  ServiceNowTickets: true
+  Namstr: true
+  DevPlaygroundCommand: ["flcli"]
+
+dss-it-general:
+  Roles: true
+  ServiceNowTickets: true
+
+dss-it-appdev:
+  GitHub: true
+  Visioneers: true
+  Roles: true
+  Devboard: true
+  ServiceNowTickets: true
+
+dss-it-servicedesk:
+  Roles: true
+  ServiceNowTickets: true
+
+coeit:
+  ServiceNowTickets: true
+
+it:
+  ServiceNowTickets: true
+
+servicenow:
+  ServiceNowTickets: true
