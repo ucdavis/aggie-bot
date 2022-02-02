@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gem 'ruby-ldap'            # for LDAP integration
 gem 'daemons'              # for 'daemon-izing' the script
 gem 'hashie', '=3.4.5'     # temporarily hold hashie (used by slack-ruby-client) at 3.4.5 until a 3.5.1 bug gets fixed
-gem 'slack-ruby-client'    # for Slack support
+gem 'slack-ruby-client', '~> 0.14'    # for Slack support
 
 gem 'eventmachine'         # required by slack-ruby-client
 gem 'faye-websocket'       # required by slack-ruby-client
