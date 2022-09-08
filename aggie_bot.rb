@@ -73,6 +73,12 @@ Daemons.run_proc('aggie_bot.rb') do
     config.token = $SETTINGS['SLACK_API_TOKEN']
   end
 
+  # Configure Client to use rtm_connect instead of rtm_start. 
+  # Beginning 9/20/2022, API responses will default to rtm_connect
+  Slack::RealTime::Client.configure do |config|
+    config.start_method = :rtm_connect
+  end
+
   client = Slack::RealTime::Client.new
 
   # Register Slack::RealTime::Client event callbacks
@@ -92,13 +98,15 @@ Daemons.run_proc('aggie_bot.rb') do
     # ignore all bot messages
     next if data['bot_id']
 
-    # True if the channel is one of the channels directly messaging chatbot
-    is_dm = client.ims[data['channel']] != nil
+    # client no longer provides channels or users, query on demand
+    channel = client.web_client.conversations_info(channel: data['channel']).channel
+    user = client.web_client.users_info(user: data['user']).user
+    is_dm = channel.is_im
 
     # Parse the received message for valid Chat Bot commands
     if data['text']
       # Parse message based on commands found in commands/*.rb
-      response = ChatBotCommand.dispatch(data['text'], data['channel'], client.users[data['user']], is_dm)
+      response = ChatBotCommand.dispatch(data['text'], data['channel'], user, is_dm)
 
       if response
         # Send reply (if any)
