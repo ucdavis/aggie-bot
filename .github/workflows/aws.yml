@@ -13,7 +13,7 @@ jobs:
     with:
       repo: 'aggie-bot'
       cluster: 'legacy'
-      service: 'aggie-bot-production'
+      service: 'aggie-bot-prod'
     secrets:
       access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
