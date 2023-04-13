@@ -21,8 +21,13 @@ require 'logger'
 require 'yaml'
 require 'cgi'
 require 'slack-ruby-client'
+require 'async'
+require 'erb'
+require 'byebug'
 
 load './chat_bot_command.rb'
+
+threads = []
 
 # Load settings from disk
 # Returns nil if file is not found or global settings is not set up
@@ -50,9 +55,10 @@ end
 $cwd = Dir.getwd
 
 # 'Daemonize' the process (see 'daemons' gem for more information)
-Daemons.run_proc('aggie_bot.rb') do
+# Daemons.run_proc('aggie_bot.rb') do
   # Log errors / information to console
-  $logger = Logger.new($cwd + '/' + LOG_FILENAME, LOG_ROTATIONS, LOG_SIZE)
+  $stdout.sync = true
+  $logger = Logger.new($stdout)
   $logger.level = Logger::DEBUG
 
   # Keep a log file of users using chatbot
@@ -71,12 +77,6 @@ Daemons.run_proc('aggie_bot.rb') do
   # Set up Slack connection
   Slack.configure do |config|
     config.token = $SETTINGS['SLACK_API_TOKEN']
-  end
-
-  # Configure Client to use rtm_connect instead of rtm_start. 
-  # Beginning 9/20/2022, API responses will default to rtm_connect
-  Slack::RealTime::Client.configure do |config|
-    config.start_method = :rtm_connect
   end
 
   client = Slack::RealTime::Client.new
@@ -125,10 +125,11 @@ Daemons.run_proc('aggie_bot.rb') do
   end
 
   # Loop itself credit slack-ruby-bot: https://github.com/dblock/slack-ruby-bot/blob/798d1305da8569381a6cd70b181733ce405e44ce/lib/slack-ruby-bot/app.rb#L45
-  loop do
+# loop do
     $logger.debug 'Client loop has started.'
     begin
-      client.start!
+      threads << client.start_async
+      threads.each(&:join)
     rescue Slack::Web::Api::Error => e
       $logger.error e
       case e.message
@@ -145,12 +146,12 @@ Daemons.run_proc('aggie_bot.rb') do
     rescue Slack::RealTime::Client::ClientAlreadyStartedError => e
       # We receive this exception when ChatBot is killed via ctrl+c but otherwise had no error.
       # Correct behavior is to exit.
-      break
+      raise e
     rescue StandardError => e
       $logger.error e
       raise e
     end
-  end
+  # end
 
   $logger.info "Aggie Bot ended at #{Time.now}"
-end
+# end

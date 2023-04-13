@@ -5,3 +5,4 @@ github.yml
 # Do not check log files into the repository
 chatbot.log
 customers.log
+.byebug_history
