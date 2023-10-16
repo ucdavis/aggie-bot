@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+ruby '~> 3.1'
+
 gem 'ruby-ldap'            # for LDAP integration
 gem 'daemons'              # for 'daemon-izing' the script
 
