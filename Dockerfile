@@ -2,7 +2,8 @@ FROM ruby:3.1-alpine
 
 RUN apk add --no-cache git && \
     apk add --no-cache openldap-dev && \
-    apk add --no-cache build-base
+    apk add --no-cache build-base && \
+    apk add --no-cache bind-tools
 
 # Set up environment to avoid adding files to root home
 ENV HOME /home
