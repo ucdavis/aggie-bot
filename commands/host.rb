@@ -1,7 +1,7 @@
 module ChatBotCommand
   class Host
     TITLE = "Host"
-    REGEX = /^host/
+    REGEX = /^host\s/
     COMMAND = "host "
     DESCRIPTION = "Runs an equivalent of the Unix 'host' command."
 
