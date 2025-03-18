@@ -113,6 +113,7 @@ module ChatBotCommand
 
     loop do
       response = slack_api("conversations.list", args)
+      sleep(1) # Add a delay to prevent hitting Slack's rate limits
 
       unless response == nil
         response["channels"].each do |channel|
