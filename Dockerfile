@@ -1,4 +1,4 @@
-FROM ruby:3.1-alpine
+FROM ruby:3.1.4-alpine
 
 RUN apk add --no-cache git && \
     apk add --no-cache openldap-dev && \
