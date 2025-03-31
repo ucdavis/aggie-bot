@@ -107,9 +107,10 @@ $cwd = Dir.getwd
     if data['text']
       # Parse message based on commands found in commands/*.rb
       response = ChatBotCommand.dispatch(data['text'], data['channel'], user, is_dm)
-      response += ">:loudspeaker:  *_@aggie_bot will stop working after March 31, 2025._* :loudspeaker:\n>To continue using the service in your channel, please remove the old bot with `/remove @aggie_bot`.\n>Then, add the new app with `/invite @aggiebot` or message <@U08E9MNQCD7> directly.";
 
       if response
+        response += ">:loudspeaker:  *_@aggie_bot will stop working after March 31, 2025._* :loudspeaker:\n>To continue using the service in your channel, please remove the old bot with `/remove @aggie_bot`.\n>Then, add the new app with `/invite @aggiebot` or message <@U08E9MNQCD7> directly.";
+
         # Send reply (if any)
         if data['thread_ts']
           client.message(channel: data['channel'], thread_ts: data['thread_ts'], text: response)
